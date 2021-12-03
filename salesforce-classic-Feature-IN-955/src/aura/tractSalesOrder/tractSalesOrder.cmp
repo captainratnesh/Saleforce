@@ -1,0 +1,134 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="global" controller="TractSalesOrderController_LT" >
+    <ltng:require styles="/resource/TRACT3__SLDS/assets/styles/salesforce-lightning-design-system.min.css"/>
+    <!--<ltng:require scripts="/resource/TRACT3__jqueryjs"/>-->
+    <!--<ltng:require styles="/resource/TRACT3__bootstrap" scripts='/resource/TRACT3__jqueryjs,/resource/TRACT3__bootstrapjs' />-->
+    <aura:attribute name="salesOrder" type="GTVSalesOrderDetailWrapper"/>
+    <aura:attribute name="oppId" type="String"/>
+    <aura:attribute name="HideSpinner" type="Boolean" default="true"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>  
+    
+    <div>
+        <div class="panel panel-primary account-sec sales-order-details" >
+            <aura:renderIf isTrue="{!v.HideSpinner}">
+                <div class="slds-spinner_container" >
+                    <div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+            </aura:renderIf>
+            <div class="panel-heading" style = "font-size: 16px;color: rgb(22, 50, 92);">Sales Order Information</div>
+            <div class="slds-card__header slds-grid">
+                <header class="slds-media slds-media--center slds-has-flexi-truncate"></header>
+                <div class="slds-no-flex open-sales-order ">
+                    <aura:renderIf isTrue="{!v.salesOrder.checkOrder}">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.showTractOrder}" >Open Order</button>
+                    </aura:renderIf>
+                </div>
+            </div>
+            <div>
+                <div class="account-details">
+                    <div class="panel-body panel_body_details service-table heading last">
+                        <div class="form-horizontal information-box service-table-details" >
+                            <div class="cmn-table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr >
+                                            <th colspan="2" class="slds-truncate">
+                                                <b>Items</b>
+                                            </th>
+                                            <th>
+                                                <b>Recurring Unit Price</b>
+                                            </th>
+                                            <th>
+                                                <b>Unit Price</b>
+                                            </th>
+                                            <th>
+                                                <b>Price</b>
+                                            </th>
+                                            <th>
+                                                <b>Qty</b>
+                                            </th>
+                                            <th>
+                                                <b>Total</b>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <aura:iteration items="{!v.salesOrder.listOfOrderItems}" var="opp" indexVar="oppIndx">
+                                        <tr class="border_bottom">
+                                            <td>{!oppIndx+1}.</td>
+                                            <td>
+                                                <p class="firstP">{!opp.productName}</p>
+                                                <aura:renderIf isTrue="{!opp.hasShortDescription}">
+                                                    <p>Short Description: {!opp.shortDescription}</p>
+                                                </aura:renderIf>
+                                                <aura:renderIf isTrue="{!opp.hasAgreement}">
+                                                    <p>Agreement: {!opp.agreementName}</p>
+                                                </aura:renderIf>
+                                                <aura:renderIf isTrue="{!opp.hasAgreement}">
+                                                    <p>Period: {!opp.agreementPeriod}</p>
+                                                </aura:renderIf>
+                                                <aura:renderIf isTrue="{!opp.hasAgreement}">
+                                                    <p>End Date: {!opp.agreementEndDate}</p>
+                                                </aura:renderIf>
+                                                <aura:renderIf isTrue="{!opp.hasAgreement}">
+                                                    <p>End Action: {!opp.agreementEndAction}</p>
+                                                </aura:renderIf>										
+                                                <aura:renderIf isTrue="{!opp.hasParentService}">
+                                                    <p>Applied To: {!opp.parentServiceName}</p>
+                                                </aura:renderIf>
+                                                <aura:renderIf isTrue="{!opp.hasServiceResource}">
+                                                    <aura:iteration items="{!opp.listOfServiceResources}" var="srobj" indexVar="index">
+                                                        <p>Service Resource: {!srobj}</p>
+                                                    </aura:iteration>
+                                                </aura:renderIf>
+                                            </td>
+                                            <td>
+                                                {!opp.recurringPrice}
+                                            </td>
+                                            <td>
+                                                {!opp.unitPrice}
+                                            </td>
+                                            <td>
+                                                {!opp.orderItemUnitPrice}
+                                            </td>
+                                            <td>
+                                                {!opp.quantity}
+                                            </td>
+                                            <td>
+                                                {!opp.orderItemTotalPrice}
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                    <tfoot class="tfootStyle">
+                                        <tr>
+                                            <td colspan="5" style="text-align: right;"></td>
+                                            <td >
+                                                <b>Tax</b>
+                                            </td>
+                                            <td>
+                                                <b>Total</b>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4">
+                                                <b>Order Amount: *</b>
+                                            </td>
+                                            <td>{!v.salesOrder.orderAmount}</td>
+                                            <td>{!v.salesOrder.taxAmount}</td>
+                                            <td>{!v.salesOrder.totalOrderAmountWithTaxes}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="7" style="font-weight: normal;">* The Order Amount May be Prorated</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

@@ -1,0 +1,150 @@
+<aura:component controller="AccountDetailController_LT">
+    <aura:attribute name="message" type="String" default="NoError"/>
+    <aura:attribute name="wrappers" type="ProductServiceWrapper" />
+    <aura:attribute name="subscriptionList" type="SelectOption[]"/>
+    <aura:attribute name="effectiveDate" type="Date" />
+    <aura:attribute name="payonPurchase" type="Boolean" default="false" />
+    <aura:attribute name="changeSubscriptionInfo" type="ChangeSubscriptionWrapper" />
+    <aura:attribute name="subscriptionInfo" type="ChangeSubscriptionWrapper" />
+    <aura:attribute name="newSubscriptionEid" type="String" />
+    <aura:attribute name="recurrence" type="String" />
+    <aura:attribute name="agreement" type="String" />
+    <aura:attribute name="accountCurrency" type="String" />
+    <aura:handler name="init" value="this" action="{!c.doinit}" />
+    <div aria-hidden="false" id="changeSubscriptionModal" role="dialog" class="slds-modal slds-fade-in-open cmn_modelbox" style="display:block;">
+        <div class="slds-modal__container">
+            <!-- *************************************Header************************************************* -->
+            <div class="slds-modal__header">
+                <h2 class="slds-text-heading--medium">Change Subscription</h2>
+                <div id = "showErrorrChange" class="cmn_error_msg" style = "display:none;">
+                    <ui:outputText value="{!v.message}"/>
+                </div>
+                <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                    <c:svg class="slds-button__icon slds-button__icon--large"
+                           xlinkHref="/resource/SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                           ariaHidden="true"
+                           />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+            </div>
+            <!-- *************************************Body************************************************* -->
+            <div class="full forcePageBlockSectionRow">
+                <div class="slds-modal__content">
+                    <div class="account-details">
+                        <div class="panel-body panel_body_details service-table service-table2 heading last">
+                            <div class="spinner change-spinner" id="Accspinner">
+                                <div aura:id="spinnerId" class="slds-spinner_container">
+                                    <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                                        <span class="slds-assistive-text">Loading</span>
+                                        <div class="slds-spinner__dot-a"></div>
+                                        <div class="slds-spinner__dot-b"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="cmn-table-responsive common-add-padding">
+                                <table>
+                                    <tr>
+                                        <td><span class="ruq-error"> </span>Current Service:</td>
+                                        <td>{!v.wrappers.serviceName}</td>
+                                    </tr>
+                                    <aura:renderIf isTrue="{!v.subscriptionInfo.enablePreserveAgreement}">
+                                        <tr>
+                                            <td>
+                                                Preserve Agreement:
+                                            </td>
+                                            <td>
+                                                <ui:inputCheckbox aura:id="PreserveAgreementCheckbox"  name="preserve_agreement" change="{!c.handleChangeInPreserveAgreement}" />
+                                            </td>
+                                        </tr>
+                                    </aura:renderIf>
+                                    <tr id="new-subscription">
+                                        <td>
+                                            <span class="ruq-error">*</span> New Subscription:
+                                        </td>
+                                        <td>
+                                            <ui:inputSelect aura:id="subscriptionValue" change="{!c.getSelectedServiceDetails}" value="{!v.newSubscriptionEid}">
+                                                <aura:iteration items="{!v.subscriptionInfo.newServiceList}" var="subscription">
+                                                    <ui:inputSelectOption text="{!subscription.value}" label="{!subscription.label}"/>
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+                                        </td>
+                                    </tr>
+                                    <tr class="price_config" style = "display:none;">
+                                        <td><span class="ruq-error"> </span> Recurrence Period:</td>
+                                        <td>
+                                            <ui:inputSelect aura:id="recurrencePeriod" change="{!c.handleChangeInRecurrence}"  value="{!v.recurrence}" >
+                                                <aura:iteration items="{!v.changeSubscriptionInfo.recurringPriceList}" var="recurrencePeriod">
+                                                    <ui:inputSelectOption text="{!recurrencePeriod.value}" label="{!recurrencePeriod.label}"/>
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+                                        </td>
+                                    </tr>
+                                    <tr class="price_config" style = "display:none;">
+                                        <td><span class="ruq-error"> </span> Recurring Price:</td>
+                                        <td>
+                                            <lightning:input type="number" name="recurrencePrice" label="" value="{!v.changeSubscriptionInfo.recurringPrice}"/>
+                                        </td>
+                                    </tr>
+                                    <tr id="agreement_config" class="agreement_configuration" style = "display:none;">
+                                        <td>
+                                            <span class="ruq-error">*</span> Agreement:
+                                        </td>
+                                        <td>
+                                            <ui:inputSelect aura:id="agreement" change="{!c.handleChangeInAgreement}"  value="{!v.agreement}">
+                                                <aura:iteration items="{!v.changeSubscriptionInfo.agreementList}" var="agreement">
+                                                    <ui:inputSelectOption text="{!agreement.value}" label="{!agreement.label}"/>
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+                                        </td>
+                                    </tr>
+                                    <tr id="renew_action" class="agreement_configuration" style = "display:none;">
+                                        <td>
+                                            <span class="ruq-error">*</span> Renew Action:
+                                        </td>
+                                        <td>
+                                            <ui:inputSelect aura:id="renew_action" >
+                                                <aura:iteration items="{!v.changeSubscriptionInfo.renewActionList}" var="renewAction">
+                                                    <ui:inputSelectOption text="{!renewAction.value}" label="{!renewAction.label}"/>
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+                                        </td>
+                                    </tr>
+                                    <tr id = "payOnPurchaseCheckBox" style = "display:none;">
+                                        <td><span class="ruq-error"> </span>Pay on purchase:</td>
+                                        <td>
+                                            <ui:inputCheckbox aura:id="checkbox"  name="pay_on_purchase" />
+                                        </td>
+                                    </tr>
+                                    <tr id = "effectiveDateSelector" style = "display:none;">
+                                        <td>
+                                            <span class="ruq-error">*</span> Effective Date:
+                                        </td>
+                                        <td>
+                                            <ui:inputDate aura:id="EffectiveDateValue" displayDatePicker="true" class="slds-input" value="{!v.effectiveDate}"/>
+                                        </td>
+                                    </tr>
+                                    <aura:renderIf isTrue="{!v.changeSubscriptionInfo.canUpdateQty}">
+                                        <tr class="qty_config" id="qtyConfig">
+                                            <td><span class="ruq-error"> </span> Quantity:</td>
+                                            <td>
+                                                <lightning:input type="number" name="quantity" label="" value="{!v.changeSubscriptionInfo.quantity}"/>
+                                            </td>
+                                        </tr>
+                                    </aura:renderIf>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- *************************************Footer************************************************* -->
+            <div class="slds-modal__footer">
+                <div class="slds-x-small-buttons--horizontal">
+                    <button class="slds-button slds-button--neutral" onclick="{!c.closeModalBox}">Cancel</button>
+                    <button class="slds-button slds-button--neutral slds-button--brand" id="finish" onclick="{!c.saveChangeServices}">Finish</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open" id="backGroundChangeSubscription" style="display:block;"></div>
+</aura:component>

@@ -1,0 +1,86 @@
+<aura:component access="GLOBAL" controller="TractProductDetailExt">
+    <aura:attribute name="productId" type="String" />
+    <aura:attribute type="Map" name="agreementListMap"  default="{}" />
+    <aura:attribute type="Integer" name="currentPage"  default="1" />
+    <aura:attribute type="Integer" name="totelPage"  default="0" />
+    <aura:attribute name="disableNext" type="boolean"  default="false"/>
+    <aura:attribute name="disablePrev" type="boolean"  default="true"/>
+    <aura:attribute name="disableFirst" type="boolean"  default="true"/>
+    <aura:attribute name="disableLast" type="boolean"  default="false"/>
+    <aura:attribute name="currentAgreementList" type="ProductAgreementWrapper[]"/>
+    <aura:attribute name="agreementList" type="ProductAgreementWrapper[]"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+                <div class="slds-modal__container">
+                  
+                  <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick="{!c.closeModalBox}">
+                            <c:svg class="slds-button__icon slds-button__icon--large"
+                            xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                            ariaHidden="true"
+                            />
+                      <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <div class="slds-grid slds-grid_align-spread slds-grid--vertical-align-center">
+                        <h3 class="slds-text-heading--small font-normal">Product Agreement Association</h3>
+                    </div>
+                  </header>
+                  <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                      <lightning:card >
+                          <aura:set attribute = "title">
+                              
+                          </aura:set>
+                          <p class="slds-p-horizontal_medium">
+                                  <div class="slds-box oli-table slds-p-around_none">
+                                      <table class="slds-table slds-table_bordered">
+                                          <thead>
+                                              <tr>
+                                                  <th>Select</th>
+                                                  <th>Name</th>
+                                                  <th>Period</th>
+                                                  <th>Renew Action</th>  
+                                                  <th>Prorate On Cancel</th>
+                                                  <th>Termination Charge</th>
+                                                  <th>Max Termination Charge</th>
+                                              </tr>
+                                          </thead>
+                                      <aura:iteration items="{!v.agreementList}" var="agree" indexVar="count">
+                                          <tbody>
+                                              <td>
+                                                <lightning:input type="checkbox" checked="{!agree.isSelected}"/>
+                                              </td>
+                                              <td>{!agree.name}</td>              
+                                              <td>{!agree.agreementPeriod} &nbsp; {!agree.agreementPeriodType}</td>
+                                              <td>{!agree.endAction}</td>
+                                              <td>{!agree.prorateOnCancel}</td>
+                                              <td>{!agree.terminationFlatCharge}</td>
+                                              <td>{!agree.maxTerminationFlatCharge}</td>
+                                              
+                                          </tbody>
+                                          </aura:iteration>
+                                      </table>
+                                  </div>
+                                  
+                              </p>
+                          
+                      </lightning:card>
+                  </div>
+                  <footer class="slds-modal__footer">
+                    <div class="slds-grid slds-grid_align-spread">
+                      <div class="">
+                          <button class="slds-button slds-button--brand " disabled="{!v.disableFirst}" onclick = "{!c.firstProduct}">First</button>
+                          <button class="slds-button slds-button--brand " disabled="{!v.disablePrev}" onclick = "{!c.prevProduct}">Previous</button>
+                          <span class="slds-m-horizontal_small">Page {!v.currentPage}  of {!v.totelPage}</span>
+                          <button class="slds-button slds-button--brand " disabled="{!v.disableNext}"  onclick = "{!c.nextProduct}">Next</button>
+                          <button class="slds-button slds-button--brand " disabled="{!v.disableLast}"  onclick = "{!c.lastProduct}">Last</button>
+                      </div>
+                      <div>
+                          <button class="slds-button slds-button_neutral" onclick="{!c.closeModalBox}">Cancel</button>
+                          <button class="slds-button slds-button_brand"  onclick="{!c.addAgreement}">Finish</button>
+                      </div>
+                    </div>
+                  </footer>
+                </div>
+              </section>
+              <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

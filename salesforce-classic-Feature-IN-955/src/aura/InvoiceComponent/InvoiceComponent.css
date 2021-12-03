@@ -1,0 +1,20 @@
+.THIS .slds-modal__content{
+    max-height: 450px;
+}
+.THIS .account-details,
+.THIS .account-details.custom-account-detail{
+    margin: 15px auto 30px;
+    width: 95%;
+}      
+.THIS .custom-table-padding .slds-accordion__section{
+    padding: 0;
+}
+.THIS .custom-table-padding .slds-accordion__summary-heading{
+    padding: 10px;
+}
+.THIS .custom-table-padding .slds-accordion__summary-heading .slds-truncate{
+    font-size: 15px;
+}
+.THIS .custom-table-padding.service-table table tr:last-child td{
+    border-top: 1px solid rgb(217, 219, 221);
+}

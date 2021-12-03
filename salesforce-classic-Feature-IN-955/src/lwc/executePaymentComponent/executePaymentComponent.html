@@ -1,0 +1,38 @@
+<template>
+  <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+      <div class="slds-modal__container">
+        <header class="slds-modal__header">
+          <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+            <svg class="slds-button__icon slds-button__icon--large" aria-hidden="true">
+              <use xlink:href="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"></use>    
+            </svg>  
+                  
+            <span class="slds-assistive-text">Close</span>    
+          </button>
+          <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">  
+            Create payment   
+          </h2>            
+          <template if:true={showErrorMessage}>
+            <div class="slds-notify_toast slds-theme_error" role="alert">   
+              <span class="slds-assistive-text">error</span>
+              <div>{errorMessage}</div>             
+            </div>       
+          </template>      
+        </header>        
+        <div class="slds-modal__content first-class slds-p-around_medium">   
+          <p class="slds-m-bottom_medium cust-heading"><span>Payment Information</span></p>
+          <lightning-combobox required disabled={noPaymentMethod} class="" label="Payment Method" variant="label-inline" name="paymentMethodCombobox" onchange={paymentMethodChange} options={paymentMethodOptions}></lightning-combobox>
+          <lightning-input required disabled={noPaymentMethod} variant="label-inline" data-id="Amount" label="Amount"></lightning-input>
+          <lightning-textarea disabled={noPaymentMethod} variant="label-inline" data-id="Description" label="Description"></lightning-textarea>
+        </div>
+        <footer class="slds-modal__footer">  
+          <button type="button" class="slds-button slds-button_neutral" onclick={closeModal}>Cancel</button> 
+          <template if:false={noPaymentMethod}>
+            <button type="button" class="slds-button slds-button_brand" onclick={executePayment}>Execute</button>
+          </template>  
+          <!-- <lightning-button variant="brand" label="Execute" ></lightning-button> -->
+        </footer>
+      </div>
+  </section>
+  <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

@@ -1,0 +1,97 @@
+<aura:component access="GLOBAL" controller="TractOppProduct_LT">
+    <aura:attribute name="oppId" type="String" access="global"/>
+    <aura:attribute name="oppProLists" type="Product2Wrapper[]"/>
+    <aura:attribute name="oppProList" type="Product2Wrapper[]"/>
+    <aura:attribute type="Map" name="productListMap"  default="{}" />
+    <aura:attribute type="Integer" name="currentPage"  default="1" />
+    <aura:attribute type="Integer" name="totelPage"  default="0" />
+    <aura:attribute name="disableNext" type="boolean"  default="false"/>
+    <aura:attribute name="disablePrev" type="boolean"  default="true"/>
+    <aura:attribute name="disableFirst" type="boolean"  default="true"/>
+    <aura:attribute name="disableLast" type="boolean"  default="false"/>
+    <aura:attribute name="disableProduct" type="boolean"  default="false"/>
+    <aura:attribute name="message" type="String" default="NoError"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:registerEvent name="AddTractProductEvent" type="c:AddTractProductEvent"/>
+    <aura:html tag="style">
+        .slds-scope .added-prod-deatisl5 th.slds-is-sortable{padding:0 0.5em;text-transform: none; font-weight:700;font-family: 'Arial','Helvetica',sans-serif!important;}
+        .slds-scope .added-prod-deatisl5 th.slds-is-sortable:first-child{width:13%}
+        .slds-scope .added-prod-deatisl5 th .slds-truncate{line-height:2.5em;font-family: 'Arial','Helvetica',sans-serif!important;}
+        .slds-scope .product-item-sec .slds-table th, .slds-scope .product-item-sec .slds-table td{ white-space: normal;}
+    </aura:html>
+    <div class="slds added-prod-deatisl5">
+        <div class="slds-card">
+            <div class="slds-card__header slds-grid" >
+                <div class="slds-col">
+                    <div class="slds-media slds-media--center slds-has-flexi-truncate" >
+                        <div class="slds-media__body slds-truncate">
+                            <span class="slds-text-heading--medium">Items</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col">
+                    <div class="slds-no-flex">
+                        <div id="showErrorProductList" class="cmn_error_msg" style="display:none;text-align:center">
+                            <ui:outputText value="{!v.message}"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col">
+                    <div class="slds-no-flex" style="float:right">
+                        <button type="button" class="slds-button slds-button--neutral "  id="Home" onclick="{!c.getHomePage}">Cancel</button>
+                        <button type="button" class="slds-button slds-button--neutral " disabled="{!v.disableProduct}" id="addProduct" onclick="{!c.addProduct}">Add Product</button>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-card__body slds-text-align--center product-item-sec">
+                <table class="slds-table slds-table--bordered slds-table--cell-buffer slds-table--fixed-layout slds-box slds-max-medium-table--stacked-horizontal product-detail-desc ">
+                    <thead>
+                        <tr class="slds-text-heading--label" style="line-height: 3.5;">
+                            <th class="slds-truncate slds-is-sortable thAlign">
+                                <div class="slds-truncate" title="Action">Action</div>
+                            </th>
+                            <th class="slds-truncate slds-is-sortable thAlign">
+                                <div class="slds-truncate" title="Product Name">Product Name</div>
+                            </th>
+                            <th class="slds-truncate slds-is-sortable thAlign">
+                                <div class="slds-truncate" title="Product Code">Product Type</div>
+                            </th>
+                            <th class="slds-truncate slds-is-sortable thAlign">
+                                <div class="slds-truncate" title="Product Description">Description</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody style="font-size: 110%;">
+                        <aura:iteration items="{!v.oppProList}" var="pro">
+                            <tr>
+                                <td>
+                                    <ui:inputCheckbox class="slds-checkbox" value="{!pro.isSelected}"/>
+                                </td>
+                                <td>
+                                    <ui:outputText class="slds-output" value="{!pro.prod.Name}"/>
+                                </td>
+                                <td>
+                                    <ui:outputText class="slds-output" value="{!pro.prod.ProductCode}"/>
+                                </td>
+                                <td>
+                                    <ui:outputText class="slds-output" value="{!pro.prod.Description}"/>
+                                </td>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+            <div class="slds-card__footer slds-grid" >
+                <div class="slds-col slds-size--1-of-2" style="text-align:left; font-size: 110%;" data-aura-rendered-by="89:2;a">
+                    Page {!v.currentPage}  of {!v.totelPage}
+                </div>
+                <div class="slds-col slds-size--1-of-2" >
+                    <button class="slds-button slds-button--brand " disabled="{!v.disableFirst}" onclick = "{!c.firstProduct}">First</button>
+                    <button class="slds-button slds-button--brand " disabled="{!v.disablePrev}" onclick = "{!c.prevProduct}">Previous</button>
+                    <button class="slds-button slds-button--brand " disabled="{!v.disableNext}"  onclick = "{!c.nextProduct}">Next</button>
+                    <button class="slds-button slds-button--brand " disabled="{!v.disableLast}"  onclick = "{!c.lastProduct}">Last</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

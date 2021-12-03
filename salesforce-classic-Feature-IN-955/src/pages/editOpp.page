@@ -1,0 +1,2 @@
+<apex:page standardController="Opportunity" showHeader="true" tabStyle="Opportunity" standardStylesheets="true">
+</apex:page>

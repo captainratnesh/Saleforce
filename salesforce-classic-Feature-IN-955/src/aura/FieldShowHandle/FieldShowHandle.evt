@@ -1,0 +1,14 @@
+<aura:event type="APPLICATION" description="Event template" access="global">
+        <aura:attribute name="thisField"
+        access="global"
+        type="String" 
+        />
+        <aura:attribute name="selectedConditionAndValue"
+        access="global"
+        type="String" 
+        />
+        <aura:attribute name="accWrapper"
+        access="global"
+        type="AccountMappingWrapper" 
+        />
+</aura:event>

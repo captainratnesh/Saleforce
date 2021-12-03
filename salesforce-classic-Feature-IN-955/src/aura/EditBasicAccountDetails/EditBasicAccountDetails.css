@@ -1,0 +1,32 @@
+.THIS .slds-custom-checkbox .slds-checkbox_faux{
+    position: absolute;
+    top: 20px;
+    cursor: pointer;
+}
+.THIS .custom-slds-field .form-element__label{
+    color: rgb(107, 109, 112);
+    font-size: .75rem;
+    margin-bottom: 0.125rem;
+}
+.THIS .custom-slds-field .input{
+    background-color: rgb(255, 255, 255);
+    border: 1px solid rgb(217, 219, 221);
+    border-radius: .25rem;
+    width: 100%;
+    transition: border .1s linear,background-color .1s linear;
+    padding: 0 1rem 0 .75rem;
+    line-height: 1.875rem;
+    min-height: calc(1.875rem + (1px * 2));
+}
+.THIS .custom-slds-field .uiInputDate .input{
+    padding-right: 2rem;
+}
+.THIS .custom-slds-field .form-element{
+    position: relative;
+}
+.THIS .custom-slds-field .datePicker-openIcon{
+    position: absolute;
+    left: unset;
+    right: 11px;
+    top: 8px;
+}

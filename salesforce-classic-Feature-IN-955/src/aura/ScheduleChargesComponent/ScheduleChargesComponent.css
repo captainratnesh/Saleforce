@@ -1,0 +1,35 @@
+.THIS .cmn_modelbox .slds-modal__footer .slds-button--neutral{text-shadow:none;font-size:11px;color:#2886d9;}
+.THIS .cmn_modelbox .slds-modal__footer .slds-button--neutral.slds-button--brand{color:#fff}
+.THIS .cmn_modelbox .account-details{margin-bottom:15px}
+.THIS .cmn_modelbox .service-table table tr td select{height:32px;background:#fff;border:1px solid #d8dde6;padding:0 10px;border-radius:.25rem;width:100%;color:#647687}
+.THIS .cmn_modelbox h2{font-size:19px}
+.THIS .cmn_modelbox tr td input[type="text"]{padding:0 10px;border-radius:.25rem;color:#647687;height:32px; float: left; width: 100%; text-align: left;}
+.THIS .cmn_modelbox .service-table table th.color-222{color: #4e4e4e;}
+.THIS .cmn_modelbox tr td form{ position:relative;}
+.THIS .cmn_modelbox .uiInput--datetime .datePicker-openIcon,.THIS .cmn_modelbox .uiInput--datetime .clearIcon{position: absolute;right: 10px;top:8px;left:auto}
+.THIS .cmn_modelbox .uiDatePicker--default a{height:30px;line-height: 30px; font-size:17px}
+.THIS a.uiDayInMonthCell--default {width:100%; height:28px; line-height:28px;font-size:17px}
+.THIS body,.THIS html{font-size:100%!important}
+.THIS .cmn_modelbox .uiInputDefaultError li{margin-left:0}
+.THIS .cmn_error_msg{font-size:13px; color: rgb(194, 57, 52);}
+.THIS .cmn_modelbox .service-table table td{padding:8px 7px}
+.THIS .cmn_modelbox tr td input[type="text"].input-amount{width:89%}
+.THIS .cmn_modelbox tr td input[type="text"].input-charge{margin-bottom:8px}
+.THIS .ruq-error{color:red;display:inline!important}
+.THIS .schedule-table-chart{padding:15px}
+.THIS .schedule-table-chart table td{padding:5px;} 
+.THIS .schedule-table-chart table td:first-child{ text-align:right;font-weight:700;width:25%}  
+
+@media only screen and (max-width: 999px) and (orientation: portrait) {
+    .THIS a.uiDayInMonthCell--default {width:100%; height:26px; line-height:26px;font-size:17px}
+}
+
+@media (min-width: 48em){
+    .THIS .slds-modal__container {
+        width: 100%;
+    }
+}
+@media (max-width:767px){   
+    .THIS .service-table-details{width:100%;overflow-x:auto}
+    .THIS .account-sec.panel .panel-heading{font-size:16px}    
+}

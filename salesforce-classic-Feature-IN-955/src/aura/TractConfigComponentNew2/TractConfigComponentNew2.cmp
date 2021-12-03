@@ -1,0 +1,691 @@
+<aura:component implements="force:appHostable" controller="TractConfigurationController">
+    <!--<ltng:require styles="/resource/TRACT3__StaticStyle"/>-->
+    <aura:attribute name="billingWrapper" type="GTVBillingWrapper" />
+    <aura:attribute name="message" type="String" default="NoError" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="aura:waiting" action="{!c.waiting}" />
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}" />
+    <aura:attribute name="hideSpinner" type="Boolean" default="true" />
+    <aura:attribute name="showApiVersion" type="Boolean" default="true" />
+    <aura:attribute name="showOrderState" type="boolean" default="false" />
+    <aura:attribute name="permissionSetWrapperList" type="PermSetWrapper" />
+    <aura:attribute name="showPermissionSet" type="boolean" default="false" />
+    <aura:attribute name="likedisable" type="Boolean" default="false" />
+    <aura:attribute name="accountMappingWrapper" type="AccountMappingWrapper" />
+    <aura:attribute name="showAccountMapping" type="Boolean" default="false" />
+    <aura:attribute name="accountValuesMap" type="Map" />
+    <aura:attribute name="accountStatusMap" type="Map" />
+    <aura:attribute name="conditionValuesMap" type="Map" />
+    <aura:attribute name="currentField" type="String" default="Name" />
+    <aura:attribute name="displayDataTypeMessage" type="string" default="" />
+    <aura:attribute name="displayInputText" type="Boolean" default="false" />
+    <aura:attribute name="displayInputCheckBox" type="Boolean" default="false" />
+    <aura:attribute name="displayInputpicklist" type="Boolean" default="false" />
+    <aura:attribute name="displayDate" type="Boolean" default="false" />
+    <aura:attribute name="objectName" type="String" default="Opportunity" />
+    <aura:attribute name="fieldName" type="String" default="Type" />
+    <aura:attribute name="fieldMap" type="Map" default="" />
+    <aura:attribute name="pickListValues" type="List" default="" />
+    <aura:attribute name="inputCheckBox" type="string" default="" />
+    <aura:handler event="c:FieldShowHandle" action="{!c.handleFieldShowReturn}" />
+    <aura:attribute name="changeOrderIndicatorStringValue" type="String" default="" />
+    <aura:attribute name="changeOrderIndicatorDateValue" type="Date" default="" />
+    <aura:attribute name="changeOrderIndicatorCheckboxValue" type="Boolean" />
+    <aura:attribute name="changeOrderIndicatorValue" type="String" default="" />
+
+    <aura:html tag="style">
+        html body.sfdcBody{padding:0}
+        .slds-scope{color: rgb(8, 7, 7); }
+        .slds-scope .slds-radio_button__label{ color: rgba(27, 82, 151, 1);}
+        .slds-scope .slds-form-element__label{color: rgb(62, 62, 60);}
+        .slds-scope .slds-text-title_caps, .slds-scope .slds-text-title--caps{color: rgb(62, 62, 60);}
+        .slds-scope .slds-button_brand, .slds-scope .slds-button--brand{background-color: rgba(27, 82, 151,
+        1);border-color: rgba(27, 82, 151, 1);}
+        .slds-scope .slds-button_brand:hover, .slds-scope .slds-button_brand:focus, .slds-scope
+        .slds-button--brand:hover, .slds-scope .slds-button--brand:focus{ background-color: rgba(0, 68, 135,
+        1);border-color: rgba(0, 68, 135, 1); color: rgb(255, 255, 255);}
+        .slds-scope .slds-radio_button [type=radio]:checked+.slds-radio_faux, .slds-scope .slds-radio_button
+        [type=radio]:checked+.slds-radio--faux, .slds-scope .slds-radio_button [type=radio]:checked~.slds-radio_faux,
+        .slds-scope .slds-radio_button [type=radio]:checked~.slds-radio--faux, .slds-scope .slds-radio_button
+        [type=radio]:checked+.slds-radio_button__label, .slds-scope .slds-radio_button
+        [type=radio]:checked+.slds-radio--button__label, .slds-scope .slds-radio--button
+        [type=radio]:checked+.slds-radio_faux, .slds-scope .slds-radio--button [type=radio]:checked+.slds-radio--faux,
+        .slds-scope .slds-radio--button [type=radio]:checked~.slds-radio_faux, .slds-scope .slds-radio--button
+        [type=radio]:checked~.slds-radio--faux, .slds-scope .slds-radio--button
+        [type=radio]:checked+.slds-radio_button__label, .slds-scope .slds-radio--button
+        [type=radio]:checked+.slds-radio--button__label{ background-color: rgba(27, 82, 151, 1);
+        color: rgb(255, 255, 255);}
+        .slds-scope .slds-card,.slds-card{background-color:#000!important}
+        .slds-scope .slds-radio [type=radio]:checked+.slds-radio_faux:after, .slds-scope .slds-radio
+        [type=radio]:checked+.slds-radio--faux:after, .slds-scope .slds-radio
+        [type=radio]:checked~.slds-radio_faux:after, .slds-scope .slds-radio
+        [type=radio]:checked~.slds-radio--faux:after, .slds-scope .slds-radio [type=radio]:checked+.slds-radio__label
+        .slds-radio_faux:after, .slds-scope .slds-radio [type=radio]:checked+.slds-radio__label .slds-radio--faux:after
+        {background: rgba(27, 82, 151, 1);}
+    </aura:html>
+    <div>
+        <aura:renderIf isTrue="{!v.hideSpinner}">
+            <div class="loader-details">
+                <lightning:spinner alternativeText="Loading" size="large" variant="brand" />
+            </div>
+        </aura:renderIf>
+
+        <!--<aura:renderIf isTrue="{!v.hideSpinner}">
+        
+    </aura:renderIf>-->
+        <div>
+            <div class="slds-grid slds-grid--vertical adapetr-config-main">
+                <div class="slds-page-header adapetr-header">
+                    <div class="slds-media ">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container config-setup-icon">
+                                <c:svg class="slds-button__icon slds-button__icon_large"
+                                    xlinkHref="/resource/TRACT3__SLDS/assets/icons/utility-sprite/svg/symbols.svg#setup"
+                                    ariaHidden="true" />
+                            </span>
+                        </div>
+                        <div class="slds-media__body">
+                            <h1 class="slds-page-header__title slds-m-right--small slds-align-middle slds-truncate">GTV
+                                Salesforce Adapter Configuration</h1>
+                            <aura:renderIf isTrue="{!v.showApiVersion}">
+                                <p class="slds-text-title--caps slds-line-height--reset">GTV CONNECTIVITY</p>
+                            </aura:renderIf>
+                            <aura:renderIf isTrue="{!v.showOrderState}">
+                                <p class="slds-text-title--caps slds-line-height--reset">DATA MAPPING</p>
+                            </aura:renderIf>
+                            <aura:renderIf isTrue="{!v.showPermissionSet}">
+                                <p class="slds-text-title--caps slds-line-height--reset">PERMISSIONS</p>
+                            </aura:renderIf>
+                            <div class="global-alert__message slds-p-bottom_x-small">
+                                <div id="showErrorrTractConfig" class="slds-text-color_error "
+                                    style="display:none; text-align:left;font-weight:700;padding-top:1%;">
+                                    <ui:outputText value="{!v.message}" />
+                                </div>
+                                <div id="showMessageTractConfig" class="slds-text-color_success"
+                                    style="display:none;text-align:left;font-weight:700;padding-top:1%;">
+                                    <ui:outputText value="{!v.message}" />
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <!--********* TABLE ********* -->
+                <div class="slds-size_1-of-1 slds-p-around_medium">
+
+                    <div class="slds-path slds-m-bottom_small">
+                        <div class="slds-grid slds-path__track">
+                            <div class="slds-grid slds-path__scroller-container">
+                                <div class="slds-path__scroller" role="application">
+                                    <div class="slds-path__scroller_inner">
+                                        <ul class="slds-path__nav" role="listbox" aria-orientation="horizontal">
+                                            <li aura:id="gtv-con-btn"
+                                                class="{!(v.showApiVersion == true ? 'slds-path__item slds-is-current slds-is-active' : 'slds-path__item slds-is-incomplete')}"
+                                                role="presentation" onclick="{!c.connectivity}">
+                                                <a aria-selected="true" class="slds-path__link"
+                                                    href="javascript:void(0);" id="path-1" role="option" tabindex="0">
+                                                    <span class="slds-path__stage">
+                                                        <span class="slds-assistive-text">Current Stage:</span>
+                                                    </span>
+                                                    <span class="slds-path__title">GTV CONNECTIVITY</span>
+                                                </a>
+                                            </li>
+                                            <li aura:id="gtv-map-btn"
+                                                class="{!(v.showOrderState == true ? 'slds-path__item slds-is-current slds-is-active' : 'slds-path__item slds-is-incomplete')}"
+                                                role="presentation" onclick="{!c.gtvMapping}">
+                                                <a aria-selected="false" class="slds-path__link"
+                                                    href="javascript:void(0);" id="path-2" role="option" tabindex="-1">
+                                                    <span class="slds-path__stage">
+                                                    </span>
+                                                    <span class="slds-path__title">DATA MAPPING</span>
+                                                </a>
+                                            </li>
+                                            <li aura:id="asses-btn"
+                                                class="{!(v.showPermissionSet == true ? 'slds-path__item slds-is-current slds-is-active' : 'slds-path__item slds-is-incomplete')}"
+                                                role="presentation" onclick="{!c.accessibility}">
+                                                <a aria-selected="false" class="slds-path__link"
+                                                    href="javascript:void(0);" id="path-4" role="option" tabindex="-1">
+                                                    <span class="slds-path__stage">
+                                                    </span>
+                                                    <span class="slds-path__title">PERMISSIONS</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h3 class="slds-text-heading--small slds-p-bottom_x-small">Please provide the following GTV
+                        configuration information. All the fields marked with <span
+                            class="cmn_mandatory_indicator">*</span> are required.</h3>
+                    <aura:renderIf isTrue="{!v.showApiVersion}">
+                        <div class="slds-box slds-align--absolute-center">
+                            <div class="slds-form-element slds-form_compound">
+                                <div class="slds-p-bottom_large">
+
+                                    <div>
+                                        <lightning:radioGroup name="API Version" variant="label-hidden"
+                                            options="{! v.billingWrapper.apiVersionList}"
+                                            value="{!v.billingWrapper.selectedAPIVersion}" type="button"
+                                            onchange="{!c.apiVersionSelection}" />
+                                    </div>
+                                </div>
+
+                                <aura:renderIf isTrue="{!v.billingWrapper.selectedAPIVersion == 'API Version 1.0'}">
+                                    <div class="slds-form-element__row slds-p-bottom_xx-small slds-wrap">
+                                        <div class="slds-form-element slds-medium-size_1-of-3  slds-size_1-of-1">
+                                            <div class="slds-p-bottom_small">
+                                                <div class="slds-text-title_bold">
+                                                    <label class="slds-form-element__label">API 1.0 WSDL <span
+                                                            class="cmn_mandatory_indicator">*</span></label>
+                                                </div>
+                                                <div class="slds-size--1-of-1">
+                                                    <ui:inputText class="slds-input"
+                                                        value="{!v.billingWrapper.tractUrl}"></ui:inputText>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element slds-medium-size_1-of-3  slds-size_1-of-1">
+                                            <div class="slds-p-bottom_small">
+                                                <div class="slds-text-title_bold">
+                                                    <label class="slds-form-element__label ">API 1.0 User Name <span
+                                                            class="cmn_mandatory_indicator">*</span></label>
+                                                </div>
+                                                <div class="slds-size--1-of-1">
+                                                    <ui:inputText class="slds-input "
+                                                        value="{!v.billingWrapper.userName}"></ui:inputText>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="slds-form-element slds-medium-size_1-of-3  slds-size_1-of-1">
+                                            <div class="slds-p-bottom_small">
+                                                <div class="slds-text-title_bold">
+                                                    <label class="slds-form-element__label">API 1.0 Password <span
+                                                            class="cmn_mandatory_indicator">*</span></label>
+                                                </div>
+
+                                                <div class="slds-size--1-of-1">
+                                                    <ui:inputSecret class="slds-input"
+                                                        value="{!v.billingWrapper.password}"></ui:inputSecret>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    <aura:set attribute="else">
+                                        <div class="slds-form-element__row slds-wrap">
+                                            <div class="slds-form-element slds-medium-size_1-of-2  slds-size_1-of-1">
+                                                <div class="slds-p-bottom_xx-small">
+                                                    <div class="slds-text-title_bold">
+                                                        <label class="slds-form-element__label">API 2.0 URL<span
+                                                                class="cmn_mandatory_indicator">*</span></label>
+                                                    </div>
+                                                    <div class="slds-size--1-of-1">
+                                                        <ui:inputText class="slds-input"
+                                                            value="{!v.billingWrapper.tractUrl2}"></ui:inputText>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="slds-form-element slds-medium-size_1-of-2  slds-size_1-of-1">
+                                                <div class="slds-p-bottom_xx-small">
+                                                    <div class="slds-text-title_bold">
+                                                        <label class="slds-form-element__label">X-API-Key<span
+                                                                class="cmn_mandatory_indicator">*</span></label>
+                                                    </div>
+                                                    <div class="slds-size--1-of-1">
+                                                        <ui:inputSecret class="slds-input"
+                                                            value="{!v.billingWrapper.apiKey}"></ui:inputSecret>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="slds-form-element slds-medium-size_1-of-2  slds-size_1-of-1">
+                                                <div class="slds-p-bottom_xx-small">
+                                                    <div class="slds-text-title_bold">
+                                                        <label class="slds-form-element__label">Hosted Payment
+                                                            URL</label>
+                                                    </div>
+                                                    <div class="slds-size--1-of-1">
+                                                        <ui:inputText class="slds-input"
+                                                            value="{!v.billingWrapper.hostedPaymentUrl}"></ui:inputText>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </aura:set>
+                                </aura:renderIf>
+                                <div>
+                                    <lightning:radioGroup
+                                        class="slds-grid slds-medium-size_2-of-2 slds-size--1-of-1 slds-large-size_2-of-3"
+                                        label="Specify Sync Type:" options="{!v.billingWrapper.syncTypeList}"
+                                        value="{!v.billingWrapper.syncTypeValue}" type="radio" />
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </aura:renderIf>
+
+                    {!v.body}
+                    <aura:renderIf isTrue="{!v.showOrderState}">
+                        <div class="slds-box slds-m-bottom_medium">
+                            <label class="slds-form-element__label slds-text-title_bold slds-p-bottom_small">Account
+                                Data Mapping:</label>
+                            <div
+                                class="slds-m-bottom_small slds-grid slds-wrap slds-grid--vertical-align-center account-data__details">
+                                <label class="slds-form-element__label">Salesforce Account ID</label>
+                                <div class="slds-grid slds-medium-size_1-of-2 slds-size--1-of-1 slds-large-size_1-of-3">
+                                    <ui:inputSelect class="slds-select"
+                                        value="{!v.billingWrapper.selectedAccountCustomFieldId}">
+                                        <aura:iteration items="{!v.billingWrapper.accountCustomFieldList}"
+                                            var="accountCustomField">
+                                            <ui:inputSelectOption text="{!accountCustomField.value}"
+                                                label="{!accountCustomField.label}"
+                                                value="{!v.billingWrapper.selectedAccountCustomFieldId == accountCustomField.value}" />
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </div>
+                            </div>
+                            <div class="slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="">
+                                    <label
+                                        class="slds-form-element__label slds-text-title_bold slds-p-bottom_small">Specify
+                                        Marketplace:</label>
+                                    <div
+                                        class="slds-m-bottom_small slds-grid slds-wrap slds-grid--vertical-align-center account-data__details">
+                                        <label class="slds-form-element__label">Marketplace</label>
+                                        <div>
+                                            <ui:inputSelect class="slds-select"
+                                                value="{!v.billingWrapper.selectedMarketplace}">
+                                                <aura:iteration items="{!v.billingWrapper.listOfMarketplaces}"
+                                                    var="marketplace">
+                                                    <ui:inputSelectOption text="{!marketplace.value}"
+                                                        label="{!marketplace.label}"
+                                                        value="{!v.billingWrapper.selectedMarketplace == marketplace.value}" />
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="">
+                                    <lightning:radioGroup class="order-state__radio"
+                                        label="Specify GTV Order State When Created:"
+                                        options="{!v.billingWrapper.orderStateList}"
+                                        value="{!v.billingWrapper.orderStatusValue}" type="radio"
+                                        onchange="{!c.orderState}" />
+                                </div>
+                            </div>
+                            <div class="slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="">
+                                    <label
+                                        class="slds-form-element__label slds-text-title_bold slds-p-bottom_small">Allow
+                                        Change Orders
+                                        Through Opportunities:</label>
+                                    <div
+                                        class="slds-m-bottom_small slds-grid slds-wrap slds-grid-vertical-align-center account-data__details">
+                                        <label class="slds-form-element__label">Enabled:</label>
+                                        <div>
+                                            <lightning:radioGroup class="order-state__radio" label=""
+                                                options="{!v.billingWrapper.enabledOrderChangeList}"
+                                                value="{!v.billingWrapper.enabledchangeOrderValue}" type="radio" />
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="slds-m-bottom_small slds-grid slds-wrap slds-grid--vertical-align-center account-data__details">
+                                        <label class="slds-form-element__label">Change Order Indicator:</label>
+                                        <div>
+                                            <ui:inputSelect class="slds-select" aura:id="InputSelectSingle"
+                                                value="{!v.billingWrapper.changeOrderIndicator}"
+                                                change="{!c.handleChangeOrderIndicator}">
+
+                                                <aura:iteration items="{!v.billingWrapper.changeOrderIndicatorList}"
+                                                    var="oppFiels">
+                                                    <ui:inputSelectOption text="{!oppFiels.value}"
+                                                        label="{!oppFiels.label}"
+                                                        value="{!v.billingWrapper.changeOrderIndicator == oppFiels.value}" />
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="slds-m-bottom_small slds-grid slds-wrap slds-grid--vertical-align-center account-data__details">
+                                        <aura:renderIf isTrue="{!v.billingWrapper.changeOrderIndicator != undefined}">
+                                            <label class="slds-form-element__label">Change Order Indicator
+                                                value:</label>
+                                        </aura:renderIf>
+                                        <aura:renderIf isTrue="{!v.displayInputText}">
+                                            <div>
+                                                <lightning:input aura:id="inputChangeOrder"
+                                                    value="{!v.changeOrderIndicatorValue}" />
+                                            </div>
+                                        </aura:renderIf>
+                                        <aura:renderIf isTrue="{!v.displayInputCheckBox}">
+                                            <div>
+                                                <lightning:input type="checkbox" label="" aura:id="checkboxChangeOrder"
+                                                    checked="{!v.changeOrderIndicatorCheckboxValue}" />
+
+                                            </div>
+                                        </aura:renderIf>
+                                        <aura:renderIf isTrue="{!v.displayInputpicklist}">
+                                            <div>
+                                                <ui:inputSelect class="slds-select"
+                                                    value="{!v.changeOrderIndicatorStringValue}">
+
+                                                    <aura:iteration items="{!v.pickListValues}" var="pickListVal">
+                                                        <ui:inputSelectOption text="{!pickListVal.value}"
+                                                            label="{!pickListVal.label}"
+                                                            value="{!v.changeOrderIndicatorStringValue == pickListVal.value}" />
+                                                    </aura:iteration>
+                                                </ui:inputSelect>
+                                            </div>
+                                        </aura:renderIf>
+                                        <aura:renderIf isTrue="{!v.displayDate}">
+                                            <div>
+                                                <lightning:input type="date" aura:id="DateChangeOrder" name="input3"
+                                                    label="" value="{!v.changeOrderIndicatorDateValue}" />
+                                            </div>
+                                        </aura:renderIf>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div >
+                                    <label class="slds-form-element__label slds-text-title_bold slds-p-bottom_small">Specify Currency:</label>
+                                    <div class="slds-m-bottom_small slds-grid slds-wrap slds-grid--vertical-align-center account-data__details">
+                                        <label class="slds-form-element__label">GTV Currency:</label>
+                                        <div class="slds-size_1-of-2"> 
+                                            <lightning:textarea aura:id="GTV Currency" value="{!v.billingWrapper.currencySet}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-box slds-m-bottom_medium">
+                            <div class="slds-border_left slds-border_right slds-scrollable">
+                                <table class="slds-no-row-hover slds-table slds-table_bordered slds-table_col-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Gotransverse Field</th>
+                                            <th>Salesforce Mapping</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr>
+                                            <td>
+                                                <label class="slds-form-element__label">Account Name</label>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center custom-btn">
+                                                    <ui:outputText value="{!v.accountValuesMap.AccountName}" />
+                                                    <lightning:button label="Edit" class="AccountName" variant="brand"
+                                                        onclick="{!c.callFieldName}" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label class="slds-form-element__label">Account Number</label>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center custom-btn">
+                                                    <ui:outputText value="{!v.accountValuesMap.AccountNumber}" />
+                                                    <lightning:button label="Edit" class="AccountNumber" variant="brand"
+                                                        onclick="{!c.callFieldName}" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label class="slds-form-element__label">Billing City</label>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center custom-btn">
+                                                    <ui:outputText value="{!v.accountValuesMap.BillingCity}" />
+                                                    <lightning:button label="Edit" class="BillingCity" variant="brand"
+                                                        onclick="{!c.callFieldName}" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label class="slds-form-element__label">Billing Country</label>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center custom-btn">
+                                                    <ui:outputText value="{!v.accountValuesMap.BillingCountry}" />
+                                                    <lightning:button label="Edit" class="BillingCountry"
+                                                        variant="brand" onclick="{!c.callFieldName}" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label class="slds-form-element__label">Billing Postal Code</label>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center custom-btn">
+                                                    <ui:outputText value="{!v.accountValuesMap.BillingCode}" />
+                                                    <lightning:button label="Edit" class="BillingCode" variant="brand"
+                                                        onclick="{!c.callFieldName}" />
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                <label class="slds-form-element__label">Billing State</label>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center custom-btn">
+                                                    <ui:outputText value="{!v.accountValuesMap.BillingState}" />
+                                                    <lightning:button label="Edit" class="BillingState" variant="brand"
+                                                        onclick="{!c.callFieldName}" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label class="slds-form-element__label">Billing Street</label>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center custom-btn">
+                                                    <ui:outputText value="{!v.accountValuesMap.BillingStreet}" />
+                                                    <lightning:button label="Edit" class="BillingStreet" variant="brand"
+                                                        onclick="{!c.callFieldName}" />
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                <label class="slds-form-element__label">Email</label>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center custom-btn">
+                                                    <ui:outputText value="{!v.accountValuesMap.GotransverseEmail}" />
+                                                    <lightning:button label="Edit" class="GotransverseEmail"
+                                                        variant="brand" onclick="{!c.callFieldName}" />
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                <label class="slds-form-element__label">Phone</label>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center custom-btn">
+                                                    <ui:outputText value="{!v.accountValuesMap.Phone}" />
+                                                    <lightning:button label="Edit" class="Phone" variant="brand"
+                                                        onclick="{!c.callFieldName}" />
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                <label class="slds-form-element__label">Shipping City</label>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center custom-btn">
+                                                    <ui:outputText value="{!v.accountValuesMap.ShippingCity}" />
+                                                    <lightning:button label="Edit" class="ShippingCity" variant="brand"
+                                                        onclick="{!c.callFieldName}" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label class="slds-form-element__label">Shipping Country</label>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center custom-btn">
+                                                    <ui:outputText value="{!v.accountValuesMap.ShippingCountry}" />
+                                                    <lightning:button label="Edit" class="ShippingCountry"
+                                                        variant="brand" onclick="{!c.callFieldName}" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label class="slds-form-element__label">Shipping Postal Code</label>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center custom-btn">
+                                                    <ui:outputText value="{!v.accountValuesMap.ShippingCode}" />
+                                                    <lightning:button label="Edit" class="ShippingCode" variant="brand"
+                                                        onclick="{!c.callFieldName}" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label class="slds-form-element__label">Shipping State</label>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center custom-btn">
+                                                    <ui:outputText value="{!v.accountValuesMap.ShippingState}" />
+                                                    <lightning:button label="Edit" class="ShippingState" variant="brand"
+                                                        onclick="{!c.callFieldName}" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label class="slds-form-element__label">Shipping Street</label>
+                                            </td>
+                                            <td>
+                                                <div
+                                                    class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center custom-btn">
+                                                    <ui:outputText value="{!v.accountValuesMap.ShippingStreet}" />
+                                                    <lightning:button label="Edit" class="ShippingStreet"
+                                                        variant="brand" onclick="{!c.callFieldName}" />
+                                                </div>
+                                            </td>
+                                        </tr>
+
+
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+                    </aura:renderIf>
+                    <aura:renderIf isTrue="{!v.showPermissionSet}">
+                        <div class="slds-box slds-scrollable account-info__table">
+                            <table
+                                class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered slds-no-row-hover">
+                                <thead>
+                                    <tr>
+                                        <th>
+
+                                        </th>
+                                        <th>
+                                            <div class="slds-text-title_bold">
+                                                GTV Account Details
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div class="slds-text-title_bold">
+                                                Permission Set API Name
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.permissionSetWrapperList}" var="setval">
+
+                                        <tr>
+                                            <td>
+                                                <ui:inputCheckbox value="{!setval.status}" class="slds-checkbox" />
+                                            </td>
+                                            <td>
+                                                {!setval.name}
+                                            </td>
+                                            <td>
+                                                <div class="slds-align-left slds-size--1-of-3">
+                                                    <ui:inputText class="slds-input" value="{!setval.getsets}"
+                                                        change="{!c.onPermissionSetChange}"></ui:inputText>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </aura:renderIf>
+
+                </div>
+
+                <!--********* FOOTER ********* -->
+                <div class="slds-grid  slds-grid--align-center slds-p-bottom_medium">
+                    <aura:renderIf isTrue="{!v.showApiVersion}">
+                        <aura:renderIf isTrue="{!!v.billingWrapper.existingTract}">
+                            <lightning:button class="slds-button slds-button--brand" disabled="{!v.likedisable}"
+                                onclick="{!c.syncGtvDetail}">Sync</lightning:button>
+                        </aura:renderIf>
+                        <button class="slds-button slds-button--brand" onclick="{!c.nextTab}">Next</button>
+                    </aura:renderIf>
+                    <aura:renderIf isTrue="{!v.showOrderState}">
+                        <button class="slds-button slds-button--brand" onclick="{!c.prevTab}">Back</button>
+                        <button class="slds-button slds-button--brand" onclick="{!c.nextTab}">Next</button>
+                        <lightning:button class="slds-button slds-button--brand" disabled="{!v.likedisable}"
+                            onclick="{!c.saveGtvDetail}">Finish</lightning:button>
+                    </aura:renderIf>
+                    <aura:renderIf isTrue="{!v.showPermissionSet}">
+                        <lightning:button class="slds-button slds-button--brand" onclick="{!c.prevTab}">Back
+                        </lightning:button>
+                        <lightning:button class="slds-button slds-button--brand" disabled="{!v.likedisable}"
+                            onclick="{!c.saveGtvDetail}">Finish</lightning:button>
+                    </aura:renderIf>
+                </div>
+            </div>
+        </div>
+    </div>
+</aura:component>

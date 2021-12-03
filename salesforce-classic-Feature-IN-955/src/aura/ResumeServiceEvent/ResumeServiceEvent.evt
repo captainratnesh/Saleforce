@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Event to Renew swervices" access="global">
+    <aura:attribute name="ServiceEid" type="String" description="service to resume" access="global"/>
+    <aura:attribute name="ServiceName" type="String" description="service to resume" access="global"/>
+</aura:event>

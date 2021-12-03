@@ -1,0 +1,19 @@
+<apex:page standardController="Product2" sidebar="false" showHeader="false">
+     <apex:includeLightning />
+ <div id="vf-app">
+    	 
+    </div> 
+     <script>
+        var productId = "{!$CurrentPage.parameters.id}";
+        var getUITheme = "{!$User.UITheme}";
+        $Lightning.use("TRACT3:TRACTProductDetailApp", function() {
+                $Lightning.createComponent(
+                    "TRACT3:TractProductDetail",
+                    { "productId" : productId,
+                    "getUITheme" : getUITheme },
+                    "vf-app",
+                    function(cmp) {
+                    });                        
+                });
+    </script>
+</apex:page>

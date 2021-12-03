@@ -1,0 +1,80 @@
+<aura:component access="GLOBAL" controller="AccountDetailController_LT" >
+
+<aura:attribute name="accountId" type="String" />
+<aura:attribute name="message" type="String" default="NoError"/>
+<aura:attribute name="today" type="DateTime" />
+<aura:attribute name="reasonList" type="SelectOption[]"/>
+<aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+<aura:handler event="aura:waiting" action="{!c.waiting}"/>
+<aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+<aura:attribute name="HideSpinner" type="Boolean" default="true"/>
+
+<div aria-hidden="false" id="addDebit" role="dialog" class="slds-modal slds-modal--large slds-fade-in-open cmn_modelbox" style="display:block;">
+    <aura:renderIf isTrue="{!v.HideSpinner}">
+            <div class="slds-spinner_container" >
+                <div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+                    <span class="slds-assistive-text">Loading, Please Wait...</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div> 
+        </aura:renderIf>
+    <div class="slds-modal__container">
+        <div class="slds-modal__header">
+            <h1 class="slds-text-heading--Large">Add Debit Adjustment</h1>
+            <div id="showErrorDebit" class="cmn_error_msg" style="display:none;">
+                <ui:outputText value="{!v.message}"/>
+            </div>
+            <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                <c:svg class="slds-button__icon slds-button__icon--large"
+                    xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                    ariaHidden="true"
+                    />
+            </button>
+        </div>
+    <div class="slds-modal__content ">
+        <div class="account-details">
+                 <div class="panel-body panel_body_details service-table service-table2 heading last">
+                       <div class="cmn-table-responsive">
+                          <table>
+                              <tr>
+                                   <td><span class="ruq-error">*</span> Adjustment Reason:</td>
+                                    <td>
+                                        <ui:inputSelect aura:id="dabitReasonEid" >
+                                            <aura:iteration items="{!v.reasonList}" var="reason">
+                                                <ui:inputSelectOption text="{!reason.value}" label="{!reason.label}"/>
+                                            </aura:iteration>
+                                        </ui:inputSelect>  
+                                      </td>  
+                               </tr>
+                              <tr>
+                                   <td><span class="ruq-error">*</span> Amount:</td>
+                                   <td><ui:inputText aura:id="DebitAmmount" class="slds-input" value="0.0"/>  </td>
+                               </tr>
+                              <tr>
+                                   <td> Amount Type:</td>
+                                   <td><ui:outputText aura:id="DebitAmmountType" class="slds-input" value="Debit"/>  </td>
+                               </tr>
+                              <tr>
+                                   <td><span class="ruq-error">*</span> Description:</td>
+                                   <td><ui:inputText aura:id="DebitDescription" class="slds-input" />  </td>
+                               </tr>
+                              <tr>
+                                   <td><span class="ruq-error">*</span> Effective Date:</td>
+                                   <td><ui:inputDate aura:id="effectiveDate"  displayDatePicker="true" class="slds-input"  value="{!v.today}"/></td>
+                               </tr>
+                          </table>
+                       </div>
+                 </div>
+         </div>
+    </div>
+    <div class="slds-modal__footer">
+    <div class="slds-x-small-buttons--horizontal">
+    <button class="slds-button slds-button--neutral"  onclick="{!c.closeModalBox}">Cancel</button>
+    <button class="slds-button slds-button--neutral slds-button--brand" onclick="{!c.saveDabitAdjustmentCtr }">Finish</button>
+    </div>
+    </div>
+    </div>
+</div>
+<div class="slds-backdrop slds-backdrop--open" id="backGroundDebit" style="display:block;"></div>
+</aura:component>

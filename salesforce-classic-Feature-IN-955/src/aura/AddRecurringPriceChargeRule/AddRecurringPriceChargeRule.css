@@ -1,0 +1,9 @@
+.THIS .border-none{border:none}
+.THIS .flex-1{flex:1}
+.THIS .add-actv-charge .slds-table td{ white-space: normal;}
+.THIS .add-actv-table td:first-child{font-weight:700}
+@media (min-width: 48em){
+    .THIS.add-acti-modal .slds-modal__container{
+        width:70%
+    }
+}

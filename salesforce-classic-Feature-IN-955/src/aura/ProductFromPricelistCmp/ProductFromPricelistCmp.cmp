@@ -1,0 +1,118 @@
+<aura:component access="GLOBAL" controller="MarketPlaceController">
+    <aura:attribute name="priceListWrap" type="PriceListWrapper"/>
+    <aura:attribute name="listOfProducts" type="PriceListProductWrapper[]"/>
+    <aura:attribute name="HideSpinner" type="Boolean" default="true"/>
+    <aura:attribute type="Map" name="ProductListMap"  default="{}" />
+    <aura:attribute type="Integer" name="currentPage"  default="1" />
+    <aura:attribute type="Integer" name="totelPage"  default="0" />
+    <aura:attribute name="disableNext" type="boolean"  default="false"/>
+    <aura:attribute name="disablePrev" type="boolean"  default="true"/>
+    <aura:attribute name="disableFirst" type="boolean"  default="true"/>
+    <aura:attribute name="disableLast" type="boolean"  default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+    <aura:handler event="c:ReloadPriceListComponent" action="{!c.ReloadComp}"/>
+
+    <aura:html tag="style">
+      .loader{z-index: 9002!important;
+    </aura:html>
+
+    <section role="dialog" tabindex="-1" id="PriceListModal" class="" style="display:block;">
+        <aura:renderIf isTrue="{!v.HideSpinner}">
+            <div class="loader">
+                <img src="/resource/TRACT3__SLDS/assets/images/spinners/slds_spinner_brand.gif" class="img-responsive center-block" style="height: 100px;"/>
+            </div>
+        </aura:renderIf>
+        <div class="custom-card-css">
+          <lightning:card >
+            <aura:set attribute = "title">
+                    <div class="slds-grid slds-grid_align-spread slds-grid--vertical-align-center">
+                            <h3 class="slds-text-heading--small font-normal">PriceList Details</h3>
+                          
+                    
+                        </div> 
+                    </aura:set>
+                    <p class="slds-p-horizontal_medium">
+                            <div class="slds-box oli-table slds-p-around_none">
+                                <table class="slds-table slds-table_bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Price List Name</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                             
+                                    <tbody>
+                                      <td>
+                                    
+                                        {!v.priceListWrap.name}
+                                      </td>              
+                                      <td>{!v.priceListWrap.description}</td>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                        </p>
+        </lightning:card>
+          <lightning:card >
+            <aura:set attribute = "title">
+                    <div class="slds-grid slds-grid_align-spread slds-grid--vertical-align-center">
+                            <h3 class="slds-text-heading--small font-normal">Attached Products</h3>
+                            <div>
+                            <lightning:button label="Add" 
+                                        
+                            variant="neutral"
+                            onclick="{!c.AddNewproduct}"/> 
+                            <lightning:button label="Remove" 
+                                        
+                            variant="neutral"
+                            onclick="{!c.RemoveExistingProduct}"/>
+                          </div>
+                            
+                        </div> 
+                    </aura:set>
+                    <p class="slds-p-horizontal_medium">
+                            <div class="slds-box oli-table slds-p-around_none">
+                                <table class="slds-table slds-table_bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Type</th>
+                                            <th>Product Category</th>
+                                        </tr>
+                                    </thead>
+                             
+                                    <aura:iteration items="{!v.listOfProducts}" var="pro" indexVar="count">
+                                      <tbody>
+                                        <td>
+                                          <a onclick="{!c.getProductPrices}" data-count="{!count}">
+                                            <u>{!pro.productName}</u>
+                                        </a>
+                                          
+                                        </td>              
+                                        <td>{!pro.productType}</td>
+                                        <td>{!pro.productCategoryName}</td>
+                                      </tbody>
+                                      </aura:iteration>
+                                </table>
+                            </div>
+                            
+                        </p>
+                        <div class="slds-p-top_medium slds-p-horizontal_medium slds-grid slds-grid_align-spread">
+                          <div class="">
+                              <button class="slds-button slds-button--brand " disabled="{!v.disableFirst}" onclick = "{!c.firstProduct}">First</button>
+                              <button class="slds-button slds-button--brand " disabled="{!v.disablePrev}" onclick = "{!c.prevProduct}">Previous</button>
+                              <span class="slds-m-horizontal_small">Showing {!v.currentPage}  of {!v.totelPage}</span>
+                              <button class="slds-button slds-button--brand " disabled="{!v.disableNext}"  onclick = "{!c.nextProduct}">Next</button>
+                              <button class="slds-button slds-button--brand " disabled="{!v.disableLast}"  onclick = "{!c.lastProduct}">Last</button>
+                          </div>
+                          <div>
+                              <button class="slds-button slds-button_neutral" onclick="{!c.closeModalBox}">Cancel</button>
+                          </div>
+                        </div>
+                      </lightning:card>
+                      </div>
+      </section>
+      {!v.body}
+</aura:component>

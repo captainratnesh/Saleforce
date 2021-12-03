@@ -1,0 +1,489 @@
+<template>
+    <template if:true={isModalOpen}>
+        <!-- <button class="custom-update-btn slds-button slds-button_neutral" onclick={openModal}> </button> -->
+        <template if:true={showHideSections}>
+            <div class="slds-box_border slds-m-bottom_medium">
+                <header
+                    class="slds-is-relative slds-grid slds-p-around_medium slds-grid_vertical-align-center slds-grid_align-spread createchange-order-header">
+
+                    <h2 id="modal-heading-01" class="slds-text-heading--small font-normal">
+                        Create Change Order *Required fields
+                    </h2>
+                    <div>
+                        <button type="button" class="slds-button slds-button_neutral"
+                        onclick={closeModal}>Back</button>
+                        <button type="button" class="slds-button slds-button_neutral"
+                            onclick={redirectToOpportunity}>Cancel</button>
+                        <button type="button" class="slds-button slds-button_neutral" onclick={saveCreateChangeOrder}>Save and Close</button>
+                    </div>
+                    <template if:true={showErrorMessage}>
+                        <div class="slds-notify_toast slds-theme_error" role="alert">
+                            <span class="slds-assistive-text">error</span>
+                            <div>{errorMessage}</div>
+                        </div>
+                    </template>
+                </header>
+                <div class="custom-spinner">
+                    <template if:true={isLoading}>
+                        <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+                        </lightning-spinner>
+                    </template>
+                </div>
+                <div class="slds-card slds-p-around_medium slds-m-horizontal_medium slds-m-bottom_medium">
+                    <!--- <b> Original Service:</b> <lightning-formatted-text value="Product Name" ></lightning-formatted-text>-->
+                    <p><b>Original Service:</b> {createOrderWrapper.originalServiceName} </p>
+                    <div class="slds-col slds-p-vertical_small custom-calendar">
+
+                        <lightning-input autocomplete="No" type="date" name="Order Date" label="Order Date"
+                            data-id="date" value={createOrderWrapper.orderDate} onchange={handleInputDate} required>
+                        </lightning-input>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 email-check slds-grid ">
+
+                        <label class="slds-m-right_xx-small">Email Receipt:</label>
+                        <lightning-input autocomplete="No" type="checkbox" name=""
+                            checked={createOrderWrapper.emailReciept} onchange={handleInputEmail} data-id="checkbox"
+                            label=""></lightning-input>
+                    </div>
+                    <div class="slds-m-top_x-small order-table">
+                        <h3 class="slds-text-heading--small font-normal">Order Items</h3>
+
+                        <div class="border-around-1 slds-card slds-p-around_xx-small">
+                            <table class="slds-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>List Price($)</th>
+                                        <th>Order Price</th>
+                                        <th>Quantity</th>
+                                        <th>Total ($)</th>
+                                        <th>Configure</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <lightning-combobox name="" data-id="sName" label=""
+                                                value={createOrderWrapper.currentProductId}
+                                                options={createOrderWrapper.compatibleProductList}
+                                                onchange={handleProductChange}>
+                                            </lightning-combobox>
+                                               
+                                        </td>
+                                        <td>
+                                            {createOrderWrapper.Type}
+                                        </td>
+                                        <td>
+                                            <lightning-combobox name="" data-id="sName" label=""
+                                                value={createOrderWrapper.recurringpriceId}
+                                                options={recurrencePriceList} onchange={handleRecurringPriceChange}>
+                                            </lightning-combobox>
+                                            <template if:true={oneTimePriceList}>
+                                                <lightning-combobox name="" data-id="sName" label=""
+                                                    value={createOrderWrapper.oneTimePriceId} options={oneTimePriceList}
+                                                    onchange={handleOneTimePriceChange}>
+                                                </lightning-combobox>
+                                            </template>
+                                        </td>
+                                        <td>
+                                            <lightning-input autocomplete="No" type="number" name=""
+                                                value={createOrderWrapper.recurringprice}
+                                                onchange={handleRecurringPriceOverrirde}></lightning-input>
+                                            <template if:true={oneTimePriceList}>
+                                                <lightning-input autocomplete="No" type="number" name=""
+                                                    value={createOrderWrapper.oneTimePrice}
+                                                    onchange={handleOneTimePriceOverrirde}></lightning-input>
+                                            </template>
+                                        </td>
+                                        <td>
+                                            {createOrderWrapper.quantity}
+                                        </td>
+                                        <td>
+                                            {createOrderWrapper.totalPrice}
+                                        </td>
+                                        <td>
+                                            <template if:true={isAddAgreement}>
+                                            <a class="slds-align_absolute-center" 
+                                                onclick={configureProduct}>
+                                                <u>Add Agreement</u>
+                                            </a>
+                                        </template>
+                                            <template if:true={isConfigureDataTrue}>
+                                                <a  
+                                                onclick={configureProduct}>
+                                                <u>Edit Agreement</u>
+                                                 </a>
+                                                
+                                            </template>
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <template if:true={displayAgreement}>
+                                                <div><b>Agreement</b></div>
+                                                <div>
+                                                    Name:{createOrderWrapper.agreementName}</br>
+                                                    Agreement Period: {createOrderWrapper.agreementPeriod}</br>
+                                                    Renewal Action:{createOrderWrapper.agreementEndAction}</br>
+                                                    End Date:{createOrderWrapper.overrideAgreementEndDate}</br>
+                                                    <template if:true={showRenewalPricing}>
+                                                    Renewal Pricing:{createOrderWrapper.renewalPrice}
+                                                    </template>
+                                                    
+                                                </div>
+                                            </template>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <footer class="slds-text-align_right slds-p-around_medium slds-border_top">
+                        <button type="button" class="slds-button slds-button_neutral"
+                            onclick={closeModal}>Cancel</button>
+                        <button type="button" class="slds-button slds-button_brand" onclick={nextPage}>Next</button>
+                    </footer> -->
+            </div>
+        </template>
+        <template if:true={nextSection}>
+            <div class="slds-box_border slds-m-bottom_medium">
+                <header
+                    class="slds-is-relative slds-grid slds-p-around_medium slds-grid_vertical-align-center slds-grid_align-spread createchange-order-header">
+                    <h2 id="modal-heading-04" class="slds-text-heading--small font-normal">
+                        Product Configuration
+                    </h2>
+                    <div>
+                        <button type="button" class="slds-button slds-button_neutral" onclick={back}>Back</button>
+                        <button type="button" class="slds-button slds-button_neutral"
+                            onclick={CancelOrder}>Cancel</button>
+                        <button type="button" class="slds-button slds-button_neutral "
+                            onclick={saveCreateChangeOrder}>Save and Close
+                        </button>
+                    </div>
+                    <template if:true={showErrorMessage}>
+                        <div class="slds-notify_toast slds-theme_error" role="alert">
+                            <span class="slds-assistive-text">error</span>
+                            <div>{errorMessage}</div>
+                        </div>
+                    </template>
+                </header>
+                <div class="custom-spinner">
+                    <template if:true={isLoading}>
+                        <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+                        </lightning-spinner>
+                    </template>
+                </div>
+                <div class="slds-card slds-p-around_medium slds-m-horizontal_medium slds-m-bottom_medium">
+                    <p><b>Order Date: </b>{createOrderWrapper.orderDate}</p>
+                    <div class="slds-col slds-size_1-of-1">
+                        <!--<p><b>Email Receipt:</b>{createOrderWrapper.EmailReciept}</p>-->
+                        <template if:true={createOrderWrapper.emailReciept}>
+                            <p><b>Email Receipt:</b>Yes</p>
+                        </template>
+                        <template if:false={createOrderWrapper.emailReciept}>
+                            <p><b>Email Receipt:</b>No</p>
+                        </template>
+                    </div>
+                    <div class="slds-m-top_x-small common-table order-items">
+                        <h3 class="slds-text-heading--small font-normal">Order Items</h3>
+
+                        <div class="border-around-1 slds-card slds-p-around_xx-small">
+                            <table class="slds-table">
+                                <thead>
+                                    <tr>
+                                        <th>Item Summary</th>
+                                        <th>Order Price ($)</th>
+                                        <th>Quantity</th>
+                                        <th>Item Total ($)</th>
+                                        <th>Configure</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            {createOrderWrapper.currentProductName} </br>
+                                            Type: {createOrderWrapper.Type}</br>
+                                            Recurring Price (Bill Cycle):{createOrderWrapper.currencyType}
+                                            {createOrderWrapper.recurringprice}</br>
+                                            <template if:true={oneTimePriceList}>
+                                                One-Time Price:{createOrderWrapper.currencyType}
+                                                {createOrderWrapper.oneTimePrice}
+                                            </template>
+                                        </td>
+                                        <td>
+                                            {createOrderWrapper.currencyType} {createOrderWrapper.totalPrice}
+                                        </td>
+                                        <td>
+                                            {createOrderWrapper.quantity}
+                                        </td>
+                                        <td>
+                                            {createOrderWrapper.currencyType} {createOrderWrapper.totalPrice}
+                                        </td>
+                                        <td>
+                                            <template if:true={isConfigureDataTrue}>
+                                                <div><b>Agreement</b></div>
+                                                <div>
+                                                    Name: {createOrderWrapper.agreementName}</br>
+                                                    Agreement Period: {createOrderWrapper.agreementPeriod}</br>
+                                                    Renewal Action:{createOrderWrapper.agreementEndAction}</br>
+                                                    Renewal Pricing:{createOrderWrapper.renewalPrice}</br>
+                                                    End Date:{createOrderWrapper.overrideAgreementEndDate}
+                                                </div>
+                                            </template>
+                                            <!---<template if:true={isServiceResourceDataTrue}>
+                                                    <div><b>Service Resource</b></div>
+                                                    <div>
+                                                        {SelectedServiceList}
+                                                    </div>
+                                                </template>-->
+                                        </td>
+
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="slds-scrollable common-table order-summary slds-m-top_small">
+                        <h3 class="slds-text-heading--small font-normal">Order Summary</h3>
+
+                        <div class="border-around-1 slds-card slds-p-around_xx-small">
+                            <table class="slds-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Sub Total</th>
+                                        <th>Total</th>
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            Order Amount (May Be Prorated)</br>
+
+                                        </td>
+                                        <td>
+                                            {createOrderWrapper.currencyType} {createOrderWrapper.totalPrice}
+                                        </td>
+                                        <td>
+                                            <b>{createOrderWrapper.currencyType}
+                                                {createOrderWrapper.totalPrice}</b>
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Amount Due Now
+                                        </td>
+                                        <td>
+                                            {createOrderWrapper.currencyType} 0.00
+                                        </td>
+                                        <td>
+                                            <b>{createOrderWrapper.currencyType} 0.00</b>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- <footer
+                    class="slds-grid slds-grid_vertical-align-center slds-grid_align-spread slds-p-around_medium slds-border_top">
+                    <button type="button" class="slds-button slds-button_neutral" onclick={back}>Back</button>
+                    <span>
+                        <button type="button" class="slds-button slds-button_neutral"
+                            onclick={CancelOrder}>Cancel</button>
+
+                        <button type="button" class="slds-button slds-button_brand "
+                            onclick={saveCreateChangeOrder}>Save
+                        </button>
+                    </span>
+
+                </footer> -->
+            </div>
+        </template>
+
+        <template if:true={orderConfirmation}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open" aria-labelledby="modal-heading-01"
+                aria-modal="true" aria-describedby="modal-content-id-1">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close" onclick={backToPrevious}>
+                            <svg class="slds-button__icon slds-button__icon--large" aria-hidden="true">
+                                <use
+                                    xlink:href="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close">
+                                </use>
+                            </svg>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-modal__title slds-hyphenate">
+                            Confirmation
+                        </h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium slds-text-align_center">
+                        Are you sure you want to cancel this order?
+                    </div>
+
+                    <footer class="slds-modal__footer">
+                        <button type="button" class="slds-button slds-button_brand"
+                            onclick={CoonfirmCancel}>Yes</button>
+                        <button type="button" class="slds-button slds-button_neutral"
+                            onclick={backToPrevious}>No</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <template if:true={isConfigure}>
+            <section role="dialog" tabindex="-1" class="config-modal slds-modal slds-fade-in-open slds-modal_medium"
+                aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+                <div class="slds-modal__container create-inner-modal">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close" onclick={CancelConfigure}>
+                            <svg class="slds-button__icon slds-button__icon--large" aria-hidden="true">
+                                <use
+                                    xlink:href="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close">
+                                </use>
+                            </svg>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h3 id="modal-heading-02" class="slds-modal__title slds-hyphenate">
+                            <b>{createOrderWrapper.currentProductName} </b>
+                            Configuration</h3>
+                        <template if:true={configErrorMessage}>
+                            <div class="slds-notify_toast slds-theme_error" role="alert">
+                                <span class="slds-assistive-text">error</span>
+                                <div>{configErrorMessage}</div>
+                            </div>
+                        </template>
+
+                    </header>
+
+                    <div class="slds-modal__content">
+                        <div class="slds-grid custom-tab">
+                            <div class="left-tab slds-border_right slds-p-around_medium">
+                                <lightning-radio-group name="Optional" label="Optional" options={options} value={value}
+                                    onchange={handleRadioConfigureChange} type="radio">
+                                </lightning-radio-group>
+                            </div>
+                            <div class="right-tab-details slds-col">
+                                <template if:true={showAgreement}>
+                                    <div class="agreement-form agreement-address-form slds-p-around_medium">
+                                        <h3 class="slds-text-heading_small">Please Select an Agreement</h3>
+                                        <div class="custom-combobox slds-m-bottom_small">
+                                            <lightning-combobox data-id="sName" value={agreementId}
+                                                options={agreementWrapper.agreementList}
+                                                onchange={handleAgreementChange} name="Select Agreement"
+                                                label="Select Agreement">
+                                            </lightning-combobox>
+                                        </div>
+                                    </div>
+                                    <template if:true={showAgreementDetails}>
+                                        <div
+                                            class="slds-border_top slds-p-around_medium slds-size_1-of-1 agreement-form">
+                                            <h3 class="slds-text-heading_small custom-heading">
+                                                Agreement Details
+                                            </h3>
+                                            <div>
+                                                <div
+                                                    class="slds-form-element slds-form-element_horizontal custom-month">
+                                                    <label class="slds-form-element__label custom-label"><span
+                                                            class="slds-text-color_error">*</span>Period
+                                                        ({agreementPeriodType})
+                                                    </label>
+                                                    <div class="slds-form-element__control">
+                                                        <lightning-input autocomplete="No" type="number" name=""
+                                                            value={agreementPeriod} onchange={HandlePeriodChange}
+                                                            required variant=" label-hidden"></lightning-input>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="slds-form-element slds-form-element_horizontal action-combobox">
+                                                    <label class="slds-form-element__label custom-label">Renewal
+                                                        Action</label>
+                                                    <div class="slds-form-element__control">
+                                                        <lightning-combobox data-id="sName" value={agreementEndAction}
+                                                            options={agreementWrapper.renewAction}
+                                                            onchange={handleRenewalAction} name="Renewal Action"
+                                                            variant="label-hidden" required>
+                                                        </lightning-combobox>
+                                                    </div>
+                                                </div>
+                                                <template if:true={showRenewalPricing}>
+                                                    <div
+                                                        class="slds-form-element slds-form-element_horizontal custom-renewal">
+                                                        <label class="slds-form-element__label custom-label">Renewal
+                                                            Pricing</label>
+                                                        <div class="slds-form-element__control">
+                                                            <lightning-radio-group name="Renewal Pricing" label="Renewal Pricing"
+                                                                options={agreementWrapper.renewalPricingOption}
+                                                                value={renewalPrice}
+                                                                variant = "label-hidden"
+                                                                onchange={handleRenewalPricingChange} type="radio"
+                                                                required>
+                                                            </lightning-radio-group>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                                <div
+                                                    class="slds-form-element slds-form-element_horizontal override-email-check ">
+                                                    <label class="slds-form-element__label custom-label">Override End
+                                                        Date</label>
+                                                    <div class="slds-form-element__control">
+                                                        <div class="slds-grid slds-grid_vertical-align-center">
+                                                            <lightning-input autocomplete="No" type="checkbox"
+                                                                checked={isOverRideDate} name=""
+                                                                onchange={handleOverRideCheckbox} data-id="checkbox1"
+                                                                label="">
+                                                            </lightning-input>
+                                                            <template if:true={isOverRideDate}>
+                                                                <lightning-input class="slds-col custom-calender-cont"
+                                                                    autocomplete="No" type="date" name=""
+                                                                    value={overrideAgreementEndDate} label=""
+                                                                    data-id="date" onchange={handleOverRideDate}>
+                                                                </lightning-input>
+                                                            </template>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+
+                                </template>
+                                <template if:true={showAgreementMessage}>
+                                    <div class="slds-text-heading_small slds-m-bottom_small slds-text-align_center">
+                                        Agreements are not available for this product
+                                    </div>
+                                </template>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer class="slds-modal__footer">
+                        <template if:false={showAgreementMessage}>
+                        <button type="button" class="slds-button slds-button_brand"
+                            onclick={ConfirmConfigure}>OK</button>
+                        </template>
+                        <button type="button" class="slds-button slds-button_neutral"
+                            onclick={CancelConfigure}>Cancel</button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+
+    </template>
+</template>

@@ -1,0 +1,6 @@
+<aura:event type="APPLICATION" access="global">
+    <aura:attribute name="accountId"
+                    access="global"
+                    type="String" 
+                    description="TO pass Account Id to reload the component"/>
+</aura:event>

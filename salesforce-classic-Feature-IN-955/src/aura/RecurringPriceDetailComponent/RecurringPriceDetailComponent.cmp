@@ -1,0 +1,281 @@
+<aura:component access="GLOBAL" controller="TractProductDetailExt">
+    <aura:attribute name="productId" type="String"/>
+    <aura:attribute name="selectedPrice" type="ProductPriceWrapper"/>
+    <aura:attribute name="HideSpinner" type="Boolean" default="true"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="activityChargeWrapper" type="ProductUsesWrapper" />
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+    <aura:handler event="c:HandleProductChargeRuleEvent" action="{!c.handleActivityChargeEvent}"/>
+    <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large recurring-modal" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+        <aura:renderIf isTrue="{!v.HideSpinner}">
+            <div class="slds-spinner_container" >
+                <div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+                    <span class="slds-assistive-text">Loading, Please Wait...</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div> 
+        </aura:renderIf>
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"  onclick="{!c.closeModalBox}" title="Close">
+                    <c:svg class="slds-button__icon slds-button__icon--large"
+                           xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                           ariaHidden="true"
+                           />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Recurring Product Price Details</h2>
+            </header>
+            {!v.body}
+            <div class="full forcePageBlockSectionRow">
+                <div class="slds-modal__content slds-p-around_medium">
+                    <div class="account-details">
+                        <div class="panel-body panel_body_details service-table heading last custom-table-">
+                            <div class="slds-box slds-p-around_none">
+                                <div class="slds-grid slds-grid_vertical-align-center slds-grid_align-spread slds-p-horizontal_x-small slds-p-vertical_xx-small">
+                                    <h3 id="modal-heading-01" class="slds-text-heading--small"><b>Price Information</b></h3>
+                                    <button class="slds-button slds-button_neutral slds-float--right" onclick="{!c.editRecurringPrice}">Edit</button>
+                                </div>
+                                
+                                <div class="cmn-table-responsive recur-price-sec">
+                                    <table class="slds-table slds-table--bordered ">
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <b>Price Type:</b>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!v.selectedPrice.priceType}"/>
+                                                </td>
+                                                <td>
+                                                    <b>Billing Type:</b> 
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!if(v.selectedPrice.billInAdvance, 'Bill In Advance', 'Bill In Arrears')}"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <b>Price Category:</b>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!v.selectedPrice.priceCategory}"/>
+                                                </td>
+                                                <td>
+                                                    <b>Recurrance:</b> 
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!v.selectedPrice.recurrencePeriod}"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <b>From Date:</b>
+                                                </td>
+                                                <td>
+                                                    <ui:outputDate aura:id="fromDate" class="slds-output"
+                                                                   value="{!v.selectedPrice.fromDate}" format="MM/dd/yyyy"/>
+                                                </td>
+                                                <td>
+                                                    <b>Prorated on Order: </b>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!if(v.selectedPrice.proratedOnOrder, 'Yes', 'No')}"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <b>Thru Date:</b>
+                                                </td>
+                                                <td>
+                                                    <ui:outputDate aura:id="thruDate" class="slds-output"
+                                                                   value="{!v.selectedPrice.thruDate}" format="MM/dd/yyyy"/>
+                                                </td>
+                                                <td>
+                                                    <b>Prorated on Order-No Charge:</b>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!if(v.selectedPrice.proratedOnOrderNoCharge, 'Yes', 'No')}"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <b>Price Override:</b>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!if(v.selectedPrice.priceOverride, 'Yes', 'No')}"/>
+                                                </td>
+                                                <td>
+                                                    <b>Prorated on Cancel:</b>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!if(v.selectedPrice.proratedOnCancel, 'Yes', 'No')}"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <b>Tapered Pricing:</b>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!if(v.selectedPrice.scheduledCharges, 'Yes', 'No')}"/>
+                                                </td>
+                                                <td>
+                                                    <b>Auto-Payment Required:</b>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!if(v.selectedPrice.recurringPaymentRequired, 'Yes', 'No')}"/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <b>Currency:</b>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText aura:id="Currency" class="slds-output"
+                                                                   value="{!v.selectedPrice.currencyType}"/>
+                                                </td>
+                                                <td>
+                                                    <b>Pay on Purchase:</b>
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!if(v.selectedPrice.paymentOnPurchaseRequired, 'Yes', 'No')}"/>
+                                                    
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <b>Price:</b>
+                                                </td>
+                                                <td>
+                                                    <div class="slds-box slds-p-around_none">
+                                                        <table class="cmn-table-responsive">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Tier</th>
+                                                                    <th>Starting QTY</th>
+                                                                    <th>Ending QTY</th>
+                                                                    <th>List Price</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <aura:iteration items="{!v.selectedPrice.priceRangesList}" var="productPriceRange">
+                                                                    <tr>
+                                                                        <td>
+                                                                            <ui:outputText aura:id="Level" class="slds-output"
+                                                                                           value="{!'Tier '+productPriceRange.level}"/>
+                                                                        </td>
+                                                                        <td>
+                                                                            <ui:outputNumber aura:id="startQuantity" class="slds-output"
+                                                                                             value="{!productPriceRange.quantityBeginRange}" />
+                                                                        </td>
+                                                                        <td>
+                                                                            <ui:outputNumber aura:id="EndQuantity" class="slds-output"
+                                                                                             value="{!productPriceRange.quantityEndRange}" format=".00"/>
+                                                                        </td>
+                                                                        <td>            
+                                                                            <ui:outputNumber aura:id="price" class="slds-output"
+                                                                                             value="{!productPriceRange.price}" format=".00"/>
+                                                                        </td>
+                                                                    </tr>
+                                                                </aura:iteration>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </td> 
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table> 
+                                    
+                                </div>  
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="product-details slds-box slds-p-around_none slds-m-top_medium recu-activity">
+                        <div class="panel-body panel_body_details service-table heading last">
+                            <lightning:accordion allowMultipleSectionsOpen="true" activeSectionName="A">
+                                <lightning:accordionSection name="A" label="Activity Charge Rules" class="horizontal-p-none">
+                                    <aura:set attribute="actions">
+                                        <button class="slds-button  slds-button_brand slds-float--right" onclick="{!c.addActivityChargeRule}">Add</button>
+                                    </aura:set>
+                                    
+                                    <div class="product-chart-box">
+                                        <div class="slds-scrollable">
+                                            <table class="slds-table slds-table--bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="head">Name</th>
+                                                        <th class="head">Rule</th>
+                                                        <th class="head">Charge Category</th>
+                                                        <th class="head">Taper</th>
+                                                        <th class="head">Rate</th>
+                                                        <th class="head">From Date</th>
+                                                        <th class="head">Thru Date</th>
+                                                        <th class="head">Status</th>
+                                                        <th class="head">Actions</th>  
+                                                    </tr>
+                                                </thead>
+                                                <aura:iteration items="{!v.activityChargeWrapper}" var="overage" indexVar="count">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <ui:outputText aura:id="ChargeName" class="slds-output"
+                                                                               value="{!overage.chargeName}"/>
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="Rule" class="slds-output"
+                                                                               value="{!overage.rule}"/>
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="Rule" class="slds-output"
+                                                                               value="{!overage.chargeCategory}"/>
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="Taper" class="slds-output"
+                                                                               value="{!overage.taper}"/>
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="Rate" class="slds-output"
+                                                                               value="{!overage.rate}"/>
+                                                                
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="FromDate" class="slds-output"
+                                                                               value="{!overage.fromDate}"/>
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="ThruDate" class="slds-output"
+                                                                               value="{!overage.thruDate}"/>
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="Status" class="slds-output"
+                                                                               value="{!overage.status}"/>
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="bill" class="slds-output"
+                                                                               value=""/>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </aura:iteration>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </lightning:accordionSection>
+                            </lightning:accordion>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral"  onclick="{!c.closeModalBox}">Cancel</button>
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

@@ -1,0 +1,16 @@
+.THIS .slds-scope .slds-spinner_container{z-index:9999;}
+.THIS .feature-showspinner .slds-spinner_container{background:none}
+.THIS .feature-showspinner.clasicLoader .slds-spinner_container{background:#fff}
+.THIS .account-create-sec{text-align:center;padding:80px 15px 0}
+.THIS .product-slds-sec-details{max-height:350px;min-height:350px; overflow:auto}
+.THIS .configured-error-message{font-size:13px; color: rgb(194, 57, 52); position:absolute;left:0;bottom:0;width:100% }
+.THIS .product-slds-sec-details .slds-table td{white-space: normal;color: rgb(22, 50, 92);}
+.THIS .product-slds-sec-details .slds-table th{color: rgb(22, 50, 92); font-weight:700;padding:.5rem}
+.THIS .product-slds-sec-details .slds-table th:first-child{padding-left:1.5rem}
+.THIS .product-slds-sec-details .slds-table{border-top:none}
+.THIS .product-slds-sec-details{padding-bottom:1.5rem;}
+.THIS .product-modal-parent .slds-modal__header h2{color: rgb(22, 50, 92); font-weight:400}
+.THIS .slds-checkbox-details input[type=checkbox]{width:20px; height: 20px}
+.THIS .slds-checkbox-details .uiInput--checkbox input[type=checkbox]:checked, .THIS input.uiInput--checkbox[type=checkbox]:checked{ background-color: rgb(75, 202, 129);    border: 1px solid rgb(216, 221, 230);}
+.THIS .slds-checkbox-details .uiInput--checkbox input[type=checkbox]:focus{ border: 1px solid rgb(216, 221, 230);}
+.THIS .configured-select-product .configured-inner-product td:nth-child(5),  .THIS .configured-select-product .configured-inner-product td:nth-child(6){width:10%}

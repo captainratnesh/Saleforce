@@ -1,0 +1,18 @@
+.order-table .slds-table,.common-table .slds-table{border:none}
+.order-table{min-height:125px}
+.order-table .slds-table thead th, .common-table .slds-table thead th{background:#fafaf9}
+.order-table .slds-scrollable{overflow:visible}
+.order-summary .slds-table th,.order-summary .slds-table td{text-align:right;}
+.order-summary .slds-table thead th:first-child{width:80%}
+.create-inner-modal{position:relative;display: flex;flex-direction: column;justify-content: center;max-height:calc(100vh - 6rem);}
+/** tab section start **/
+.custom-tab{ border: 1px solid #dddbda;border-radius: .25rem;}
+.custom-heading{border-top: 1px solid #dddbda; margin: 1rem -1rem 0; padding: 0.5rem 1rem 0.5rem;font-weight: 700;}
+.left-tab{width: 12rem;border-right: 1px solid #dddbda; background: #f3f2f2;padding-top: 0.5rem;}
+.right-tab-details{-webkit-box-flex: 1;-ms-flex: 1;flex: 1;padding: 1rem;background: #fff;}
+.custom-combobox .slds-form-element{display: flex;align-items: center; flex-wrap: wrap;}
+.agreement-form .custom-label{min-width: 135px;padding: 0.5rem 0 0 0;text-align:right}
+.custom-renewal .custom-label{padding-top:0}
+@media (max-width:767px){   
+    .order-table .slds-scrollable{overflow:auto}   
+}

@@ -1,0 +1,27 @@
+<aura:component controller="TractProductDetailExt">
+    <ltng:require styles="/resource/TRACT3__SLDS/assets/styles/salesforce-lightning-design-system.min.css"/>
+    <aura:attribute name="productId" type="String" />
+	<aura:attribute name="productRelationWrap" type="ProductRelationWrapper"/>
+	<aura:attribute name="message" type="String" default="undefined"/>
+	<section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+            <div class="slds-modal__container">
+              <header class="slds-modal__header">
+                <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                              <c:svg class="slds-button__icon slds-button__icon--large"
+                              xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                              ariaHidden="true"
+                              />
+                          </button>
+                <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Confirm</h2>
+              </header>
+              <div class="slds-modal__content">
+                  <p class="slds-p-vertical_medium slds-text-align_center">Are you sure you want to remove the relationship with product: <q>{!v.productRelationWrap.productName}</q> ?</p>
+              </div>
+              <footer class="slds-modal__footer">
+               <button class="slds-button slds-button--neutral"  onclick="{!c.closeModalBox}">No</button>
+                <button class="slds-button slds-button--neutral slds-button--brand" onclick="{!c.deleteproductRelation}">Yes</button>
+              </footer>
+            </div>
+          </section>
+          <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

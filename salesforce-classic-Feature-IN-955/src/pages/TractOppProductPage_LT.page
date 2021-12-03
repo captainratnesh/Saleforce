@@ -1,0 +1,39 @@
+<apex:page standardController="Opportunity" sidebar="false" showHeader="true" standardStylesheets="false" >
+    <apex:includeLightning />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <apex:stylesheet value="{!URLFOR($Resource.SLDS, '/assets/styles/salesforce-lightning-design-system.min.css')}"/>
+  <style>
+    .loader{position:absolute;background:rgba(0,0,0,0.3);width:99.7%;height:100%;top:0; z-index:999}
+    .loader img{position:absolute;left:50%;top:2%;transform:translate(-20%, 80px);-webkit-transform:translate(-20%,80px;)}
+  </style>
+   <div id="vf-app">
+         
+    </div>
+    <div id="test" class=" col-xs-12 text-center">
+        <div class="slds-spinner_container" >
+              <div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+              </div>
+             </div>
+    </div>   
+    <script>
+      document.addEventListener("closeModal", function(event){
+            console.log('vf event data window listener => '+event.detail);
+            sforce.one.navigateToSObject(event.detail);
+        });
+       var opportunityId = "{!$CurrentPage.parameters.id}";
+        var getUITheme = "{!$User.UITheme}";
+        $Lightning.use("TRACT3:OpportunityProductApp", function() {
+                $Lightning.createComponent(
+                    "TRACT3:AddProductComponent",
+                    {"opportunityId" : opportunityId
+                     },
+                    "vf-app",
+                    function(cmp) {
+                        $("#test").hide()
+                    });                        
+                });
+    </script>
+</apex:page>

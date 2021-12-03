@@ -1,0 +1,20 @@
+.createchange-order-header h2{
+    font-weight:400
+}
+.custom-calendar{
+    max-width: 250px;
+}
+.config-modal .left-tab{
+    min-height: 320px;
+    min-width: 200px;
+}
+.slds-card.border-around-1{
+    border: 1px solid #dcdbda;
+}
+.slds-notify_toast{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+}

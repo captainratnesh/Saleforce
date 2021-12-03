@@ -1,0 +1,8 @@
+.THIS .slds-modal__container.custom-modal-container{
+    width: 50%;
+    max-width: 40rem;
+    min-width: 20rem;
+}
+.THIS .modal-error-msg{
+    color: #f00;
+}

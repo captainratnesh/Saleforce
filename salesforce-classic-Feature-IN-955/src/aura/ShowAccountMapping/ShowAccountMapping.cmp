@@ -1,0 +1,148 @@
+<aura:component controller="AccountMappingController" access="global">
+    <aura:attribute name="AccountID" type="String"/>
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/> 
+    <aura:attribute name="HideSpinner" type="Boolean" default="true"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:attribute type="map" name="MapOfFieldVsValue"/>
+    <aura:attribute type="AccountMappingWrapper" name="accountWrap"/>
+    <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+        <aura:renderIf isTrue="{!v.HideSpinner}">
+            <div class="slds-spinner_container" >
+                <div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+                    <span class="slds-assistive-text">Loading, Please Wait...</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div> 
+        </aura:renderIf>
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                    <c:svg class="slds-button__icon slds-button__icon--large"
+                           xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                           ariaHidden="true"
+                           />
+                </button>
+                <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Account Mapping Values</h2>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <!-- <aura:renderIf isTrue="{!v.accountWrap.isRelatedList}">
+                    <lightning:select  name="relatedRecords" aura:id="relatedRecords" onchange="{!c.onRecordSelect}">
+                        <aura:iteration items="{!v.accountWrap.accountRelatedListRecords}" var="cus" indexVar="key">
+                            <option label="{!cus.Name}" value="{!cus.Id}" />
+                        </aura:iteration>
+                    </lightning:select>   
+                </aura:renderIf> -->
+                <div class="slds-scrollable">
+                    <table class="slds-table slds-table_bordered">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <b>Account Name : </b>
+                                </td>
+                                <td>
+                                    <ui:outputText value="{!v.MapOfFieldVsValue.AccountName}"/>
+                                </td>
+                                <td>
+                                    <b>Account Number :</b> 
+                                </td>
+                                <td>
+                                    <ui:outputText value="{!v.MapOfFieldVsValue.AccountNumber}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>Billing Street : </b>
+                                </td>
+                                <td>
+                                    <ui:outputText value="{!v.MapOfFieldVsValue.BillingStreet}"/>
+                                </td>
+                                <td>
+                                    <b>Billing City : </b>
+                                </td>
+                                <td>
+                                    <ui:outputText value="{!v.MapOfFieldVsValue.BillingCity}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>Billing Postal Code : </b>
+                                </td>
+                                <td>
+                                    <ui:outputText value="{!v.MapOfFieldVsValue.BillingCode}"/>
+                                </td>
+                                <td>
+                                    <b>Billing State : </b>
+                                </td>
+                                <td>
+                                    <ui:outputText value="{!v.MapOfFieldVsValue.BillingState}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>Billing Country : </b>
+                                </td>
+                                <td>
+                                    <ui:outputText value="{!v.MapOfFieldVsValue.BillingCountry}"/>
+                                </td>
+                                <td>
+                                    <b>Shipping Street : </b>
+                                </td>
+                                <td>
+                                    <ui:outputText value="{!v.MapOfFieldVsValue.ShippingStreet}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>Shipping City : </b>
+                                </td>
+                                <td>
+                                    <ui:outputText value="{!v.MapOfFieldVsValue.ShippingCity}"/>
+                                </td>
+                                <td>
+                                    <b>Shipping Postal Code : </b>
+                                </td>
+                                <td>
+                                    <ui:outputText value="{!v.MapOfFieldVsValue.ShippingCode}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>Shipping State : </b>
+                                </td>
+                                <td>
+                                    <ui:outputText value="{!v.MapOfFieldVsValue.ShippingState}"/>
+                                </td>
+                                <td>
+                                    <b>Shipping Country : </b>
+                                </td>
+                                <td>
+                                    <ui:outputText value="{!v.MapOfFieldVsValue.ShippingCountry}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>Phone : </b>
+                                </td>
+                                <td>
+                                    <ui:outputText value="{!v.MapOfFieldVsValue.Phone}"/>
+                                </td>
+                                <td>
+                                    <b>Email : </b>
+                                </td>
+                                <td>
+                                    <ui:outputText value="{!v.MapOfFieldVsValue.GotransverseEmail}"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>  
+                </div>
+            </div>
+            <footer class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral" onclick="{!c.closeModalBox}">Cancel</button>
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

@@ -1,0 +1,179 @@
+<aura:component access="GLOBAL" controller="CreateProductController">
+    <aura:attribute name="CreateProductWrapper" type="CreateProductWrapper"/>
+    <aura:attribute name="productId" type="String"/>
+    <aura:handler name="init" value="this" action="{!c.doinit}" />
+    <aura:attribute name="HideSpinner" type="Boolean" default="true"/>
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+    <aura:attribute name="message" type="String" default="NoError" />
+    <aura:attribute name="showMessage" type="Boolean" default="false"/>
+
+    <div>
+        <aura:renderIf isTrue="{!v.HideSpinner}">
+            <div class="loader">
+                <lightning:spinner alternativeText="Loading" size="large" variant="brand"/>
+            </div>
+        </aura:renderIf>
+        <aura:renderIf isTrue="{!v.showMessage}">
+            <div class="slds-grid slds-grid--align-center slds-wrap slds-p-top_x-small slds-text-heading_medium">
+                <lightning:formattedText value="{!v.message}"/>
+            </div>
+            <div class=" slds-text-align--center slds-size_1-of-1 slds-p-top_medium">
+                <lightning:button class="slds-button slds-button--brand" onclick="{!c.closeComponent}">Go Back</lightning:button>
+            </div>
+        </aura:renderIf>
+        <aura:renderIf isTrue="{!!v.showMessage}">
+            <div class="slds-grid slds-grid_vertical">
+                <div class="slds-page-header">
+                    <div class="slds-media ">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container">
+                                <!-- <c:svg class="slds-button__icon slds-button__icon_large"
+                                    xlinkHref="/resource/TRACT3__SLDS/assets/icons/utility-sprite/svg/symbols.svg#archive"
+                                    ariaHidden="true"/> -->
+
+                                <lightning:icon iconName="standard:product" alternativeText="product" />
+                            </span>    
+                        </div>
+                        <h1 class="slds-media__body slds-page-header__title slds-m-right--small slds-align-middle slds-truncate">New Product</h1>
+                    </div>
+                </div>
+
+                <div class="slds-p-bottom_x-small">
+                    <div id="showErrorProductCreation" class="slds-text-color_error " style="display:none; text-align:center;font-weight:700">
+                        <lightning:formattedText value="{!v.message}"/>   
+                    </div>
+                </div>
+                    
+                <div>
+                    <div class="slds-form-element slds-form-element_compound">
+                        <div class="slds-form-element__row">
+                            <div class="slds-size_1-of-2">
+                                <lightning:select value="{!v.CreateProductWrapper.productType}" label="Product Type:" onchange="{!c.onProductTypeSelect}" required="true">
+                                    <aura:iteration items="{!v.CreateProductWrapper.productTypeList}" var="prodType">
+                                        <option value="{!prodType.value}" label="{!prodType.label}">
+                                        </option>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                            <div class="slds-size_1-of-2">
+                                <lightning:input type="text" value="{!v.CreateProductWrapper.productName}" label="Product Name:" required="true"/>   
+                            </div>
+                        </div>
+                        <div class="slds-form-element__row">
+                            <div class="slds-size_1-of-2">
+                                <lightning:input type="text" value="{!v.CreateProductWrapper.shortDescription}" label="Short Description:"/>
+                            </div>
+                            <div class="slds-size_1-of-2">
+                                <lightning:input type="text" value="{!v.CreateProductWrapper.sku}" label="SKU:"/>
+                            </div>
+                        </div>
+                        <div class="slds-form-element__row">
+                            <div class="slds-size_1-of-2">
+                                <lightning:input type="text" value="{!v.CreateProductWrapper.internalName}" label="Internal Name:"/>
+                            </div>
+                            <div class="slds-size_1-of-2">
+                                <lightning:input type="text" value="{!v.CreateProductWrapper.externalName}" label="External Name:"/>
+                            </div>
+                        </div>
+                        <div class="slds-form-element__row custom-date-time-filed">
+                            <div class="slds-size_1-of-2">
+                                <lightning:input type="datetime" value="{!v.CreateProductWrapper.salesDiscontinuationDate}" label="Sales Discontinuation Date:"/>   
+                            </div>
+                            <div class="slds-size_1-of-2">
+                                <lightning:input type="datetime" value="{!v.CreateProductWrapper.introductionDate}" label="Introduction Date:" required="true"/>   
+                            </div>
+                        </div>
+                        <div class="slds-form-element__row">
+                            <div class="slds-size_1-of-2">
+                                <lightning:select value="{!v.CreateProductWrapper.productCategory}" label="Product Category:" required="true">
+                                    <aura:iteration items="{!v.CreateProductWrapper.productCategoryList}" var="prodCategory">
+                                        <option value="{!prodCategory.value}" label="{!prodCategory.label}">
+                                        </option>
+                                    </aura:iteration>
+                                </lightning:select>
+                                <aura:renderIf isTrue = "{!!v.CreateProductWrapper.unique}"> 
+                                    <lightning:input type="number" value="{!v.CreateProductWrapper.defaultQuantity}" label="Default Quantity:" required="true"/>  
+                                </aura:renderIf>
+                                <aura:renderIf isTrue = "{!v.CreateProductWrapper.fundPrepaidBalance || v.CreateProductWrapper.consumePrepaidBalance}"> 
+                                    <lightning:select value="{!v.CreateProductWrapper.productRegisterType}" label="Register Type:" required="true">
+                                        <aura:iteration items="{!v.CreateProductWrapper.productRegisterTypeList}" var="prodRegType">
+                                            <option value="{!prodRegType.value}" label="{!prodRegType.label}">
+                                            </option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </aura:renderIf>
+                            </div>
+                            <div class="slds-size_1-of-2 slds-p-top_medium">
+                                <lightning:input type="checkbox" value="{!v.CreateProductWrapper.taxable}" label="Taxable:" checked="{!v.CreateProductWrapper.taxable}"/>   
+                                <lightning:input type="checkbox" value="{!v.CreateProductWrapper.unique}" label="Unique:" checked="{!v.CreateProductWrapper.unique}"/>
+                                <aura:renderIf isTrue = "{!v.CreateProductWrapper.productType == 'general'}" >
+                                    <lightning:input type="checkbox" value="{!v.CreateProductWrapper.fundPrepaidBalance}" label="fundPrepaidBalance:" checked="{!v.CreateProductWrapper.fundPrepaidBalance}"/>   
+                                </aura:renderIf>
+                                <aura:renderIf isTrue = "{!v.CreateProductWrapper.productType == 'add-on' || v.CreateProductWrapper.productType == 'customer-subscription'}" >
+                                    <lightning:input type="checkbox" value="{!v.CreateProductWrapper.consumePrepaidBalance}" label="consumePrepaidBalance:" checked="{!v.CreateProductWrapper.consumePrepaidBalance}"/>   
+                                </aura:renderIf>
+                            </div>
+                        </div>
+                        <div class="slds-form-element__row">
+                            <div class="slds-size_1-of-2 custom-textarea">
+                                <lightning:textarea label="Description:" value="{!v.CreateProductWrapper.description}" rows="12"/>
+                            </div>
+                            <div class="slds-size_1-of-2">
+                                <lightning:dualListbox label= "Product Tags:" value="{!v.CreateProductWrapper.selectedproductTagsList}" sourceLabel="Available Product Tags" selectedLabel="Selected Product Tags"
+                                    fieldLevelHelp="Select the product Tags" options="{!v.CreateProductWrapper.productTagList}"/>
+                            </div>
+                        </div>
+                        <aura:renderIf isTrue = "{!v.CreateProductWrapper.productType == 'add-on' || v.CreateProductWrapper.productType == 'customer-subscription' || v.CreateProductWrapper.productType == 'ADDON' || v.CreateProductWrapper.productType == 'SUBSCRIPTION'}" >
+                            <div class="slds-form-element__row">
+                                <div class="slds-size_1-of-2">
+                                    <lightning:select value="{!v.CreateProductWrapper.ruleMode}" label="Rule Mode:">
+                                        <aura:iteration items="{!v.CreateProductWrapper.ruleModeList}" var="ruleMo">
+                                            <option value="{!ruleMo.value}" label="{!ruleMo.label}">
+                                            </option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                                <div class="slds-size_1-of-2">
+                                    <lightning:select value="{!v.CreateProductWrapper.ruleType}" label="Rule Type:">
+                                        <aura:iteration items="{!v.CreateProductWrapper.ruleTypeList}" var="ruleTy">
+                                            <option value="{!ruleTy.value}" label="{!ruleTy.label}">
+                                            </option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                            </div>
+                            <div class="slds-form-element__row">
+                                <div class="slds-size_1-of-2">
+                                    <lightning:select value="{!v.CreateProductWrapper.identifierCategory}" label="Identifier Category:">
+                                        <aura:iteration items="{!v.CreateProductWrapper.identifierCategoryList}" var="idenCategory">
+                                            <option value="{!idenCategory.value}" label="{!idenCategory.label}">
+                                            </option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                                <div class="slds-size_1-of-2">
+                                    <lightning:input type="number" value="{!v.CreateProductWrapper.minimumIdentifiers}" label="Minimum Identifiers:" required="true"/>   
+                                </div>
+                            </div>
+                            <div class="slds-form-element__row">
+                                <div class="slds-size_1-of-2">
+                                    <lightning:input type="number" value="{!v.CreateProductWrapper.maximumIdentifiers}" label="Maximum Identifiers:" required="true"/>   
+                                </div>
+                                <div class="slds-size_1-of-2 slds-p-top_medium">
+                                    <lightning:input type="checkbox" value="{!v.CreateProductWrapper.agreementMandatory}" label="Agreement Mandatory:" checked="{!v.CreateProductWrapper.agreementMandatory}"/>   
+                                    <lightning:input type="checkbox" value="{!v.CreateProductWrapper.ruleOverride}" label="Rule Override:" checked="{!v.CreateProductWrapper.ruleOverride}"/>   
+                                </div>
+                            </div>
+                        </aura:renderIf>
+                    </div>
+                </div>
+                <div class="slds-grid  slds-grid--align-center slds-p-vertical_medium">
+                    <lightning:button class="slds-button slds-button--brand" onclick="{!c.closeComponent}">Cancel</lightning:button>
+                    <lightning:button class="slds-button slds-button--brand" onclick="{!c.saveProduct}">Finish</lightning:button> 
+                </div>
+            </div>
+        </aura:renderIf>
+    </div>
+    
+</aura:component>

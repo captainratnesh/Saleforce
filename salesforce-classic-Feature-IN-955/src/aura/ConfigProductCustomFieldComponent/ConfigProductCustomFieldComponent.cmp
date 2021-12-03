@@ -1,0 +1,86 @@
+<aura:component controller="TractProductDetailExt" >
+    <aura:attribute name="productCustomFieldList" type="ProductCustomFieldWrapper[]"/>
+    <aura:attribute name="isShow" type="boolean" default="true"/>
+    <aura:attribute name="validationError" type="boolean" default="false"/>
+    <aura:attribute name="message" type="String" default=""/>
+    <aura:attribute name="productId" type="String" default=""/>
+    <aura:attribute name="productEid" type="String" default=""/>
+    <aura:attribute name="showEdit" type="boolean" default="true"/> 
+    <aura:attribute name="canEdit" type="boolean" default="false"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/> 
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+    <aura:attribute name="HideSpinner" type="Boolean" default="true"/>
+    <div>
+        <div aria-hidden="false" id="ProductCustomField" role="dialog" class="slds-modal  slds-fade-in-open cmn_modelbox Product-edit-modal" style="display:block;">
+            <aura:renderIf isTrue="{!v.HideSpinner}">
+                <lightning:spinner alternativeText="Loading" size="large" variant="brand"/>
+            </aura:renderIf>
+            <div class="slds-modal__container">  
+                <div class="slds-modal__header top-cmn-heading-row"> 
+                    <h1 class="slds-text-heading_medium">Configure Product Custom Fields</h1>
+                    <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                        <c:svg class="slds-button__icon slds-button__icon--large"
+                               xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                               ariaHidden="true"
+                               />
+                    </button>
+                </div>
+                <div class="slds-modal__content">
+                    <aura:renderIf isTrue="{!!v.isShow}">
+                        <div id="showErrorProductCart" class="cmn_error_msg" style="text-align:center;">
+                            <ui:outputText value="{!v.message}"/>
+                        </div>
+                    </aura:renderIf>
+                    <aura:renderIf isTrue="{!v.validationError}">
+                        <div id="showErrorProductCart" class="cmn_error_msg" style="text-align:center;">
+                            <ui:outputText value="{!v.message}"/>
+                        </div>
+                    </aura:renderIf>
+                  <aura:renderIf isTrue="{!v.canEdit}">
+                    <div class="Product-details" >
+                        <div>
+                            <div class="cmn-table-responsive">
+                                <table class="slds-table">
+                                    <aura:iteration items="{!v.productCustomFieldList}" var="customField"  indexVar="index">
+                                        <tr>
+                                            <td>
+                                                <ui:outputText aura:id="customFieldName" class="slds-output"
+                                                               value="{!customField.name}">
+                                                    <span id="{!'thisInput'+index}"></span>
+                                                </ui:outputText>
+                                            </td>
+                                            <td> 
+                                                <aura:renderIf isTrue="{!!customField.checkListtype}">
+                                                    <ui:inputText class="slds-input"
+                                                                  value="{!customField.value}" />
+                                                </aura:renderIf>
+                                                <aura:renderIf isTrue="{!customField.checkListtype}">
+                                                    <ui:inputSelect class="slds-select bill-cycle-select"  value="{!customField.selectedListTypeValue}">
+                                                        <aura:iteration items="{!customField.storeListTypeValues}" var="serviceList">
+                                                            <ui:inputSelectOption text="{!serviceList.value}" label="{!serviceList.label}" value = "{!serviceList.value == customField.selectedListTypeValue}" />
+                                                        </aura:iteration>
+                                                    </ui:inputSelect> 
+                                                </aura:renderIf>
+                                            </td>
+                                        </tr>  
+                                    </aura:iteration>
+                                </table>    
+                            </div>
+                        </div>
+                    </div>
+                 </aura:renderIf>
+                </div>
+                <div class="slds-modal__footer">
+                    <div class="slds-x-small-buttons--horizontal">
+                        <button class="slds-button slds-button--destructive"  onclick="{!c.closeModalBox}">Cancel</button>
+                        <aura:renderIf isTrue="{!v.isShow}">
+                            <button class="slds-button slds-button--neutral slds-button--brand" onclick="{!c.saveCustomFields}">Finish</button>
+                        </aura:renderIf>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open custom-slds-backdrop" id="ProductCustomFieldBackground" style="display:block;"></div>
+    </div>
+</aura:component>

@@ -1,0 +1,199 @@
+<aura:component access="GLOBAL" controller="AccountDetailController_LT">
+    <aura:attribute name="getInvoiceList" type="InvoiceWrapper"/>
+    <aura:attribute name="invoiceData" type="InvoiceDetailWrapper"/>
+    <aura:attribute name="invoiceItems" type="InvoiceItemWrapper[]"/>
+    <aura:attribute name="HideSpinner" type="Boolean" default="true"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" /> 
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/> 
+    <!-- *************************************Header************************************************* -->
+    <div style="height:640px">
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+            <aura:renderIf isTrue="{!v.HideSpinner}">
+                <div class="slds-spinner_container" >
+                    <div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+                        <span class="slds-assistive-text">Loading, Please Wait...</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div> 
+            </aura:renderIf>
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                        <c:svg class="slds-button__icon slds-button__icon--large"
+                               xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                               ariaHidden="true"
+                               />
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Invoice Summary</h2>
+                </header>
+                <!-- *************************************Body************************************************* -->
+                <div class="full forcePageBlockSectionRow">
+                    <div class="slds-modal__content">
+                        <div class="account-details">
+                            <div class="panel-body panel_body_details service-table service-table2 heading last">
+                                <div class="cmn-table-responsive">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                Invoice Number : 
+                                            </td>
+                                            <td>
+                                                <ui:outputText value="{!v.getInvoiceList.name}"/>
+                                            </td>
+                                            <td colspan="2">
+                                                <b>Service Charges: </b>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value="{!v.invoiceData.serviceCharges}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Type : 
+                                            </td>
+                                            <td>
+                                                <ui:outputText value="{!v.invoiceData.invoiceType}"/>
+                                            </td>
+                                            <td colspan="2">
+                                                <b>Service Activity Charges: </b>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value="{!v.invoiceData.serviceActivityCharge}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Due Date: 
+                                            </td>
+                                            <td>
+                                                <ui:outputText value="{!v.invoiceData.dueDate}"/>
+                                            </td>
+                                            <td colspan="2">
+                                                <b>Other Charges: </b>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value="{!v.invoiceData.otherCharge}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Billing Period: 
+                                            </td>
+                                            <td>
+                                                <ui:outputText value="{!v.invoiceData.billPeriod}"/>
+                                            </td>
+                                            
+                                            <td colspan="2">
+                                                <b>Taxes and Fees: </b>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value="{!v.invoiceData.taxFees}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Disputed: 
+                                            </td>
+                                            <td>
+                                                <ui:outputText value="{!v.invoiceData.disputed}"/>
+                                            </td>
+                                            <td colspan="2">
+                                                <b>Total Current Charges: </b>
+                                            </td>
+                                            <td>
+                                                <ui:outputText value="{!v.invoiceData.totalCharge}"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <aura:renderIf isTrue = "{!v.invoiceData.isBillCycle}">
+                                                <td>
+                                                    Bill Cycle Run: 
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!v.invoiceData.billCycle}"/>
+                                                </td>
+                                            </aura:renderIf>  
+                                            <aura:renderIf isTrue = "{!v.invoiceData.isBillBatch}">
+                                                <td>
+                                                    Bill Batch Run: 
+                                                </td>
+                                                <td>
+                                                    <ui:outputText value="{!v.invoiceData.billBatch}"/>
+                                                </td>
+                                            </aura:renderIf> 
+                                            
+                                        </tr>
+                                    </table>  
+                                </div>
+                            </div>
+                        </div>
+                        <div class="account-details custom-account-detail"> 
+                            <div class="panel-body panel_body_details service-table heading last custom-table-padding">
+                                <lightning:accordion  allowMultipleSectionsOpen="true" activeSectionName="A">
+                                    <lightning:accordionSection name="A" label="Invoice Items">
+                                        <div >
+                                            <div class="product-chart-box">
+                                                <table class="slds-table slds-table--bordered">
+                                                    <thead>   
+                                                        <tr>
+                                                            <th class="head">Type</th>
+                                                            <th class="head">Invoice Number</th>
+                                                            <th class="head">Description</th>
+                                                            <th class="head">Service</th>
+                                                            <th class="head">Charges</th>
+                                                            <th class="head">Total Amount</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <aura:iteration items="{!v.invoiceItems}" var="item">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                    <ui:outputText aura:id="AgreementName" class="slds-output"
+                                                                                   value="{!item.type}"/>
+                                                                </td>
+                                                                <td>
+                                                                    <ui:outputText aura:id="AgreementPeriod" class="slds-output"
+                                                                                   value="{!v.getInvoiceList.name}"/>
+                                                                </td>
+                                                                <td>
+                                                                    <ui:outputText aura:id="RenewalAction" class="slds-output"
+                                                                                   value="{!item.description}"/>
+                                                                </td>
+                                                                <td>
+                                                                    <ui:outputText aura:id="RenewalAction" class="slds-output"
+                                                                                   value="{!item.serviceName}"/>
+                                                                </td>
+                                                                <td>
+                                                                    <ui:outputText aura:id="AdjustmentCategory" class="slds-output"
+                                                                                   value="{!item.charges}"/>
+                                                                </td>
+                                                                <td>
+                                                                    <ui:outputText aura:id="TerminationCharge" class="slds-output"
+                                                                                   value="{!item.totalAmount}"/>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </aura:iteration>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </lightning:accordionSection> 
+                                </lightning:accordion>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <!-- *************************************Footer************************************************* -->
+                
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button--neutral"  onclick="{!c.closeModalBox}">Close</button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </div>
+</aura:component>

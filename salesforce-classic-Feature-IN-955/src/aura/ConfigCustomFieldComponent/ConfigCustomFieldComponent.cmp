@@ -1,0 +1,78 @@
+<aura:component controller="TractOppProduct_LT">
+    <aura:attribute name="productWrapper" type="Product2AddWrapper"/>
+    <aura:attribute name="customValueList" type="ServiceCustomFieldValuesWrapper[]"/>
+    <aura:attribute name="isShow" type="boolean" default="true"/>
+    <aura:attribute name="validationError" type="boolean" default="false"/>
+    <aura:attribute name="canEdit" type="boolean" default="false"/>
+    <aura:attribute name="message" type="String" default=""/>
+    <aura:registerEvent name="ConfigServiceCustomFieldReturnEvent" type="c:ConfigServiceCustomFieldReturnEvent"/>
+    <aura:handler event="c:ConfigCustomFieldEvent" action="{!c.handleConfigCustomFieldEvent}"/>
+    <div aria-hidden="false" id="customField" role="dialog" class="slds-modal  slds-fade-in-open cmn_modelbox add-new-prod-model" style="display:none;">
+        <div class="slds-modal__container">  
+            <div class="slds-modal__header top-cmn-heading-row"> 
+                <h1 class="slds-text-heading--Large">Configure Service Custom Fields</h1>
+                <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                    <c:svg class="slds-button__icon slds-button__icon--large"
+                           xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                           ariaHidden="true"
+                           />
+                </button>
+            </div>
+            <div class="slds-modal__content">
+                <aura:renderIf isTrue="{!!v.isShow}">
+                    <div id="showErrorProductCart" class="cmn_error_msg" style="text-align:center;">
+                        <ui:outputText value="{!v.message}"/>
+                    </div>
+                </aura:renderIf>
+                <aura:renderIf isTrue="{!v.validationError}">
+                    <div id="showErrorProductCart" class="cmn_error_msg" style="text-align:center;">
+                        <ui:outputText value="{!v.message}"/>
+                    </div>
+                </aura:renderIf>
+               <aura:renderIf isTrue="{!v.canEdit}">
+                <div class="account-details" >
+                    <div class="panel-body panel_body_details service-table service-table2 heading last">
+                        <div class="cmn-table-responsive">
+                            <table>
+                                <aura:iteration items="{!v.customValueList}" var="customField"  indexVar="index">
+                                    
+                                    <tr>
+                                        <td>
+                                            <ui:outputText aura:id="customFieldName" class="slds-output"
+                                                           value="{!customField.name}">
+                                             	<span id="{!'thisInput'+index}"></span>
+                                           	</ui:outputText>
+                                        </td>
+                                        <td> 
+                                            <aura:renderIf isTrue="{!!customField.checkListtype}">
+                                                <ui:inputText class="slds-input"
+                                                              value="{!customField.value}" />
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!customField.checkListtype}">
+                                                <ui:inputSelect class="slds-select bill-cycle-select"  value="{!customField.serviceListTypeValue}">
+                                                    <aura:iteration items="{!customField.serviceListType}" var="serviceList">
+                                                        <ui:inputSelectOption text="{!serviceList.value}" label="{!serviceList.label}" value = "{!serviceList.value == customField.ServiceListTypeValue}" />
+                                                    </aura:iteration>
+                                                </ui:inputSelect> 
+                                            </aura:renderIf>
+                                        </td>
+                                    </tr>  
+                                </aura:iteration>
+                            </table>    
+                        </div>
+                    </div>
+                </div>
+               </aura:renderIf>
+            </div>
+            <div class="slds-modal__footer">
+                <div class="slds-x-small-buttons--horizontal">
+                    <button class="slds-button slds-button--neutral"  onclick="{!c.closeModalBox}">Cancel</button>
+                    <aura:renderIf isTrue="{!v.isShow}">
+                        <button class="slds-button slds-button--neutral slds-button--brand" onclick="{!c.saveCustomFields}">Finish</button>
+                    </aura:renderIf>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open" id="customFieldBackground" style="display:none;"></div>
+</aura:component>

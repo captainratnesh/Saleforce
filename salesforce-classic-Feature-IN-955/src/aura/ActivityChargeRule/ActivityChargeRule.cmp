@@ -1,0 +1,88 @@
+<aura:component controller="AccountDetailController_LT">
+	<aura:attribute name="message" type="String" default="NoError"/>
+	<aura:attribute name="wrappers" type="ProductServiceWrapper" />
+	<aura:attribute name="activityChargeWrapper" type="ProductUsesWrapper" />
+	<aura:handler event="c:ActivityChargeEvent" action="{!c.handleActivityChargeEvent}"/>
+    <div>
+	<div aria-hidden="false" id="activityChargeModal" role="dialog" class="slds-modal slds-modal_large slds-fade-in-open activitycharge-modal" style="display:none;">
+		<div class="slds-modal__container">
+			<!-- *************************************Header************************************************* -->
+			<div class="slds-modal__header">
+				<h2>Activity Charge Rules</h2>
+				<div id="showErrorAddAddress" style="display:none;">
+					<ui:outputText value="{!v.message}"/>
+				</div>
+				<div class="slds-x-large-buttons--horizontal" style= "float:right;">
+					<button class="slds-button slds-button--neutral" onclick="{!c.AddActivityCharge}">Add</button>
+				</div>
+				<button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+					<c:svg class="slds-button__icon slds-button__icon--large"
+                        xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                        ariaHidden="true"
+                    />
+					<span class="slds-assistive-text">Close</span>
+				</button>
+			</div>
+			<!-- *************************************Body************************************************* -->
+			{!v.body}
+		
+				<div class="slds-modal__content">
+					<div class="account-details">
+						<div class="panel-body panel_body_details service-table service-table2 heading last">
+							<div class="cmn-table-responsive">
+								<table>
+									<tr>
+										<th class="head">Name</th>
+										<th class="head">Rule</th>
+										<th class="head">Rate</th>
+										<th class="head">Allowance</th>
+										<th class="head">Status</th>
+										<th class="head">Actions</th>
+									</tr>
+									<aura:iteration items="{!v.activityChargeWrapper}" var="overage" indexVar="count">
+										<tr>
+											<td>
+												<ui:outputText aura:id="ChargeName" class="slds-output"
+                                         value="{!overage.chargeName}"/>
+											</td>
+											<td>
+												<ui:outputText aura:id="Rule" class="slds-output"
+                                         value="{!overage.rule}"/>
+											</td>
+											<td>
+												<ui:outputText aura:id="Rate" class="slds-output"
+                                         value="{!overage.rate}"/>
+											</td>
+											<td>
+												<ui:outputText aura:id="Taper" class="slds-output"
+                                         value="{!overage.taper}"/>
+											</td>
+											<td>
+												<ui:outputText aura:id="Status" class="slds-output"
+                                         value="{!overage.status}"/>
+											</td>
+											<td>
+												<a onclick="{!c.deleteChargeRule}" data-countdelete="{!count}">
+													<u>Delete</u>
+												</a>
+											</td>
+										</tr>
+									</aura:iteration>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			
+			<!-- *************************************Footer************************************************* -->
+			<div class="slds-modal__footer">
+				<div class="slds-x-small-buttons--horizontal">
+					<button class="slds-button slds-button--neutral slds-button--brand" onclick="{!c.closeModalBox}">Finish</button>
+				</div>
+			</div>
+			<!-- *************************************Footer************************************************* -->
+		</div>
+	</div>
+	<div class="slds-backdrop slds-backdrop--open" id="backGroundActivityCharge" style="display:none;"></div>
+        </div>
+</aura:component>

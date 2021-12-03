@@ -1,0 +1,6 @@
+<aura:event type="APPLICATION" access="global">
+    <aura:attribute name="productWrapper"
+                    access="global"
+                    type="Product2AddWrapper" 
+                    description="productWrapper to pass whwen action is perform on product"/>
+</aura:event>

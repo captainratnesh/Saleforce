@@ -1,0 +1,15 @@
+.THIS .custom-textarea{
+    padding-top: 20px;
+}
+.THIS .custom-textarea textarea{
+    height: 15rem;
+}
+.THIS .custom-date-time-filed fieldset.slds-form-element{
+    padding: 0;
+}
+.THIS .custom-date-time-filed fieldset.slds-form-element lightning-datepicker:first-child{
+    padding-left: 0;
+}
+.THIS .custom-date-time-filed fieldset.slds-form-element lightning-datepicker, .THIS .custom-date-time-filed fieldset.slds-form-element lightning-timepicker{
+    width: 50%;
+}

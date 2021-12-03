@@ -1,0 +1,150 @@
+<aura:component access="GLOBAL" controller="TractConfigurationController">
+    <aura:attribute name="lstKey" type="List"/>
+    <aura:attribute name="lstKey2" type="List"/>
+    <aura:attribute name="lstKey3" type="List"/>
+    <aura:attribute name="lstKey4" type="List"/>
+    <aura:attribute name="ObjectList" type="List"/>
+    <aura:attribute name="fieldMap" type="Map"/>
+    <aura:attribute name="fieldMap2" type="Map"/>
+    <aura:attribute name="fieldMap3" type="Map"/>
+    <aura:attribute name="fieldMap4" type="Map"/>
+    <aura:attribute name="ObjectFieldMap" type="Map"/>
+    <aura:attribute name="accountMapWrapper" type="Object"/>
+    <aura:attribute name="currentNumber" type="String" default='1'/>
+    <aura:attribute name="FieldValue" type="String" />
+    <aura:attribute name="conditionValue" type="String" />
+    <aura:attribute name="fieldToChange" type="String" />
+    <aura:attribute name="showRelatedList" type="Boolean" default="false"/>
+    <aura:attribute name="selectedobject" type="String" default="Contact"/>
+    <aura:attribute name="selectedobjectFieldValue" type="String" default="Name"/>
+    <aura:attribute name="selectedRadioOption" type="String"/>
+    <aura:attribute name="selectedConditionFIeldValue" type="String"/>
+    <aura:attribute name="selectedConditions" type="String"/>
+    <aura:attribute name="selectedConditionValue" type="String" default=""/>
+    <aura:attribute name="selectedValue" type="String" default="Name"/>
+    <aura:attribute name="selectedValue2" type="String" default="Name"/>
+    <aura:attribute name="selectedValue3" type="String" default="Name"/>
+    <aura:attribute name="selectedValue4" type="String" default="Name"/>
+    <aura:attribute name="showSecondList" type="Boolean" default="false"/>
+    <aura:attribute name="showThirdList" type="Boolean" default="false"/>
+    <aura:attribute name="showFourthList" type="Boolean" default="false"/>
+    <aura:attribute name="HideSpinner" type="Boolean" default="true"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/> 
+    <aura:registerEvent name="FieldShowHandle" type="c:FieldShowHandle" />
+    <!-- *************************************Header************************************************* -->
+    <div>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+          
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                        <c:svg class="slds-button__icon slds-button__icon--large"
+                               xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                               ariaHidden="true"
+                               />
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Select Field</h2>
+                </header>
+                <!-- *************************************Body************************************************* -->
+                
+                <div class="slds-modal__content slds-p-horizontal_medium slds-p-vertical_medium">
+                    <div class="slds-p-bottom_small custom-radion-col">
+                        <lightning:radioGroup name="Order State" options="{!v.accountMapWrapper.accountStateList}" value="{!v.accountMapWrapper.accountStatusValue}" type="radio" onchange="{!c.accountStateChange}"/>                            	
+                    </div>
+                    <div class="slds-grid custom-picklist  slds-grid_align-center slds-wrap">
+                        <div class="slds-grid slds-grid_vertical-align-center slds-m-vertical_medium">
+                            <strong>Account</strong>
+                            <span class="child-arrow">></span>
+                        </div>
+                        <div class="slds-m-vertical_medium">
+                            <aura:renderIf isTrue="{!!v.showRelatedList}">
+                                <lightning:select  name="FieldList" aura:id="FieldId" value="{!v.selectedValue}" onchange="{!c.onFieldSelect}">
+                                    <aura:iteration items="{!v.lstKey}" var="cus" indexVar="key">
+                                        <option label="{!cus}" value="{!cus}" selected="{!cus == v.selectedValue}" />
+                                    </aura:iteration>
+                                </lightning:select>
+                                <aura:set attribute="else">
+                                    <lightning:select  name="FieldList" aura:id="ObjectField" value="{!v.selectedobject}" onchange="{!c.onObjectChange}">
+                                        <option value="Contact">Contact</option>
+                                    </lightning:select>
+                                    <div class="slds-grid slds-grid_vertical-align-center slds-m-vertical_medium">
+                                        <span class="child-arrow">></span>
+                                        <lightning:select  name="ObjectFieldList" aura:id="FieldIdObject" value="{!v.selectedobjectFieldValue}">
+                                            <aura:iteration items="{!v.ObjectList}" var="cus" indexVar="key">
+                                                <option label="{!cus}" value="{!cus}" selected="{!cus == v.selectedobjectFieldValue}"/>
+                                            </aura:iteration>
+                                            
+                                        </lightning:select>
+                                        
+                                    </div>
+                                    <div class="condition-col">
+                                        <strong>Set conditions</strong>
+                                        <lightning:select class="condition-select" name="ObjectFieldList"  aura:id="FieldIdObject" value="{!v.selectedConditionFIeldValue}">
+                                            <aura:iteration items="{!v.ObjectList}" var="cus" indexVar="key">
+                                                <option label="{!cus}" value="{!cus}"/>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                        <div class="slds-grid slds-gutters slds-wrap condition-row">
+                                            <div class="slds-size_1-of-2 slds-col">
+                                                <lightning:select  name="ObjectFieldList"  aura:id="FieldIdObject" value="{!v.selectedConditions}" >
+                                                    <aura:iteration items="{!v.accountMapWrapper.setSonditions}" var="cus" indexVar="key">
+                                                        <option label="{!cus.label}" value="{!cus.value}"/>
+                                                    </aura:iteration>
+                                                    
+                                                </lightning:select>
+                                            </div>
+                                            <div class="slds-size_1-of-2 slds-col">
+                                                <ui:inputText class="slds-input" value="{!v.selectedConditionValue}"/>       
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </aura:set>
+                            </aura:renderIf>
+                        </div>
+                        <aura:renderIf isTrue="{!v.showSecondList}">
+                            <div class="slds-grid slds-grid_vertical-align-center slds-m-vertical_medium">
+                                <span class="child-arrow">></span>
+                                <lightning:select  name="FieldList"  aura:id="FieldId2" value="{!v.selectedValue2}" onchange="{!c.onFieldSelect2}">
+                                    <aura:iteration items="{!v.lstKey2}" var="cus" indexVar="key">
+                                        <option label="{!cus}" value="{!cus}" selected="{!cus == v.selectedValue2}"/>
+                                    </aura:iteration>
+                                </lightning:select>
+                            </div>
+                            <aura:renderIf isTrue="{!v.showThirdList}">
+                                <div class="slds-grid slds-grid_vertical-align-center slds-m-vertical_medium">
+                                    <span class="child-arrow">></span>
+                                    <lightning:select aura:id="FieldId3" name="FieldList" value="{!v.selectedValue3}" onchange="{!c.onFieldSelect3}">
+                                        <aura:iteration items="{!v.lstKey3}" var="cus" indexVar="key">
+                                            <option label="{!cus}" value="{!cus}" selected="{!cus == v.selectedValue3}"/>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                                <aura:renderIf isTrue="{!v.showFourthList}">
+                                    <div class="slds-grid slds-grid_vertical-align-center slds-m-vertical_medium">
+                                        <span class="child-arrow">></span>
+                                        <lightning:select aura:id="FieldId4" value="{!v.selectedValue4}" name="FieldList">
+                                            <aura:iteration items="{!v.lstKey4}" var="cus" indexVar="key">
+                                                <option label="{!cus}" value="{!cus}" selected="{!cus == v.selectedValue4}" />
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </div>
+                                </aura:renderIf>
+                            </aura:renderIf>
+                        </aura:renderIf>
+                    </div>
+                </div>
+                <!-- *************************************Footer************************************************* -->
+                <footer class="slds-modal__footer">
+                    <button class="slds-button slds-button--neutral"  onclick="{!c.closeModalBox}">Close</button>
+                    <button class="slds-button slds-button--brand"  onclick="{!c.selectedChoice}">Choose</button>
+                </footer>
+            </div>
+        </section>
+        
+    </div>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

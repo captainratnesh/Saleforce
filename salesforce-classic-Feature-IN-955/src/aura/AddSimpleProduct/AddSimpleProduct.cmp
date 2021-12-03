@@ -1,0 +1,76 @@
+<aura:component access="GLOBAL" controller="TractOppProductSimple">
+    <aura:attribute name="addedProduct" type="product2[]" access="global" />
+    <aura:attribute name="addedProductWrapper" type="Product2AddWrapper[]" access="global" />
+    <aura:attribute name="proWrap" type="Product2AddWrapper" />
+    <aura:attribute name="oppId" type="String" access="global" />
+    <aura:attribute name="proName" type="String" />
+    <aura:attribute name="priceListValue" type="String" default=" " />
+    <aura:attribute name="ProdCount" type="Integer" />
+    <aura:attribute name="message" type="String" default="NoError" />
+    <aura:attribute name="errorOccured" type="Boolean" default="false" />
+    <aura:attribute name="errorMessage" type="String" default="" />
+    <aura:attribute name="childProductWrapperList" type="Product2AddWrapper[]" />
+    <aura:attribute name="childProductEidList" type="String[]" />
+    <aura:handler name="AddChildProductEvent" event="c:AddChildProduct" action="{!c.handleAddChildProductEvent}"/>
+    <aura:handler name="ShowErrorEvent" event="c:ShowErrorFromChild" action="{!c.showError}"/>
+    <aura:handler name="init" value="this" action="{!c.doinit}" />
+    
+    <div>
+        <div class="classicTModel product-modal-parent">
+            <div class="modal-header slds-modal__header">
+                <h2 class="title slds-text-heading_medium">
+                    Configure Selected Products
+                </h2><br />
+                <div id="showErrorProductCart" class="configured-error-message" style="display:none;text-align:center;">
+                    <ui:outputText value="{!v.message}" />
+                </div>
+            </div>
+            <div class="product-slds-sec-details">
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer configured-select-product">
+                    <thead>
+                        <tr class="slds-text-heading_label ">
+                            <th class="slds-truncate slds-is-sortable thAlign">
+                            </th>
+                            <th class="slds-truncate slds-is-sortable thAlign">
+                                <div class="slds-truncate" title="Product Name">Name</div>
+                            </th>
+                            
+                            
+                            <th class="slds-truncate slds-is-sortable thAlign">
+                                <div class="slds-truncate" title="Product Description">priceList</div>
+                            </th>
+                            
+                            <th class="slds-truncate slds-is-sortable thAlign">
+                                <div class="slds-truncate" title="Product Description">Recurrence</div>
+                            </th>
+                            <th class="slds-truncate slds-is-sortable thAlign">
+                                <div class="slds-truncate" title="Product Description">Quantity</div>
+                            </th>
+                            
+                            <th class="slds-truncate slds-is-sortable thAlign">
+                                <div class="slds-truncate" title="Discount">Discount</div>
+                            </th>
+                            
+                            <th class="slds-truncate slds-is-sortable thAlign">
+                                <div class="slds-truncate" title="Discount">Agreement</div>
+                            </th>
+                            
+                            <th class="slds-truncate slds-is-sortable thAlign">
+                                <div class="slds-truncate" title="Price">Price</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.addedProductWrapper}" var="prod" indexVar="count">
+                            <c:quickAddProductElement pro="{!prod}" index="{!count+1}" childProdList="{!prod.childProducts}"/>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer slds-modal__footer" id="billingAccountFooter">
+                <button class="slds-button slds-button_neutral" type="button" onclick="{!c.cancelBtn}">Cancel</button>
+                <button class="slds-button slds-button_brand" type="button" onclick="{!c.createOrder}">Finish</button>
+            </div>
+        </div>
+    </div>
+</aura:component>

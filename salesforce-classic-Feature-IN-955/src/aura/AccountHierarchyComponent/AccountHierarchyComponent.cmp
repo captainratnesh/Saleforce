@@ -1,0 +1,130 @@
+<aura:component access="GLOBAL" controller="AccountDetailController_LT">
+    <aura:attribute name="tractBillingAccount" type="TRACTAccountWrapper" description="" />
+    <aura:attribute name="childAccounts" type="TRACTAccountWrapper[]" description="" />
+    <aura:attribute name="HideSpinner" type="Boolean" default="true"/>
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+    <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+        <aura:renderIf isTrue="{!v.HideSpinner}">
+            <div class="slds-spinner_container" >
+                <div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+                    <span class="slds-assistive-text">Loading, Please Wait...</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div> 
+        </aura:renderIf>
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"  onclick="{!c.closeModalBox}" title="Close">
+                    <c:svg class="slds-button__icon slds-button__icon--large"
+                           xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                           ariaHidden="true"
+                           />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Account Hierarchy Details</h2>
+            </header>
+            <div class="full forcePageBlockSectionRow">
+                <div class="slds-modal__content slds-p-around_medium">
+                    <div class="account-details">
+                        <div class="panel-body panel_body_details service-table heading last custom-table-">
+                            <h3 id="modal-heading-01" class="slds-modal__title slds-hyphenate slds-p-around_small">Account Information</h3>
+                            <div class="cmn-table-responsive">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            Account Name : 
+                                        </td>
+                                        <td>
+                                            <ui:outputText value="{!v.tractBillingAccount.billingAccount.Name}"/>
+                                        </td>
+                                        <td colspan="2">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Account Number : 
+                                        </td>
+                                        <td>
+                                            <ui:outputText value="{!v.tractBillingAccount.tractBillingAccountNumber}"/>
+                                        </td>
+                                        <td colspan="2">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Bill Cycle: 
+                                        </td>
+                                        <td>
+                                            <ui:outputText value="{!v.tractBillingAccount.billCycleName}"/>
+                                        </td>
+                                    </tr>
+                                    
+                                </table>  
+                            </div>    
+                        </div>
+                    </div>
+                    
+                    <div class="account-details"> 
+                        <div class="panel-body panel_body_details service-table heading last">
+                            <lightning:accordion  allowMultipleSectionsOpen="true"  activeSectionName="A">
+                                <lightning:accordionSection name="A" label="Child Accounts" class="horizontal-p-none">
+                                    <div class="product-chart-box">
+                                        <div class="slds-scrollable">
+                                            <table class="slds-table slds-table--bordered">
+                                                <thead>   
+                                                    <tr>
+                                                        <th class="head">Child Account Number</th>
+                                                        <th class="head">Account Name</th>
+                                                        <th class="head">Address</th>
+                                                        <th class="head">Balance</th>
+                                                        <th class="head">Valid From</th>
+                                                    </tr>
+                                                </thead>
+                                                <aura:iteration items="{!v.childAccounts}" var="item">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <ui:outputText aura:id="validFrom" class="slds-output"
+                                                                               value="{!item.tractBillingAccountNumber}"/>
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="recurrencePeriod" class="slds-output"
+                                                                               value="{!item.billingAccount.Name}"/>
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="priceCategory" class="slds-output"
+                                                                               value="{!item.acccountAddress}"/>
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="InvoiceQuantity" class="slds-output"
+                                                                               value="{!item.balance}"/>
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="bill" class="slds-output"
+                                                                               value="{!item.validFrom}"/>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </aura:iteration>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </lightning:accordionSection>  
+                            </lightning:accordion>
+                        </div>
+                    </div>
+                    
+                    
+                    
+                </div>
+            </div>
+            <footer class="slds-modal__footer">
+                <button class="slds-button slds-button_neutral"  onclick="{!c.closeModalBox}">Cancel</button>
+            </footer>
+        </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</aura:component>

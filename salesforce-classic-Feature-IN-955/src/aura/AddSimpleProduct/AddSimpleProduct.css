@@ -1,0 +1,32 @@
+.THIS .classicTModel .uiInput--select.select, .THIS .uiInput--select .select, .THIS .uiInput--select .uiPopupTrigger a{
+    background-color: rgb(255, 255, 255);
+    color: rgb(8, 7, 7);
+    border: 1px solid rgb(221, 219, 218);
+    border-radius: .25rem;
+    width: 100%;
+    transition: border .1s linear,background-color .1s linear;
+    height: 1.875rem;
+    line-height: 1.875rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding: 0 14px;
+    background-image: url(/resource/TRACT3__SLDS/assets/icons/utility/chevrondown_120.png);
+    background-repeat: no-repeat;
+    background-position: 97.5% 50%;
+    background-size: .8125rem .8125rem,100% 100%;
+}
+.THIS .classicTModel .uiInput--select.select[disabled], .THIS .uiInput--select .select[disabled], .THIS .uiInput--select .uiPopupTrigger a[aria-disabled=true] {
+    background-color: rgb(236, 235, 234);
+    border-color: #a8b7c7;
+    cursor: not-allowed;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.THIS .classicTModel .product-slds-sec-details{
+    height: calc(100vh - 136px);
+    min-height: auto;
+    max-height: none;
+}

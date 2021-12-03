@@ -1,0 +1,13 @@
+.THIS .slds-modal__content{
+    max-height: 450px;
+    border-radius: 0;
+}
+.THIS .slds-accordion__section{
+    padding: 0;
+}
+.THIS .slds-is-open .slds-accordion__summary{
+    margin: 0;
+}
+.THIS .slds-accordion__summary-action{
+    padding: 16px;
+}

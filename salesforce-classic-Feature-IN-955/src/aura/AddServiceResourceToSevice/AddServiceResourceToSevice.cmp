@@ -1,0 +1,94 @@
+<aura:component controller="AccountDetailController_LT">
+    <aura:attribute name="serviceEid" type="String" description="The eid of the service on which the service resource has been applied" />
+    <aura:attribute name="effectiveDate" type="Date" />
+    <aura:attribute name="serviceResource" type="String" description="" />
+    <aura:attribute name="message" type="String" default="NoError"/>
+    <aura:handler name="init" value="this" action="{!c.doinit}" />
+    <aura:registerEvent name="ReloadAccountDetail" type="c:ReloadAccountDetail"/>
+    <div aria-hidden="false" id="serviceResource" role="dialog" class="slds-modal  slds-fade-in-open cmn_modelbox add-new-prod-model" style="display:block;">
+        <div class="slds-modal__container">  
+            <div class="slds-modal__header top-cmn-heading-row"> 
+                <h1 class="slds-text-heading--Large">Add Service Resource</h1>
+                <div id="showErrorResource" class="cmn_error_msg" style="display:none;">
+                    <ui:outputText value="{!v.message}"/>
+                </div>
+                <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                    <c:svg class="slds-button__icon slds-button__icon--large"
+                           xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                           ariaHidden="true"
+                           />
+                </button>
+            </div>
+            <div class="slds-modal__content">
+                <div class="account-details" >
+                    <div class="panel-body panel_body_details service-table service-table2  heading last">
+                        <div class="spinner change-spinner" id="Accspinner" style = "Display:none;">
+                            <div aura:id="spinnerId" class="slds-spinner_container">
+                                <div class="slds-spinner--brand  slds-spinner slds-spinner--large slds-is-relative" role="alert">
+                                    <span class="slds-assistive-text">Loading</span>
+                                    <div class="slds-spinner__dot-a"></div>
+                                    <div class="slds-spinner__dot-b"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cmn-table-responsive">
+                            <table>
+                                <tr id="newServiceResourceRow">
+                                    <td>New Service Resource :</td>
+                                    <td>
+                                        <div class="uiInput uiInputRadio uiInput--default uiInput--radio">
+                                            <ui:inputRadio change="{!c.selectedNewResource}"   name="options"  aura:id="newServiceResource" value="False" /> 
+                                        </div>
+                                    </td>  
+                                </tr>
+                                <tr id="existingServiceResourceRow">
+                                    
+                                    <td>Existing Service Resource :</td>
+                                    <td>
+                                        <div class="uiInput uiInputRadio uiInput--default uiInput--radio">
+                                            <ui:inputRadio change="{!c.selectedExistingResource}"   name="options"  aura:id="existingServiceResource" /> 
+                                        </div>
+                                    </td>  
+                                </tr>
+                                <tr id="newServiceResource" style="display:none;">
+                                    <td>New Service Resource :</td>
+                                    <td>
+                                        <ui:inputText class="slds-input"  value="{!v.serviceResource}" aura:id="newServiceResourceInput"/>
+                                    </td>  
+                                </tr>
+                                <tr id="existingServiceResource" style="display:none;">
+                                    <td>Existing Service Identifier :</td>
+                                    <td>
+                                        <ui:inputText class="slds-input"  value="{!v.serviceResource}" aura:id="existingServiceResourceInput"/>
+                                    </td>  
+                                </tr>
+                                <tr id="override" style = "display:none;">
+                                    <td>Override Date:</td>
+                                    <td>
+                                        <lightning:input type="checkbox" label="" name="overrideDate" onchange="{!c.showOverrideDateSelector}" aura:id="allowOverrideDate"/>
+                                    </td>  
+                                </tr>
+                                <tr id = "effectiveDateSelector" style = "display:none;">
+                                    <td>
+                                        Effective Date:
+                                    </td>
+                                    <td>
+                                        <ui:inputDate aura:id="EffectiveDateValue" displayDatePicker="true" class="slds-input" value="{!v.effectiveDate}"/>
+                                    </td>
+                                </tr>
+                            </table>    
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <div class="slds-x-small-buttons--horizontal">
+                    <button class="slds-button slds-button--neutral"  onclick="{!c.closeModalBox}">Cancel</button>
+                    <button class="slds-button slds-button--neutral slds-button--brand" onclick="{!c.saveServiceResource}">Finish</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open" id="serviceResourceBackground" style="display:block;"></div>
+</aura:component>

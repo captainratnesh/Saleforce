@@ -1,0 +1,37 @@
+<aura:component implements="flexipage:availableForAllPageTypes" access="GLOBAL" controller="TractProductDetailExt">
+	<aura:attribute name="productId" type="String" default=" "/>
+	<aura:attribute name="message" type="String" default="NoError"/>
+	<aura:attribute name="getUITheme" type="String"  />
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+	<aura:handler event="aura:waiting" action="{!c.waiting}"/>
+	<aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+	
+    
+	<div id= "showspinner" >
+		<div class="slds-spinner_container" >
+			<div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+				<span class="slds-assistive-text">Loading</span>
+				<div class="slds-spinner__dot-a"></div>
+				<div class="slds-spinner__dot-b"></div>
+			</div>
+		</div>
+	</div>
+	<!--**************************************Header*****************************************************-->
+	
+		<h3 class ="title slds-text-heading--medium slds-text-align--center">
+             <b>Activate Product</b>
+         </h3>
+
+	<!--**************************************Body*****************************************************-->
+	<div id="billingAccount" >
+		<div id="activateProduct" style="display:none;" class="account-create-sec cmn_error_msg">
+			<div id="showError" class="slds-grid--align-center slds-wrap slds-p-top_x-small" >
+				<p class="slds-text-heading--small slds-text-color_error slds-text-align--center">{!v.message} </p>
+				<div class="slds-text-align--center slds-size_1-of-1 slds-p-top_medium">
+                    <button class="slds-button slds-button_brand" onclick="{!c.cancelActivate}">Go Back</button>
+				</div>
+			</div>
+		</div>
+		<!--**************************************Footer*****************************************************-->
+	</div>
+</aura:component>

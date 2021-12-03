@@ -1,0 +1,4 @@
+<aura:event type="APPLICATION" description="Event to Create Tract Account" access="global">
+    <aura:attribute name="AccountID" type="String" description="wrapper to store create tract" access="global"/>
+    <!-- <aura:attribute name="CurrencyWrap" type="tabbedAccount_LtController.currencyWrapper"/> -->
+</aura:event>

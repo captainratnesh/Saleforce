@@ -1,0 +1,12 @@
+.THIS .account-details .panel-body.last{border-radius:5px 5px 5px 5px}
+.THIS .panel .panel-body{color:rgb(62, 62, 60)}
+.THIS .cmn-table-responsive{width:100%;overflow:auto}
+.THIS .main-product-sec .common-product-details{margin:0 0 20px;}
+.THIS .main-product-sec  .slds-box{padding:0}
+.THIS .main-product-sec .product-chart-box{overflow-x:auto}
+.THIS .main-product-sec .slds-box .slds-table--bordered{border:none}
+.THIS .main-product-sec .slds-box th,.THIS .main-product-sec .slds-box thead th{font-weight:700;background:#f3f2f2}
+.THIS .main-product-sec .slds-box .slds-text-heading--small{font-weight:700;padding:0.5rem;border-bottom:1px solid rgb(217, 219, 221);border-radius:3px 3px 0 0;display:block;color:#3e3e3c}
+.THIS .main-product-sec .slds-box .slds-box table th{border-top:none}
+.THIS .border-bottom-none{border-bottom: 0!important;}
+.THIS .custom-add-btn{height: 30px;margin: 3px 10px;}

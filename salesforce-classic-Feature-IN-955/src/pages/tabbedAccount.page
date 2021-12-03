@@ -1,0 +1,2 @@
+<apex:page standardController="Account" showHeader="true" tabStyle="account"  docType="html-5.0">
+</apex:page>

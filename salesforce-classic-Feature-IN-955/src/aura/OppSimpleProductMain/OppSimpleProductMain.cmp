@@ -1,0 +1,44 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId" controller="TractOppProductSimple">
+    <aura:attribute name="oppId" type="String"/>
+    <aura:attribute name="addedProductWrapper" type="Product2AddWrapper[]"/>
+    <aura:attribute name="recordId" type="Id"  />
+    <aura:handler event="c:AddTractProductEvent" action="{!c.NavigateAddProduct}"/>
+    <aura:handler event="c:AddMoreTractProductEvent" action="{!c.addProduct}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+    <aura:attribute name="wait" type="String"/>
+    <aura:attribute name="message" type="String" default=""/>
+    <aura:html tag="style">
+        html body.sfdcBody{padding:0}
+        .forceChatterBasePublisher :not(.PHONE) .cuf-content{padding:0}
+        .slds-modal__container{    width: 90%;max-width: none; min-width: 640px;}
+        .slds-modal__content{overflow:visible!important;padding:0!important}
+        .configured-select-heading th{background-color: #f4f6f9;}
+        .configured-select-heading th:first-child{ width: 50px}
+        .ItemLabel{display:none;}
+        .custom-autocomplete {padding: 1rem 1.5rem 1rem 1.5rem;background-color: rgb(244, 246, 249);border-bottom: 1px solid rgb(216, 221, 230);}
+        .custom-autocomplete .slds-input{ min-height: calc(2.125rem + 2px);}
+    </aura:html>
+    <div>
+        <div class="wait">
+            <div id= "showspinner" class="clasicLoader feature-showspinner" >
+                <div class="slds-spinner_container" >
+                    <div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+                        <span class="slds-assistive-text">Loading</span>
+                        <div class="slds-spinner__dot-a"></div>
+                        <div class="slds-spinner__dot-b"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="showError" style="display:none;" class="account-create-sec">
+            <div  class="title slds-text-heading--medium cmn_error_msg" >
+                <h3>{!v.message}</h3>
+            </div>
+        </div> 
+        
+        {!v.body}
+    </div>
+    
+</aura:component>

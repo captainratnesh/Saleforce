@@ -1,0 +1,12 @@
+.THIS .custom-picklist .slds-form-element__label{
+    display: none;
+}
+.THIS .custom-picklist .child-arrow {
+    margin: 0 10px;
+    font-weight: bold;
+    font-size: 25px;
+    line-height: 1;
+}
+.THIS .custom-radion-col .slds-form-element__control .slds-radio{display: inline-block;font-weight: 700;margin-right:0.75rem;}
+.THIS .condition-select.slds-form-element{margin-bottom:0.75rem}
+.THIS .condition-row .slds-input{min-height:32px}

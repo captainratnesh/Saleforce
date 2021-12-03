@@ -1,0 +1,22 @@
+.THIS.account-details{
+    margin:15px 15px 30px;border:1px solid #d8dde6;border-radius:5px 
+}  
+.THIS.dynamic{
+    size : "35";
+}
+.THIS#accname{
+    display : none;
+}
+.THIS.table{
+    border-top: none !important;
+}
+
+.THIS.uiInputSelect {
+    width: 1000px;
+    height: 500px;
+}
+.THIS.slds-select.inline{
+    background-color: #30afd6;
+    font-weight: 400;
+    display : none;
+}

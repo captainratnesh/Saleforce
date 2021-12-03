@@ -1,0 +1,10 @@
+.THIS .custom-card-css .slds-card:nth-child(2){
+    border-radius: 4px 4px 0 0;
+}
+.THIS .custom-card-css .slds-card:nth-child(2) .slds-card__body{
+    margin-bottom: 0;
+}
+.THIS .custom-card-css .slds-card:last-child{
+    margin-top: 0;
+    border-radius: 0 0 4px 4px;
+}

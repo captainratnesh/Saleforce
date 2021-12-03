@@ -1,0 +1,29 @@
+<apex:page standardController="Opportunity" sidebar="false" showHeader="false">
+    <apex:includeLightning />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <apex:stylesheet value="{!URLFOR($Resource.SLDS, '/assets/styles/salesforce-lightning-design-system.min.css')}"/>
+    <div id="vf-app">
+         
+    </div>
+    <div id="test" class=" col-xs-12 text-center">
+        <div class="slds-spinner_container" >
+              <div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+              </div>
+             </div>
+    </div> 
+    <script> 
+        var oppId = "{!$CurrentPage.parameters.id}";
+        $Lightning.use("TRACT3:tractSalesOrderApp", function() { 
+                $Lightning.createComponent(
+                    "TRACT3:tractSalesOrder",
+                    { "oppId" : oppId },
+                    "vf-app",
+                    function(cmp) {
+                        $("#test").hide()
+                    });                        
+                });
+    </script>
+</apex:page>

@@ -1,0 +1,183 @@
+.card-cont{
+    perspective: 1000px;
+}
+.card-cont-inner{
+	transition: all 0.6s;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+}
+.card-cont.cvv-input .card-cont-inner {
+  transform: rotateY(180deg);
+}
+.card-cont .card-type-img{
+    display: none;
+}
+.card-cont.visa-card .card-layout{
+    background: linear-gradient(45deg,#910232,#8403d5);
+}
+.card-cont.master-card .card-layout{
+    background: linear-gradient(45deg, #005387, #24a1cd);
+}
+.card-cont.discover-card .card-layout{
+    background: linear-gradient(0deg,#0e5359,#f3a533);
+}
+.card-cont.american-card .card-layout{
+    background: linear-gradient(45deg,#248c8a,#ebc08b 70%);
+}
+.card-cont.visa-card .card-type-img.v-card{
+    height: 85px;
+    margin: -15px 15px 0;
+    display: inline-block;
+}
+.card-cont.master-card .card-type-img.m-card{
+    height: 75px;
+    margin: -5px 15px 0;
+    display: inline-block;
+}
+.card-cont.discover-card .card-type-img.d-card{
+    height: 140px;
+    margin: -40px 15px 0;
+    display: inline-block;
+}
+.card-cont.american-card .card-type-img.a-card{
+    height: 100px;
+    margin: -20px 15px 0;
+    display: inline-block;
+}
+.card-layout{
+    width: 300px;
+    height: 140px;
+    background: linear-gradient(-45deg,#828282,#b1b1b1);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 5px 5px 6px 0 rgb(0 0 0 / 19%);
+    user-select: none;
+    margin: 20px auto;
+    position: relative;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+.card-layout:before {
+    content: '';
+    background: linear-gradient(0deg, transparent, #ffffff73, transparent);
+    width: 200%;
+    height: 80px;
+    position: absolute;
+    z-index: 1;
+    top: -100px;
+    left: -100px;
+    transform: rotate(-45deg);
+    opacity: 0.4;
+}
+.card-layout .card-front-chip{
+    position: absolute;
+    top: 15px;
+    left: 10px;
+    width: 60px;
+    height: 50px;
+}
+.card-layout .card-number{
+    color: #fff;
+    position: absolute;
+    left: 25px;
+    top: 60px;
+    letter-spacing: 5px;
+}
+.card-layout .card-owner{
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    color: #fff;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: bold;
+    white-space: nowrap;
+    max-width: 190px;
+    overflow: hidden;
+}
+.card-layout .card-owner p:empty{
+    display: none;
+}
+.card-layout .card-validity{
+    position: absolute;
+    bottom: 21px;
+    right: 35px;
+    color: #fff;
+}
+.card-layout .card-validity .valid-text{
+    line-height: 1;
+    font-weight: bold;
+    font-size: 6px;
+}
+.card-layout .card-validity .card-validity-date{
+    font-size: 14px;
+    font-family: sans-serif;
+    letter-spacing: 1px;
+    width: 38px;
+    line-height: 1;
+    margin-top: 2px;
+    white-space: nowrap;
+}
+
+.card-layout.back-side{
+	position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%) rotateY(180deg);
+    z-index: 0;
+}
+.card-layout .black-strip{
+    background: #000;
+    position: absolute;
+    left: 0;
+    top: 20px;
+    width: 100%;
+    height: 35px;
+}
+.card-layout .cvv-cont{
+    position: absolute;
+    left: 50%;
+    top: 60px;
+    transform: translateX(-50%);
+    background: #fff;
+    width: 280px;
+    border-radius: 1px;
+}
+.card-layout .cvv-cont .cvv-strip{
+    width: 240px;
+    background-image: linear-gradient(0deg,#23bcf8 0,white 0%,#ffffff 55%,#23bcf8 0,#23bcf8 74%,white 0%,white);
+    background-size: 100% 5px;
+    height: 25px;
+}
+.card-layout .cvv-cont p{
+    font-size: 12px;
+    font-style: italic;
+    margin: 0 10px;
+}
+.card-layout .card-back-text{
+    position: absolute;
+    bottom: 15px;
+    left: 20px;
+    max-width: 260px;
+}
+.card-layout .card-back-text .back-chip{
+    background-image: linear-gradient(90deg, transparent, #dddddd, transparent);
+    background-size: 20px 100%;
+    width: 50px;
+    height: 30px;
+    flex: none;
+    background-color: #fff;
+    border-radius: 5px;
+}
+.card-layout .card-back-text p{
+    font-size: 8px;
+    line-height: 1;
+    color: #cecece;
+    margin-left: 8px;
+    max-width: 220px;
+    max-height: 30px;
+}
+.note-sec{
+    padding:0.5rem 1rem;background:#D3D3D3;border-radius:0.25rem
+}

@@ -1,0 +1,21 @@
+.cust-heading{
+	font-weight: bold;
+	position: relative;
+}
+.cust-heading span{
+	background: #fff;
+	display: inline-block;
+	padding-right: 5px;
+    position: relative;
+    z-index: 1;
+}
+.cust-heading:after{
+	content: '';
+	width: 100%;
+	background: #999;
+	height: 1px;
+	position: absolute;
+	left: 0;
+	top: 50%;
+	transform: translateY(-50%);
+}

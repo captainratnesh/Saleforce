@@ -1,0 +1,53 @@
+<!-- 
+*  Unpublished Work. Copyright 2009-2018 Transverse, LLC. All Rights Reserved.
+*  This software contains confidential and trade secret information of:
+*  Transverse, LLC.
+*  620 Congress Ave.
+*  Suite 200
+*  Austin, TX 78701
+*  USA
+*  Use, duplication or disclosure of this software is prohibited
+*  without prior written permission of Transverse, LLC.
+*
+* @author Jitesh Kumar Goel <jitesh.goel@algoworks.com>
+*
+* This Visualforce page is embedded as a inline page on the Contact detail page to create the Contact from Salesforce to TRACT.
+* Controller :- Standard Controller(Contact)
+* Extentions :- CreateContactOnTRACTExtension
+-->
+
+<apex:page standardController="Contact" extensions="CreateContactOnTRACTExtension" sidebar="false" showHeader="false">
+    <apex:includeScript value="{!URLFOR($Resource.jqueryui, 'jqueryui/js/jquery-3.3.1.js')}" />
+    <apex:form id="theForm">
+        <div class="popUpID">
+           <apex:pageMessages id="msgBlock" />
+        </div>
+        <center>
+            <apex:commandButton value="Create Contact In GTV" id="theButton" status="contactCreationStatus" action="{!createContactOnTract}" rendered="{!!contactAllreadyMovedToTract}" rerender="theForm,msgBlock,hiddenValuesForScript,scriptPanel" onComplete="reloadPage('{!conObj.id}');"/>
+            <apex:actionStatus startText="creating..." id="contactCreationStatus"/>
+        </center>
+        <apex:outputPanel id="hiddenValuesForScript">
+          <apex:outputPanel id="hiddenValues">
+                <apex:inputHidden value="{!userTheme}" id="userThemeDisplayed"/>
+                <apex:inputHidden value="{!doReload}" id="reloadPage"/>
+            </apex:outputPanel> 
+        </apex:outputPanel>
+        <apex:outputPanel id="scriptPanel">
+            <script>
+                function reloadPage(recordId) {
+                    var doReload = '';
+                    var userTheme = '';
+                    doReload = $('[id$=reloadPage]').val().toString();
+                    userTheme = $('[id$=userThemeDisplayed]').val();
+                    if(doReload == 'true') {
+                        if(userTheme ==='Theme4d' || userTheme ==='Theme4t'){
+                            sforce.one.navigateToSObject(recordId);
+                        }else{
+                            top.location.href="/"+recordId;
+                        }
+                    }
+                }
+            </script>
+        </apex:outputPanel>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,50 @@
+<aura:component controller="TractOppProductSimple">
+    <aura:attribute name="childProd" type="Product2AddWrapper" />
+    <aura:attribute name="childProdPriceListValue" type="String"/>
+    <aura:attribute name="childProdRecurrencePeriod" type="String"/>
+    <aura:attribute name="prodQuantity" type="Integer"/>
+    <aura:attribute name="prodDiscountName" type="String"/>
+    <aura:registerEvent name="AddChildProductEvent" type="c:AddChildProduct"/>
+    <aura:registerEvent name="ShowErrorEvent" type="c:ShowErrorFromChild"/>
+
+    <tr class="configured-inner-product">
+        <td class="slds-truncate slds-is-sortable thAlign"></td>
+        <td>
+            <ui:outputText aura:id="parentProdName" class="slds-output" value="{!v.childProd.prod.Name}" />
+        </td>
+        <td>
+            <ui:inputSelect aura:id="parentPriceList" change="{!c.onPriceListChange}" class="slds-select" value="{!v.childProdPriceListValue}">
+                <aura:iteration items="{!v.childProd.productPriceList}" var="priceList">
+                    <ui:inputSelectOption text="{!priceList.value}" label="{!priceList.label}" value="{!priceList.value == v.childProdPriceListValue}"/>
+                </aura:iteration>
+            </ui:inputSelect>
+        </td>
+        <td>
+            <aura:renderIf isTrue="{!v.childProd.recurrenceoptList.length > 0}">
+                <ui:inputSelect aura:id="parentRecurPeriod" class="slds-select bill-cycle-select" change="{!c.onRecurPerChange}" value="{!v.childProdRecurrencePeriod}">
+                    <aura:iteration items="{!v.childProd.recurrenceoptList}" var="recList">
+                        <ui:inputSelectOption text="{!recList.value}" label="{!recList.label}" value="{!recList.value == v.childProdRecurrencePeriod}"/>
+                    </aura:iteration>
+                </ui:inputSelect>
+            </aura:renderIf>
+        </td>
+        <td>
+            <ui:inputText class="slds-input slds-output slds-size_1-of-1" value="{!v.childProd.quantity}" updateOn="keyup" keyup="{!c.onQuantityChange}"/>
+        </td>
+        <td>
+            <ui:inputText class="slds-input" value="{!v.prodDiscountName}" updateOn="keyup" keyup="{!c.onChildDiscountChange}"/>
+        </td>
+        <td>
+            <aura:renderIf isTrue="{!v.childProd.agreements.agreementList.length > 0}">
+                <ui:inputSelect aura:id="parentAgreementValue" value="{!v.childProd.agreementId}" disabled="{!!v.childProd.agreements.hasAgreement}" change="{!c.onAgreementChange}">
+                    <aura:iteration items="{!v.childProd.agreements.agreementList}" var="agreement">
+                        <ui:inputSelectOption text="{!agreement.value}" label="{!agreement.label}" value="{!agreement.value == v.childProd.agreementId}"/>
+                    </aura:iteration>
+                </ui:inputSelect>
+            </aura:renderIf>
+        </td>
+        <td>
+            <ui:outputText aura:id="parentTotalPrice" class="slds-output slds-output slds-size_1-of-1" value="{!v.childProd.totelPriceValue}" />
+        </td>
+    </tr>
+</aura:component>

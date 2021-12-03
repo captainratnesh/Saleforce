@@ -1,0 +1,11 @@
+.THIS .uiButton--default.blue-btn{
+   background:rgb(0, 112, 210);
+   box-shadow:none;
+   text-shadow:none; 
+   color:#fff ;
+}
+.THIS html body.sfdcBody{padding:0}
+.THIS .uiButton--default.blue-btn .label{
+    color:inherit;
+    
+}

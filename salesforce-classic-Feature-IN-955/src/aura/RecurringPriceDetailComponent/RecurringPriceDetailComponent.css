@@ -1,0 +1,34 @@
+.THIS .slds-modal__content{
+    max-height: 450px;
+    border-radius: 0;
+}
+.THIS .slds-accordion__section{
+    padding: 0;
+}
+.THIS .slds-is-open .slds-accordion__summary{
+    margin: 0;
+}
+.THIS .slds-accordion__summary-action{
+    padding: 16px;
+}
+
+.THIS .recur-price-sec .slds-table thead th,.THIS .recu-activity .slds-table thead th{
+    font-weight: 700;
+    background: #f3f2f2;
+}
+.THIS .recu-activity .slds-accordion__summary-heading,.THIS .recur-price-sec .slds-text-heading--small{
+    color: #3e3e3c;
+    font-weight: 700;
+}
+.THIS .recu-activity .slds-accordion__summary-heading .slds-button:focus{
+    text-decoration: none;
+}
+.THIS .recu-activity .slds-accordion .slds-accordion__summary{
+    padding:0.5rem
+}
+.THIS .recu-activity .slds-accordion__summary-heading .slds-accordion__summary-action{
+    padding:0
+}
+.THIS.recurring-modal .slds-modal__title{
+    font-weight:400
+}

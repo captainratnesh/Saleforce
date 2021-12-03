@@ -1,0 +1,98 @@
+<aura:component controller="TractOppProduct_LT">
+    <aura:attribute name="productWrapper" type="Product2AddWrapper"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/> 
+    <aura:registerEvent name="BasicProductEditReturnEvent" type="c:EditBasicProductDetailsReturnEvent"/>
+    <div>
+        <div aria-hidden="false" id="serviceResource" role="dialog" class="slds-modal  slds-fade-in-open cmn_modelbox add-new-prod-model" style="display:block;">
+            <div class="slds-modal__container">  
+                <div class="slds-modal__header top-cmn-heading-row"> 
+                    <h1 class="slds-text-heading--medium"><b>Edit Basic Details</b> </h1>
+                    <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                        <c:svg class="slds-button__icon slds-button__icon--large"
+                               xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                               ariaHidden="true"
+                               />
+                    </button>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium slds-form-element_compound">
+                    <h1> <lightning:formattedText value="Product Name: " />
+                        <b>{!v.productWrapper.prod.Name}</b></h1>
+                    <div class="slds-form-element__row">
+                        <div class="slds-size_1-of-2">
+                            <lightning:input type="number" aura:id="productDetails" label="Quantity"
+                                             name="expenseamount"
+                                             value="{!v.productWrapper.quantity}"
+                                             placeholder="{!v.productWrapper.quantity}"/>
+                        </div>
+                        <div class="slds-size_1-of-2">
+                            <aura:renderIf isTrue="{!v.productWrapper.disableRecurring}">        
+                                <lightning:input type="number" aura:id="productDetails" label="Recurring Price"
+                                                 name="expenseamount"
+                                                 min="0.1"
+                                                 step="0.01"
+                                                 value="{!v.productWrapper.recurringprice}"
+                                                 placeholder="{!v.productWrapper.recurringprice}"
+                                                 messageWhenRangeUnderflow="Enter an amount that's at least 0.10."/>
+                                <aura:set attribute="else">
+                                    <lightning:input type="number" aura:id="productDetails" label="Recurring Price"
+                                                     name="expenseamount"
+                                                     min="0.1"
+                                                     step="0.01"
+                                                     value="{!v.productWrapper.recurringprice}"
+                                                     placeholder="{!v.productWrapper.recurringprice}"
+                                                     disabled="true"/>
+                                </aura:set>
+                            </aura:renderIf>
+                        </div>
+                    </div>
+                    <div class="slds-form-element__row">
+                        <div class="slds-size_1-of-2">
+                            <aura:renderIf isTrue="{!v.productWrapper.disableonetime}">
+                                <lightning:input type="number" aura:id="productDetails" label="One TIme Price"
+                                                 name="expenseclient"
+                                                 min="0.1"
+                                                 step="0.01"
+                                                 value="{!v.productWrapper.oneTimePrice}"
+                                                 placeholder="{!v.productWrapper.oneTimePrice}"
+                                                 messageWhenRangeUnderflow="Enter an amount that's at least 0.10."/>
+                                <aura:set attribute="else">
+                                    <lightning:input type="number" aura:id="productDetails" label="One TIme Price"
+                                                     name="expenseclient"
+                                                     min="0.1"
+                                                     step="0.01"
+                                                     value="{!v.productWrapper.oneTimePrice}"
+                                                     placeholder="{!v.productWrapper.oneTimePrice}"
+                                                     disabled="true"/>
+                                </aura:set>
+                            </aura:renderIf>
+                        </div>
+                        <div class="slds-size_1-of-2">
+                            <lightning:select value="{!v.productWrapper.priceListValue}" label="PriceList" onchange = "{!c.onPriceListChange}" >
+                                <aura:iteration items="{!v.productWrapper.productPriceList}" var="item">
+                                    <option value="{!item.value}" label="{!item.label}" selected="{!item.value == v.productWrapper.priceListValue}">
+                                    </option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <div class="slds-x-small-buttons--horizontal">
+                        <lightning:button label="Close" 
+                                          class="slds-m-top--medium"
+                                          variant="destructive"
+                                          onclick="{!c.closeModalBox}"/>
+                        <lightning:button label="Finish" 
+                                          class="slds-m-top--medium"
+                                          variant="brand"
+                                          onclick="{!c.editProduct}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+    
+</aura:component>

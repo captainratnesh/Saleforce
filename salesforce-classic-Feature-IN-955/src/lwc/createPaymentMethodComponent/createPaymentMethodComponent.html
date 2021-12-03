@@ -1,0 +1,175 @@
+<template>
+    <!-- lightning button for open modal window -->
+    <!-- <button class="custom-update-btn slds-button slds-button_neutral" onclick={openModal}>Add Payment Method </button> -->
+    <!--Use template if:true to display/hide popup based on isModalOpen value-->
+    <!--<form autocomplete="off">-->
+    <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large"
+        aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+        <div class="slds-modal__container">
+            <header class="slds-modal__header">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close"
+                    onclick={closeModal}>
+                    <svg class="slds-button__icon slds-button__icon--large" aria-hidden="true">
+                        <use xlink:href="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close">
+                        </use>
+                    </svg>
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+                <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+                    Payment Method
+                </h2>
+                <template if:true={showErrorMessage}>
+                    <div class="slds-notify_toast slds-theme_error" role="alert">
+                        <span class="slds-assistive-text">error</span>
+                        <div>{errorMessage}</div>
+                    </div>
+                </template>
+            </header>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <h3 class="slds-m-bottom_medium slds-border_top note-sec">
+                    <b>Enter Credit Card Information</b>
+                </h3>
+                <div>
+                    <div class="slds-grid slds-gutters slds-wrap slds-grid_vertical-align-end">
+                        <!--<div class="slds-col slds-size_1-of-1">
+    <lightning-combobox data-id="CardType" label="Card Type" placeholder="Card Type" options={payment.cardType}></lightning-combobox>
+    </div>-->
+
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-input autocomplete="off" data-id="NickName" label="Nickname:"></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_xx-small">
+                            <lightning-input autocomplete="off" type="checkbox" data-id="AutoPayment"
+                                label="Set as Auto-Payment:" onchange={autoPaymentCHange}></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1">
+                            <lightning-input autocomplete="off" data-id="CardNumber" label="Card Number"
+                                onchange={handleCCInput} required></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-input autocomplete="off" data-entry1 data-id="FirstName" label="First Name"
+                                onchange={fNameInput} required></lightning-input>
+                            <lightning-input autocomplete="off" data-entry2 data-id="MiddleName" label="Middle Name"
+                                onchange={mNameInput}></lightning-input>
+                            <lightning-input autocomplete="none" data-entry3 data-id="LastName" type="text" label="Last Name"
+                                onchange={lNameInput} required></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <div data-id="cardCont" class="card-cont">
+                                <div class="card-cont-inner">
+                                    <div class="card-layout front-side">
+                                        <div class="slds-text-align_right">
+                                            <img src={visaIcon} class="card-type-img v-card" alt="VISA" />
+                                            <img src={mcIcon} class="card-type-img m-card" alt="Master Card" />
+                                            <img src={disIcon} class="card-type-img d-card" alt="Dicover" />
+                                            <img src={aeIcon} class="card-type-img a-card" alt="American Express" />
+                                        </div>
+                                        <img src={chipIcon} class="card-front-chip" alt="chip" />
+                                        <p data-id="cardNumber16" class="card-number">xxxx xxxx xxxx xxxx</p>
+                                        <div class="slds-grid card-owner">
+                                            <p data-id="fName" class="f-name">Full</p>
+                                            <p data-id="mName" class="m-name slds-m-left_x-small"></p>
+                                            <p data-id="lName" class="l-name slds-m-left_x-small">Name</p>
+                                        </div>
+                                        <div class="card-validity">
+                                            <p class="valid-text">VALID THRU</p>
+                                            <p data-id="eDate" class="card-validity-date">--/----</p>
+                                        </div>
+                                    </div>
+                                    <div class="card-layout back-side">
+                                        <div class="black-strip"></div>
+                                        <div class="cvv-cont slds-grid slds-grid_vertical-align-center">
+                                            <div class="cvv-strip"></div>
+                                            <p data-id="cvvName">***</p>
+                                        </div>
+                                        <div class="card-back-text slds-grid">
+                                            <div class="back-chip"></div>
+                                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                                                tempor incididunt ut labore et dolore magna aliqua.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-input autocomplete="off" data-id="CardExpiryDate" label="Expiry Date"
+                                placeholder="mm/yyyy" onkeyup={eDateInput} required></lightning-input>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-input pattern="^(0|[1-9][0-9]*)$" 
+                            message-when-pattern-mismatch="Only numbers can be entered"
+                            min="0" formatter="decimal" autocomplete="off" data-id="CardCVV" label="CVV" onchange={cvvInput}
+                            onfocus={onFocusCVV} onfocusout={onFocusOutCVV} required></lightning-input>
+                        </div>
+                        <!--<div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+    <lightning-input data-id="Suffix" type="text" label="Suffix" ></lightning-input>
+    </div>-->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_x-small">
+                            <lightning-input autocomplete="none" data-id="Email" type="email" label="Email" required>
+                            </lightning-input>
+                        </div>
+                    </div>
+
+                    <!-- <div class="slds-col slds-size_1-of-1 slds-m-bottom_x-small slds-m-top_medium ">   
+        <h3 class="class="slds-m-top_medium slds-border_top note-sec"">
+            <b>Address</b>
+            </h3>   
+    </div>-->
+                    <div class="slds-gutters first-class">
+                        <lightning-accordion allow-multiple-sections-open active-section-name="A">
+                            <lightning-accordion-section name="A" label="Address" class="horizontal-p-none">
+                                <div class="slds-grid slds-gutters slds-wrap">
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <lightning-input autocomplete="none" data-id="Street" label="Street" required>
+                                        </lightning-input>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_x-small">
+                                        <lightning-input autocomplete="none" data-id="City" label="City" required>
+                                        </lightning-input>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_x-small">
+                                        <lightning-input pattern="^(0|[1-9][0-9]*)$" 
+                                        message-when-pattern-mismatch="Only numbers can be entered"
+                                        min="0" formatter="decimal" autocomplete="none" data-id="Pincode" label="Postal Code" required>
+                                        </lightning-input>
+                                    </div>
+                                    <div class="custom-dropdown slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_x-small">
+
+                                        <lightning-combobox data-id="Country" name="Country" label="Country"
+                                            value={payment.country} options={countryOptions} onchange={handleAddressChange}
+                                            required>
+                                        </lightning-combobox>   
+                                    </div>
+                                    <template if:true={usselected}>
+                                        <div class="custom-dropdown slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_x-small">
+                                            <lightning-combobox name="State"  data-id="State" label="State" value={payment.state}
+                                                options={stateOptions} onchange={handleStateChange} required>
+                                            </lightning-combobox>  
+                                        </div>
+                                    </template>
+                                    <template if:false={usselected}>  
+                                        <div
+                                            class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-m-bottom_x-small">
+                                            <lightning-input autocomplete="none" data-id="StateInput" label="State" required>
+                                            </lightning-input>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <!-- <lightning-input-address autocomplete="chrome-off" address-label="Address" street-label="Street" city-label="City" country-label="Country" province-label="State" postal-code-label="PostalCode" street={payment.street} city={payment.city} country={payment.country} province={payment.state} postal-code={payment.postalCode} country-options={countryOptions} province-options={stateOptions} onchange={handleAddressChange} required> </lightning-input-address> -->
+
+                            </lightning-accordion-section>
+                        </lightning-accordion>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="slds-modal__footer">
+                <button type="button" class="slds-button slds-button_neutral" onclick={closeModal}>Cancel</button>
+                <button type="button" class="slds-button slds-button_brand" onclick={hanfleSubmit}>Submit</button>
+            </footer>
+        </div>
+    </section>
+    <!--</form> -->
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>

@@ -1,0 +1,642 @@
+<template>
+    <!-- <button class="custom-update-btn slds-button slds-button_neutral" onclick={openModal}> </button> -->
+    <template if:true={isModalOpen}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large"
+            aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1">
+            <template if:true={showHideSections}>
+                <div class="slds-modal__container">
+                    <div class="create-inner-modal">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                title="Close" onclick={closeModal}>
+
+                                <svg class="slds-button__icon slds-button__icon--large" aria-hidden="true">
+                                    <use
+                                        xlink:href="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close">
+                                    </use>
+                                </svg>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">
+                                Create Change Order *Required fields
+                            </h2>
+                            <template if:true={showErrorMessage}>
+                                <div class="slds-notify_toast slds-theme_error" role="alert">
+                                    <span class="slds-assistive-text">error</span>
+                                    <div>{errorMessage}</div>
+                                </div>
+                            </template>
+                        </header>
+                        <div class="custom-spinner">
+                            <template if:true={isLoading}>
+                                <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+                                </lightning-spinner>
+                            </template>
+                        </div>
+                        <div class="slds-modal__content  slds-p-around_medium">
+                            <div class="slds-col slds-size_1-of-1 ">
+                                <!--- <b> Original Service:</b> <lightning-formatted-text value="Product Name" ></lightning-formatted-text>-->
+                                <p><b>Original Service:</b> {createOrderWrapper.originalServiceName} </p>
+                            </div>
+                            <div
+                                class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 slds-p-vertical_small custom-calendar">
+
+                                <lightning-input autocomplete="No" type="date" name="Order Date" label="Order Date"
+                                    data-id="date" value={createOrderWrapper.orderDate} onchange={handleInputDate}
+                                    required></lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1 email-check slds-grid ">
+
+                                <label class="slds-m-right_xx-small">Email Receipt:</label>
+                                <lightning-input autocomplete="No" type="checkbox" name=""
+                                    checked={createOrderWrapper.emailReciept} onchange={handleInputEmail}
+                                    data-id="checkbox" label=""></lightning-input>
+                            </div>
+                            <div class="slds-m-top_x-small order-table">
+                                <h3 class="slds-text-heading--small font-normal">Order Items</h3>
+
+                                <div class="slds-box slds-p-around_none slds-scrollable">
+                                    <table class="slds-table  slds-table_bordered slds-table_col-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Type</th>
+                                                <th>List Price($)</th>
+                                                <th>Order Price</th>
+                                                <th>Quantity</th>
+                                                <th>Total ($)</th>
+                                                <th>Configure</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <lightning-combobox name="" data-id="sName" label=""
+                                                        value={createOrderWrapper.currentProductId}
+                                                        options={createOrderWrapper.compatibleProductList}
+                                                        onchange={handleProductChange}>
+                                                    </lightning-combobox>
+                                                </td>
+                                                <td>
+                                                    {createOrderWrapper.type}
+                                                </td>
+                                                <td>
+                                                    <lightning-combobox name="" data-id="sName" label=""
+                                                        value={createOrderWrapper.recurringpriceId}
+                                                        options={recurrencePriceList}
+                                                        onchange={handleRecurringPriceChange}>
+                                                    </lightning-combobox>
+                                                    <template if:true={oneTimePriceList}>
+                                                        <lightning-combobox name="" data-id="sName" label=""
+                                                            value={createOrderWrapper.oneTimePriceId}
+                                                            options={oneTimePriceList}
+                                                            onchange={handleOneTimePriceChange}>
+                                                        </lightning-combobox>
+                                                    </template>
+                                                </td>
+                                                <td>
+                                                    <lightning-input autocomplete="No" type="number" name=""
+                                                        value={createOrderWrapper.recurringprice}
+                                                        onchange={handleRecurringPriceOverrirde}></lightning-input>
+                                                    <template if:true={oneTimePriceList}>
+                                                        <lightning-input autocomplete="No" type="number" name=""
+                                                            value={createOrderWrapper.oneTimePrice}
+                                                            onchange={handleOneTimePriceOverrirde}></lightning-input>
+                                                    </template>
+                                                </td>
+                                                <td>
+                                                    {createOrderWrapper.quantity}
+                                                </td>
+                                                <td>
+                                                    {createOrderWrapper.totalPrice}
+                                                </td>
+                                                <td>
+                                                    <lightning-button class="slds-align_absolute-center" variant="base" label="" title=""
+                                                        icon-name="utility:settings" icon-size="large"
+                                                        onclick={configureProduct}></lightning-button>
+                                                </td>
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <footer class="slds-modal__footer">
+                            <button type="button" class="slds-button slds-button_neutral"
+                                onclick={closeModal}>Cancel</button>
+                            <button type="button" class="slds-button slds-button_brand" onclick={nextPage}>Next</button>
+                        </footer>
+                    </div>
+                </div>
+            </template>
+            <template if:true={nextSection}>
+
+                <div class="slds-modal__container">
+                    <div class="create-inner-modal">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                title="Close" onclick={closeModal}>
+
+                                <svg class="slds-button__icon slds-button__icon--large" aria-hidden="true">
+                                    <use
+                                        xlink:href="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close">
+                                    </use>
+                                </svg>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+
+                            <template if:true={showErrorMessage}>
+                                <div class="slds-notify_toast slds-theme_error" role="alert">
+                                    <span class="slds-assistive-text">error</span>
+                                    <div>{errorMessage}</div>
+                                </div>
+                            </template>
+                            <h2 class="slds-modal__title slds-hyphenate">
+                                Order Confirmation
+                            </h2>
+                        </header>
+                        <div class="custom-spinner">
+                            <template if:true={isLoading}>
+                                <lightning-spinner alternative-text="Loading" variant="brand" size="large">
+                                </lightning-spinner>
+                            </template>
+                        </div>
+                        <div class="slds-modal__content slds-p-around_medium">
+                            <div class="slds-col slds-size_1-of-1">
+                                <p><b>Order Date: </b>{createOrderWrapper.orderDate}</p>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1">
+                                <!--<p><b>Email Receipt:</b>{createOrderWrapper.emailReciept}</p>-->
+                                <template if:true={createOrderWrapper.emailReciept}>
+                                    <p><b>Email Receipt:</b>Yes</p>
+                                </template>
+                                <template if:false={createOrderWrapper.emailReciept}>
+                                    <p><b>Email Receipt:</b>No</p>
+                                </template>
+                            </div>
+                            <div class="slds-m-top_x-small common-table order-items">
+                                <h3 class="slds-text-heading--small font-normal">Order Items</h3>
+
+                                <div class="slds-box slds-p-around_none slds-scrollable">
+                                    <table class="slds-table slds-table_bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Item Summary</th>
+                                                <th>Order Price ($)</th>
+                                                <th>Quantity</th>
+                                                <th>Item Total ($)</th>
+                                                <th>Configure</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    {createOrderWrapper.currentProductName} </br>
+                                                    Type: {createOrderWrapper.type}</br>
+                                                    Recurring Price (Bill Cycle):{createOrderWrapper.currencyType}
+                                                    {createOrderWrapper.recurringprice}</br>
+                                                    <template if:true={oneTimePriceList}>
+                                                        One-Time Price:{createOrderWrapper.currencyType}
+                                                        {createOrderWrapper.oneTimePrice}
+                                                    </template>
+                                                </td>
+                                                <td>
+                                                    {createOrderWrapper.currencyType} {createOrderWrapper.totalPrice}
+                                                </td>
+                                                <td>
+                                                    {createOrderWrapper.quantity}
+                                                </td>
+                                                <td>
+                                                    {createOrderWrapper.currencyType} {createOrderWrapper.totalPrice}
+                                                </td>
+                                                <td>
+                                                    <template if:true={isConfigureDataTrue}>
+                                                        <div><b>Agreement</b></div>
+                                                        <div>
+                                                            Name: {createOrderWrapper.agreementName}</br>
+                                                            Agreement Period: {createOrderWrapper.agreementPeriod}</br>
+                                                            Renewal Action:{createOrderWrapper.agreementEndAction}</br>
+                                                            Renewal Pricing:{createOrderWrapper.renewalPrice}</br>
+                                                            End Date:{createOrderWrapper.overrideAgreementEndDate}
+                                                        </div>
+                                                    </template>
+                                                   <!---<template if:true={isServiceResourceDataTrue}>
+                                                        <div><b>Service Resource</b></div>
+                                                        <div>
+                                                            {SelectedServiceList}
+                                                        </div>
+                                                    </template>-->
+                                                </td>
+
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="slds-scrollable common-table order-summary slds-m-top_small">
+                                <h3 class="slds-text-heading--small font-normal">Order Summary</h3>
+
+                                <div class="slds-box slds-p-around_none">
+                                    <table class="slds-table slds-table_bordered">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Sub Total</th>
+                                                <th>Total</th>
+                                            </tr>
+
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    Order Amount (May Be Prorated)</br>
+
+                                                </td>
+                                                <td>
+                                                    {createOrderWrapper.currencyType} {createOrderWrapper.totalPrice}
+                                                </td>
+                                                <td>
+                                                    <b>{createOrderWrapper.currencyType}
+                                                        {createOrderWrapper.totalPrice}</b>
+                                                </td>
+
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Amount Due Now
+                                                </td>
+                                                <td>
+                                                    {createOrderWrapper.currencyType} 0.00
+                                                </td>
+                                                <td>
+                                                    <b>{createOrderWrapper.currencyType} 0.00</b>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <footer class="slds-modal__footer">
+                            <button type="button" class="slds-button slds-button_neutral slds-float_left"
+                                onclick={back}>Back</button>
+                            <button type="button" class="slds-button slds-button_neutral"
+                                onclick={CancelOrder}>Cancel</button>
+                            <template if:true={showAccount}>     
+                            <button type="button" class="slds-button slds-button_brand" onclick={placeOrder}>Place
+                                Order</button>
+                            </template>   
+                            <template if:true={showOpportunity}>   
+                            <button type="button" class="slds-button slds-button_brand" onclick={saveCreateChangeOrder}>Save
+                                </button> 
+                            </template>   
+                        </footer>
+                    </div>
+                </div>
+            </template>
+            <template if:true={orderConfirmation}>
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close" onclick={backToPrevious}>
+                            <svg class="slds-button__icon slds-button__icon--large" aria-hidden="true">
+                                <use
+                                    xlink:href="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close">
+                                </use>
+                            </svg>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-modal__title slds-hyphenate">
+                            Confirmation
+                        </h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        Are you sure you want to cancel this order?
+                    </div>
+
+                    <footer class="slds-modal__footer">
+                        <button type="button" class="slds-button slds-button_brand"
+                            onclick={CoonfirmCancel}>Yes</button>
+                        <button type="button" class="slds-button slds-button_neutral"
+                            onclick={backToPrevious}>No</button>
+                    </footer>
+                </div>
+
+            </template>
+            <template if:true={isConfigure}>
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close" onclick={CancelConfigure}>
+                            <svg class="slds-button__icon slds-button__icon--large" aria-hidden="true">
+                                <use
+                                    xlink:href="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close">
+                                </use>
+                            </svg>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <template if:true={configErrorMessage}>
+                            <div class="slds-notify_toast slds-theme_error" role="alert">
+                                <span class="slds-assistive-text">error</span>
+                                <div>{configErrorMessage}</div>
+                            </div>
+                        </template>
+                        <h3 class="slds-text-heading--small font-normal"><b>{createOrderWrapper.currentProductName}</b>
+                            Configuration</h3>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <div class="slds-grid custom-tab">
+                            <div class="left-tab">
+                                <lightning-radio-group name="Optional" label="Optional" options={options} value={value}
+                                    onchange={handleRadioConfigureChange} type="radio">
+                                </lightning-radio-group>
+                            </div>
+                            <div class="right-tab-details ">
+                                <template if:true={showAgreement}>
+                                    <div class="slds-text-heading_small slds-m-bottom_small">
+                                        Please Select an Agreement
+                                    </div>
+                                    <div class="agreement-form agreement-address-form">
+                                        <div class="custom-combobox slds-m-bottom_small">
+                                       <lightning-combobox data-id="sName" value={agreementId}
+                                           options={agreementWrapper.agreementList} onchange={handleAgreementChange}
+                                           name="Select Agreement" label="Select Agreement">
+                                       </lightning-combobox>
+                                       </div>
+                                   </div>
+                                    <template if:true={showAgreementDetails}>
+                                        <div class="slds-size_1-of-1 agreement-form">
+                                            <h3 class="slds-text-heading_small custom-heading">
+                                                Agreement Details
+                                            </h3>
+                                            <div>
+                                                <div
+                                                    class="slds-form-element slds-form-element_horizontal custom-month">
+                                                    <label class="slds-form-element__label custom-label"><span
+                                                            class="slds-text-color_error">*</span>Period ({agreementPeriodType})
+                                                    </label>
+                                                    <div class="slds-form-element__control">
+                                                        <lightning-input autocomplete="No" type="number" name=""
+                                                            value={createOrderWrapper.agreementPeriod}
+                                                            onchange={HandlePeriodChange} required
+                                                            variant=" label-hidden"></lightning-input>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="slds-form-element slds-form-element_horizontal action-combobox">
+                                                    <label class="slds-form-element__label custom-label">Renewal
+                                                        Action</label>
+                                                    <div class="slds-form-element__control">
+                                                        <lightning-combobox data-id="sName"
+                                                            value={agreementEndAction}
+                                                            options={agreementWrapper.renewAction}
+                                                            onchange={handleRenewalAction} name="Renewal Action"
+                                                            variant="label-hidden" required>
+                                                        </lightning-combobox>
+                                                    </div>
+                                                </div>
+                                                <template if:true={showRenewalPricing}>
+                                                    <div
+                                                        class="slds-form-element slds-form-element_horizontal custom-renewal">
+                                                        <label class="slds-form-element__label custom-label">Renewal
+                                                            Pricing</label>
+                                                        <div class="slds-form-element__control">
+                                                            <lightning-radio-group name="" label=""
+                                                                options={agreementWrapper.renewalPricingOption}
+                                                                value={renewalPrice}
+                                                                onchange={handleRenewalPricingChange} type="radio"
+                                                                required>
+                                                            </lightning-radio-group>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                                <div
+                                                    class="slds-form-element slds-form-element_horizontal override-email-check ">
+                                                    <label class="slds-form-element__label custom-label">Override End
+                                                        Date</label>
+                                                    <div class="slds-form-element__control">
+                                                        <lightning-input autocomplete="No" type="checkbox"
+                                                            checked={isOverRideDate} name=""
+                                                            onchange={handleOverRideCheckbox} data-id="checkbox1"
+                                                            label="">
+                                                        </lightning-input>
+                                                        <template if:true={isOverRideDate}>
+                                                            <lightning-input autocomplete="No" type="date" name=""
+                                                                value={overrideAgreementEndDate}
+                                                                label="" data-id="date" onchange={handleOverRideDate}>
+                                                            </lightning-input>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+
+                                </template>
+                                <template if:true={showAgreementMessage}>
+                                    <div class="slds-text-heading_small slds-m-bottom_small">
+                                        Agreements are not available for this product
+                                    </div>
+                                </template>
+                               <!-- <template if:true={showServiceResourceMessage}>
+                                    <div class="slds-text-heading_small slds-m-bottom_small">
+                                        Service Resources are not available for this product
+                                    </div>
+                                </template>
+                                <template if:true={showServiceResource}>
+                                    <div class="slds-text-heading_small slds-m-bottom_small">
+                                        Search or Create Service Resource
+                                    </div>
+                                    <div>
+                                        <div class="slds-form-element">
+
+                                            <div class="slds-form-element_control">
+                                                <div class="slds-combobox_container">
+                                                    <div class={dropDownClass} aria-expanded="true"
+                                                        aria-haspopup="listbox" role="combobox">
+                                                        <div class="slds-combobox__form-element slds-input-has-icon slds-input-has-icon_right"
+                                                            role="none">
+                                                            <input type="text"
+                                                                class="slds-input slds-combobox__input slds-combobox__input-value combobox-input-class"
+                                                                id="select-sobject-id" autocomplete="off"
+                                                                data-id="select-sobject-id" aria-autocomplete="list"
+                                                                aria-controls="listbox-id-11" role="textbox"
+                                                                placeholder={placeholder} title=""
+                                                                onclick={handleInputClick} value="" readonly
+                                                                disabled={disabled}></input>
+
+                                                            <div if:true={isDropdownOpen}>
+                                                                <span
+                                                                    class="slds-icon_container slds-icon-utility-up slds-input__icon slds-input__icon_right">
+                                                                    <lightning-icon icon-name="utility:up"
+                                                                        size="x-small"></lightning-icon>
+                                                                </span>
+                                                            </div>
+                                                            
+                                                            <div if:false={isDropdownOpen}>
+                                                                <span
+                                                                    class="slds-icon_container slds-icon-utility-down slds-input__icon slds-input__icon_right">
+                                                                    <lightning-icon icon-name="utility:down"
+                                                                        size="x-small"></lightning-icon>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div id="listbox-id-11"
+                                                            class="slds-dropdown slds-dropdown_fluid" role="listbox">
+                                                            <ul class="slds-listbox slds-listbox_vertical"
+                                                                role="presentation">
+                                                                <li>
+                                                                    <input type="text"
+                                                                        class="slds-input search-input-class"
+                                                                        role="textbox" value={inputValue}
+                                                                        onkeyup={handleKeyPress}
+                                                                        onblur={closeDropdown}></input>
+                                                                </li>
+                                                            </ul>
+                                                            <ul class="slds-listbox slds-listbox_vertical slds-dropdown_length-5 customClass"
+                                                                tabindex="0" role="presentation">
+                                                                <template for:each={identifierToDisplay}
+                                                                    for:item="option">
+                                                                    <li key={option.value} role="presentation"
+                                                                        class="slds-listbox__item"
+                                                                        data-label={option.label}
+                                                                        data-value={option.value}
+                                                                        onclick={optionsClickHandler}
+                                                                        title={option.label}>
+                                                                        <div id={option.value}
+                                                                            class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small"
+                                                                            role="option">
+                                                                            <span
+                                                                                class="slds-media__figure slds-listbox__option-icon"></span>
+                                                                            <span class="slds-truncate">
+                                                                                <span>{option.label}</span>
+                                                                            </span>
+                                                                        </div>
+                                                                    </li>
+                                                                </template>
+                                                            </ul>
+                                                        </div>
+                                                        <div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <template for:each={SelectedServiceList} for:item="optionss">
+                                            <li key={optionss}>
+                                                {optionss}
+                                                <lightning-button-icon icon-name="utility:delete" name={optionss}
+                                                    alternative-text="Delete" onclick={removeService}
+                                                    class="slds-m-left_xx-small" title="Delete"></lightning-button-icon>
+                                            </li>
+                                        </template>
+
+                                    </div>
+                                    Total Resources:{SelectedServiceList.length} </br>
+                                    Minimum Resources: {productDetails.TRACT3__minServiceResources__c}</br>
+                                    Maximum Resources: {productDetails.TRACT3__maxServiceResources__c}
+                                </template>
+                              <template if:true={showShortDescription}>
+                                    <div class="slds-text-heading_small slds-m-bottom_small">
+                                        Short Description
+                                    </div>
+                                    <div>
+                                        <lightning-textarea name="" label="" onchange={handleShortDescriptionChange}
+                                            value={createOrderWrapper.shortDescription}>
+
+                                        </lightning-textarea>
+                                    </div>
+                                </template>
+                                <template if:true={showAddress}>
+                                    <div class="agreement-form agreement-address-form">
+                                        <div class="custom-combobox slds-m-bottom_small">
+                                            <lightning-combobox data-id="Country" name="Country" label="Country"
+                                                value={country} options={countryOptions} onchange={handleAddressChange}
+                                                required>
+                                            </lightning-combobox>
+                                        </div>
+                                        <div class="slds-form-element slds-form-element_horizontal">
+                                            <label class="slds-form-element__label custom-label"><span
+                                                    class="slds-text-color_error">*</span> Address Line 1</label>
+                                            <div class="slds-form-element__control">
+                                                <lightning-input autocomplete="none" data-id="Address1" label=""
+                                                    variant="label-hidden" required>
+                                                </lightning-input>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="slds-form-element slds-form-element_horizontal">
+                                            <label class="slds-form-element__label custom-label">Address Line 2</label>
+                                            <div class="slds-form-element__control">
+                                                <lightning-input autocomplete="none" data-id="Address2" label="">
+                                                </lightning-input>
+                                            </div>
+
+                                        </div>
+                                        <div class="slds-form-element slds-form-element_horizontal">
+                                            <label class="slds-form-element__label custom-label"><span
+                                                    class="slds-text-color_error">*</span> City</label>
+                                            <div class="slds-form-element__control">
+                                                <lightning-input autocomplete="none" data-id="City" label=""
+                                                    variant="label-hidden" required>
+                                                </lightning-input>
+                                            </div>
+
+                                        </div>
+                                        <template if:true={usselected}>
+                                            <div class="slds-form-element slds-form-element_horizontal">
+                                                <label class="slds-form-element__label custom-label">State</label>
+                                                <div class="slds-form-element__control">
+                                                    <lightning-combobox name="" data-id="State" label=""
+                                                        value={country.state} options={stateOptions}
+                                                        onchange={handleStateChange} required>
+                                                    </lightning-combobox>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <div class="slds-form-element slds-form-element_horizontal">
+                                            <label class="slds-form-element__label custom-label">Postal Code</label>
+                                            <div class="slds-form-element__control">
+                                                <lightning-input autocomplete="none" data-id="postal" label="">
+                                                </lightning-input>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </template>
+                                <template if:true={showDiscountCode}>
+                                    <div class="custom-combobox">
+                                        <lightning-input autocomplete="none" data-id="discount" name="Discount Code"
+                                            label="Discount Code">
+                                        </lightning-input>
+                                    </div>
+                                </template> -->
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer class="slds-modal__footer">
+                        <button type="button" class="slds-button slds-button_brand"
+                            onclick={ConfirmConfigure}>OK</button>
+                        <button type="button" class="slds-button slds-button_neutral"
+                            onclick={CancelConfigure}>Cancel</button>
+                    </footer>
+                </div>
+
+            </template>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+</template>

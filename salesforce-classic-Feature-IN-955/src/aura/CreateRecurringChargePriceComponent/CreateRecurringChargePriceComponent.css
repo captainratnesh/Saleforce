@@ -1,0 +1,13 @@
+.THIS .custom-horizontal-radio .slds-form-element__control{
+    display: flex;
+}
+.THIS .custom-horizontal-radio .slds-form-element__control .slds-radio{
+    flex: 1 1 auto;
+}
+.THIS .custom-lable-display label{
+    display: block;
+    margin-top: 21px;
+}
+.THIS .table-custom-label label{
+    display: block;
+}

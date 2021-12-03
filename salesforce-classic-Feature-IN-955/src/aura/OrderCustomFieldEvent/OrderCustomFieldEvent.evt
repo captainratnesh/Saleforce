@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="Event to Deactivate services" access="global">
+    <aura:attribute name="oppId" type="String" description="wrapper to store service detail" access="global"/>
+</aura:event>

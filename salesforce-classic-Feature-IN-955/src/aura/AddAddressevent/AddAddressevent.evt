@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="Event to Add Address" access="global">
+    <aura:attribute name="ServiceWrapper" type="ProductServiceWrapper" description="wrapper to store service detail" access="global"/>
+</aura:event>

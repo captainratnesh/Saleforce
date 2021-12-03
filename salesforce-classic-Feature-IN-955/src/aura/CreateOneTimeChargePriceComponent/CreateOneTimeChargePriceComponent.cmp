@@ -1,0 +1,134 @@
+<aura:component controller="CreateOneTimeChargePriceController">
+    <aura:attribute name="CreateOneTimeChargePriceWrapper" type="CreateOneTimeChargePriceWrapper"/>
+    <aura:attribute name="productId" type="String"/>
+    <aura:handler name="init" value="this" action="{!c.doinit}" />
+    <aura:attribute name="HideSpinner" type="Boolean" default="true"/>
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+    <aura:attribute name="message" type="String" default="NoError" />
+    <aura:attribute name="showMessage" type="Boolean" default="false"/>
+    <aura:attribute name="pricelist" type="String"/>
+    <aura:attribute name="CreatePriceRangeWrapper" type="CreatePriceRangeWrapper"/>
+    <aura:registerEvent name="recurringPriceReturn" type="c:ReturnRecurringPriceEvt" />
+
+    <div aria-hidden="false" id="productPriceCreation" role="dialog" class="slds-modal  slds-fade-in-open" style="display:block;">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-p-around_none;">
+                <div class="slds-page-header">
+                    <div class="slds-media ">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container">
+                                <lightning:icon iconName="standard:product" alternativeText="product" />
+                            </span>    
+                        </div>
+                        <h1 class="slds-media__body slds-page-header__title slds-m-right--small slds-align-middle slds-truncate slds-text-align_left">Manage One-Time Charge Price</h1>
+                    </div>
+                </div>
+                <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                    <c:svg class="slds-button__icon slds-button__icon--large"
+                    xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                    ariaHidden="true"
+                    />
+                </button>
+            </div>
+            <div class="slds-modal__content slds-p-horizontal_medium">
+                <div class="slds-grid slds-grid_vertical">
+                    <div class="slds-p-bottom_x-small">
+                        <div id="showErrorOneTimePriceCreation" class="slds-text-color_error " style="display:none; text-align:center;font-weight:700">
+                            <lightning:formattedText value="{!v.message}"/>   
+                        </div>
+                    </div>
+                        <div class="slds-form-element slds-form-element_compound">
+                            <div class="slds-form-element__row">
+                                <div class="slds-size_1-of-2">
+                                    <lightning:select value="{!v.CreateOneTimeChargePriceWrapper.priceCategory}" label="Price Category:" required="true">
+                                        <aura:iteration items="{!v.CreateOneTimeChargePriceWrapper.priceCategoryList}" var="priCategory">
+                                            <option value="{!priCategory.value}" label="{!priCategory.label}">
+                                            </option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                                <div class="slds-size_1-of-2">
+                                    <lightning:input type="date" value="{!v.CreateOneTimeChargePriceWrapper.fromDate}" label="From Date:" required="true"/>   
+                                </div>
+                            </div>
+                            <div class="slds-form-element__row">
+                                <div class="slds-size_1-of-2">
+                                    <lightning:select value="{!v.CreateOneTimeChargePriceWrapper.selectedcurrency}" label="Currency:" required="true">
+                                        <aura:iteration items="{!v.CreateOneTimeChargePriceWrapper.currencyList}" var="currency">
+                                            <option value="{!currency.value}" label="{!currency.label}">
+                                            </option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                                <aura:renderIf isTrue="{!v.CreateOneTimeChargePriceWrapper.productPriceGroupList.length > 0}">
+                                    <div class="slds-size_1-of-2">
+                                        <lightning:select value="{!v.CreateOneTimeChargePriceWrapper.productPriceGroup}" label="Product Price Group:">
+                                            <aura:iteration items="{!v.CreateOneTimeChargePriceWrapper.productPriceGroupList}" var="prodPriceGroup">
+                                                <option value="{!prodPriceGroup.value}" label="{!prodPriceGroup.label}">
+                                                </option>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </div>
+                                </aura:renderIf>
+                            </div>
+                            <div class="slds-form-element__row">
+                                <div class="slds-size_1-of-2">
+                                    <lightning:input type="checkbox" value="{!v.CreateOneTimeChargePriceWrapper.chargeAtRenewal}" label="Charge at Renewal:" checked="{!v.CreateOneTimeChargePriceWrapper.chargeAtRenewal}"/>   
+                                    <lightning:input type="checkbox" value="{!v.CreateOneTimeChargePriceWrapper.requireScheduledCharges}" label="Require Scheduled Charges:" checked="{!v.CreateOneTimeChargePriceWrapper.requireScheduledCharges}"/>   
+                                    <lightning:input type="checkbox" value="{!v.CreateOneTimeChargePriceWrapper.priceOverride}" label="Price Override:" checked="{!v.CreateOneTimeChargePriceWrapper.priceOverride}"/>
+                                </div>
+                                <div class="slds-size_1-of-2 slds-p-top_medium">
+                                    <lightning:input type="checkbox" value="{!v.CreateOneTimeChargePriceWrapper.payOnPurchase}" label="Pay on Purchase:" checked="{!v.CreateOneTimeChargePriceWrapper.payOnPurchase}"/>
+                                    <lightning:input type="checkbox" value="{!v.CreateOneTimeChargePriceWrapper.taperedPricing}" label="Tapered Pricing:" checked="{!v.CreateOneTimeChargePriceWrapper.taperedPricing}"/>   
+                                </div>
+                            </div>
+                            <div class="slds-form-element__row">
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="">Tier</th>
+                                            <th class="">Starting Qty:</th>
+                                            <th class="">Ending Qty:</th>
+                                            <th class="">* Price:</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.CreateOneTimeChargePriceWrapper.createPriceRangeWrapper}" var="createPriceRange" indexVar="index">
+                                            <tr>
+                                                <td>
+                                                    <lightning:formattedText value="{!createPriceRange.tier}" />                                               
+                                                </td>
+                                                <td class="table-custom-label">
+                                                    <lightning:input type="number" value="{!createPriceRange.startingQuantity}" label=""/>   
+                                                </td>
+                                                <td class="table-custom-label">
+                                                    <lightning:input type="number" value="{!createPriceRange.endingQuantity}" label=""/>   
+                                                </td>
+                                                <td class="table-custom-label">
+                                                    <lightning:input type="number" value="{!createPriceRange.price}" label=""/>   
+                                                </td>
+                                            </tr> 
+                                        </aura:iteration>
+                                    </tbody>
+                                </table> 
+                            </div>
+                            <div class="slds-grid  slds-grid--align-left slds-p-vertical_medium">
+                                <lightning:button class="slds-button slds-button--neutral"  onclick="{!c.addTier}">Add Tier</lightning:button>
+                                <aura:renderIf isTrue = "{!v.CreateOneTimeChargePriceWrapper.createPriceRangeWrapper.length >1}">    
+                                    <lightning:button class="slds-button slds-button--neutral"  onclick="{!c.deleteTier}">Delete Tier</lightning:button>
+                                </aura:renderIf>    
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <div class="slds-grid  slds-grid--align-center slds-p-vertical_medium">
+                    <lightning:button class="slds-button slds-button--brand" onclick="{!c.closeModalBox}">Cancel</lightning:button>
+                    <lightning:button class="slds-button slds-button--brand" onclick="{!c.saveProductPrice}">Finish</lightning:button> 
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open" id="productPriceCreationBackground" style="display:block;"></div>
+</aura:component>

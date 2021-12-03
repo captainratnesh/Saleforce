@@ -1,0 +1,89 @@
+<aura:component controller="TractOppProduct_LT">
+   <!-- <ltng:require styles="/resource/TRACT3__SLDS/assets/styles/salesforce-lightning-design-system.min.css"/>-->
+    <aura:attribute name="productWrapper" type="Product2AddWrapper"/>
+    <aura:attribute name="oppId" type="String"/>
+    <!-- Attribute added to store total value for one time charged based on the quantity of product-->
+    <aura:attribute name="totalPrice" type="Decimal"/>
+    <aura:attribute name="schduler" type="ScheduleChargeWrapper"/>
+    <aura:attribute name="schdulerList" type="ScheduleChargeWrapper[]"/>
+    <aura:attribute name="message" type="String" default="NoError"/>
+    <aura:registerEvent name="SelectedAgreementReturnEvent" type="c:SelectedAgreementReturnEvent"/>
+    <!--aura:handler event="c:ScheduleChargeEvent" action="{!c.handleScheduleChargeEvent}"/-->
+    <aura:handler name="init" value="this" action="{!c.handleScheduleChargeEvent}" />
+    <div>
+        <div aria-hidden="false" id="schduleCharge" role="dialog" class="slds-modal  slds-fade-in-open cmn_modelbox add-new-prod-model" style="display:block;">
+            <div class="slds-modal__container">  
+                <div class="slds-modal__header top-cmn-heading-row"> 
+                    <h1 class="slds-text-heading--Large">Schedule One-Time Charges</h1>
+                    <div id="showErrorCharges" class="cmn_error_msg" style="display:none;">
+                        <ui:outputText value="{!v.message}"/>
+                    </div>
+                    <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                        <c:svg class="slds-button__icon slds-button__icon--large"
+                               xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                               ariaHidden="true"
+                               />
+                    </button>
+                </div>
+                <div class="slds-modal__content schedule-table-chart">
+                    <table>
+                        <tr>
+                            <td> 
+                                Product:
+                            </td>
+                            <td>
+                                {!v.productWrapper.prod.Name}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Total Amount:
+                            </td> 
+                            <td>
+                                {!v.totalPrice}
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="account-details" >
+                        <div class="panel-body panel_body_details service-table service-table2 heading last">
+                            <div class="cmn-table-responsive">
+                                <table>
+                                    <tr>
+                                        <th class="head color-222">Charge Description</th>
+                                        <th class="head color-222">Charge Date</th>
+                                        <th class="head color-222">Charge Amount</th>
+                                        <th class="head color-222">Actions</th>
+                                    </tr>
+                                    <aura:iteration items="{!v.schdulerList}" var="schedule" indexVar="index">
+                                        <tr>
+                                            <td>
+                                                <ui:inputText class="slds-input" value="{!schedule.schdeuleDescription}"/>
+                                            </td>
+                                            <td>
+                                                <ui:inputDate aura:id="deactivationDate"  displayDatePicker="true" class="slds-input" value="{!schedule.schdeuleDate}"/>
+                                            </td>
+                                            <td>
+                                                <ui:inputText class="slds-input" value="{!schedule.schdeuleAmount}"/>
+                                            </td>
+                                            <td>
+                                                <a  data-count="{!index}" onclick="{!c.removeCharge}"><u>Remove</u></a><br/>
+                                            </td>
+                                        </tr> 
+                                    </aura:iteration>
+                                </table>    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <div class="slds-x-small-buttons--horizontal">
+                        <button class="slds-button slds-button--neutral"  onclick="{!c.addCharge}" style="float:left">Add New Schedule Charge</button>    
+                        <button class="slds-button slds-button--neutral"  onclick="{!c.closeModalBox}">Cancel</button>
+                        <button class="slds-button slds-button--neutral slds-button--brand" onclick="{!c.scheduleCharge}">Finish</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open" id="schduleChargeBackground" style="display:block;"></div>
+</aura:component>

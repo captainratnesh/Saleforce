@@ -1,0 +1,56 @@
+<aura:component access="GLOBAL" controller="MarketPlaceController">
+    <aura:handler name="init" value="this" action="{!c.doinit}" />
+    <aura:attribute name="HideSpinner" type="Boolean" default="false"/>
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+    <aura:attribute name="message" type="String" default="NoError" />
+    <aura:attribute name="priceListWrap" type="PriceListWrapper"/>
+    <aura:attribute name="AvailableAndSelectedProductsWrap" type="AvailableAndSelectedProductsWrapper"/>
+
+    <aura:attribute name="showMessage" type="Boolean" default="false"/>
+    <div>
+        <div aria-hidden="false" id="EditProductsToPriceList" role="dialog" class="slds-modal  slds-fade-in-open" style="display:block;">
+            <div class="slds-modal__container">
+                <div class="slds-modal__header slds-p-around_none;">
+                    <div class="slds-page-header">
+                        <div class="slds-media ">
+                            <div class="slds-media__figure">
+                                <span class="slds-icon_container">
+                                    <lightning:icon iconName="standard:product" alternativeText="product" />
+                                </span>    
+                            </div>
+                            <h1 class="slds-media__body slds-page-header__title slds-m-right--small slds-align-middle slds-truncate slds-text-align_left">Add Products to Price List</h1>
+                        </div>
+                    </div>
+                    <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                        <c:svg class="slds-button__icon slds-button__icon--large"
+                        xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                        ariaHidden="true"
+                        />
+                    </button>
+                </div>
+                <div class="slds-modal__content slds-p-horizontal_medium">
+                    <div class="slds-grid slds-grid_vertical">
+                        <div class="slds-p-bottom_x-small">
+                            <div id="showErrorEditProductsToPriceList" class="slds-text-color_error " style="display:none; text-align:center;font-weight:700">
+                                <lightning:formattedText value="{!v.message}"/>   
+                            </div>
+                        </div>
+                        <div class="slds-form-element slds-form-element_compound">
+                            <lightning:dualListbox label= "" value="{!v.AvailableAndSelectedProductsWrap.listOfSelectedProducts}" sourceLabel="Available" selectedLabel="Selected"
+                            options="{!v.AvailableAndSelectedProductsWrap.listOfAvailableProducts}"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <div class="slds-grid  slds-grid--align-center slds-p-vertical_medium">
+                        <lightning:button class="slds-button slds-button--brand" onclick="{!c.closeModalBox}">Cancel</lightning:button>
+                        <lightning:button class="slds-button slds-button--brand" onclick="{!c.saveSelectedProduct}">Finish</lightning:button> 
+                    </div>
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop--open" id="EditProductsToPriceListBackground" style="display:block;"></div>
+        </div>
+    </div>
+    
+</aura:component>

@@ -1,0 +1,173 @@
+<aura:component controller="CreateRecurringChargePriceController" access="GLOBAL">
+    <aura:attribute name="recurringChargePriceWrapper" type="CreateRecurringChargePriceWrapper"/>
+    <aura:attribute name="productId" type="String"/>
+    <aura:attribute name="pricelist" type="String"/>
+    <aura:handler name="init" value="this" action="{!c.doinit}" />
+   	<aura:attribute name="HideSpinner" type="Boolean" default="true"/>
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+    <aura:attribute name="message" type="String" default="NoError" />
+    <aura:attribute name="showMessage" type="Boolean" default="false"/>
+    <aura:attribute name="isEdit" type="Boolean" default="false"/>
+    <aura:attribute name="CreatePriceRangeWrapper" type="CreatePriceRangeWrapper"/>
+    <aura:attribute name="selectedPrice" type="ProductPriceWrapper"/>
+    <aura:registerEvent name="recurringPriceReturn" type="c:ReturnRecurringPriceEvt" />
+
+
+    <div aria-hidden="false" id="productPriceCreation" role="dialog" class="slds-modal  slds-fade-in-open" style="display:block;">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header slds-p-around_none;">
+                <div class="slds-page-header">
+                    <div class="slds-media ">
+                        <div class="slds-media__figure">
+                            <span class="slds-icon_container">
+                                <lightning:icon iconName="standard:product" alternativeText="product" />
+                            </span>    
+                        </div>
+                        <h1 class="slds-media__body slds-page-header__title slds-m-right--small slds-align-middle slds-truncate slds-text-align_left">Manage Recurring Charge Price</h1>
+                    </div>
+                </div>
+                <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                    <c:svg class="slds-button__icon slds-button__icon--large"
+                    xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                    ariaHidden="true"
+                    />
+                </button>
+            </div>
+            <div class="slds-modal__content slds-p-horizontal_medium">
+                <div class="slds-grid slds-grid_vertical">
+                    <div class="slds-p-bottom_x-small">
+                        <div id="showErrorRecurringPriceCreation" class="slds-text-color_error " style="display:none; text-align:center;font-weight:700">
+                            <lightning:formattedText value="{!v.message}"/>   
+                        </div>
+                    </div>
+                        <div class="slds-form-element slds-form-element_compound">
+                            <div class="slds-form-element__row">
+                                <div class="slds-size_1-of-2">
+                                    <lightning:select name = "category" aura:id="category" value="{!v.recurringChargePriceWrapper.priceCategory}" label="Price Category:" required="true">
+                                        <aura:iteration items="{!v.recurringChargePriceWrapper.priceCategoryList}" var="priCategory">
+                                            <option value="{!priCategory.value}" label="{!priCategory.label}" selected="{!priCategory.value == v.recurringChargePriceWrapper.priceCategory}">
+                                            </option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                                <div class="slds-size_1-of-2">
+                                    <lightning:input type="date" value="{!v.recurringChargePriceWrapper.fromDate}" label="From Date:" required="true"/>   
+                                </div>
+                            </div>
+                            <div class="slds-form-element__row">
+                                <div class="slds-size_1-of-2">
+                                    <lightning:select name = "currency" aura:id="currency" value="{!v.recurringChargePriceWrapper.selectedcurrency}" label="Currency:" required="true" disabled = "{!v.isEdit}">
+                                        <aura:iteration items="{!v.recurringChargePriceWrapper.currencyList}" var="currency">
+                                            <option value="{!currency.value}" label="{!currency.label}" selected="{!currency.value == v.recurringChargePriceWrapper.selectedcurrency}">
+                                            </option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                                <div class="slds-size_1-of-2">
+                                    <lightning:select name = "recperiod" aura:id="recperiod" value="{!v.recurringChargePriceWrapper.recurrencePeriod}" label="Recurrence Period:" disabled = "{!v.isEdit}">
+                                        <aura:iteration items="{!v.recurringChargePriceWrapper.recurrencePeriodList}" var="recPeriod">
+                                            <option value="{!recPeriod.value}" label="{!recPeriod.label}" selected="{!recPeriod.value == v.recurringChargePriceWrapper.recurrencePeriod}">
+                                            </option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                            </div>
+                            <div class="slds-form-element__row">
+                            <aura:renderIf isTrue="{!v.recurringChargePriceWrapper.productPriceGroupList.length > 0}">
+                                <div class="slds-size_1-of-2">
+                                    <lightning:select value="{!v.recurringChargePriceWrapper.productPriceGroup}" label="Product Price Group:">
+                                        <aura:iteration items="{!v.recurringChargePriceWrapper.productPriceGroupList}" var="prodPriceGroup">
+                                            <option value="{!prodPriceGroup.value}" label="{!prodPriceGroup.label}">
+                                            </option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                            </aura:renderIf>
+                                <div class="slds-size_1-of-2 slds-p-top_medium">
+                                    <lightning:input type="checkbox" value="{!v.recurringChargePriceWrapper.payOnPurchase}" label="Pay on Purchase:" checked="{!v.recurringChargePriceWrapper.payOnPurchase}"/>
+                                    <lightning:input type="checkbox" value="{!v.recurringChargePriceWrapper.proratedOnCancel}" label="Prorated on Cancel:" checked="{!v.recurringChargePriceWrapper.proratedOnCancel}"/>   
+                                </div>
+                            </div>
+                            <div class="slds-form-element__row">
+                                <div class="slds-size_1-of-2">
+                                    <lightning:input type="checkbox" value="{!v.recurringChargePriceWrapper.proratedOnOrder}" label="Prorated on Order:" checked="{!v.recurringChargePriceWrapper.proratedOnOrder}"/>   
+                                    <lightning:input type="checkbox" value="{!v.recurringChargePriceWrapper.taperedPricing}" label="Tapered Pricing:" checked="{!v.recurringChargePriceWrapper.taperedPricing}" disabled = "{!v.isEdit}"/>   
+                                    <lightning:input type="checkbox" value="{!v.recurringChargePriceWrapper.priceOverride}" label="Price Override:" checked="{!v.recurringChargePriceWrapper.priceOverride}"/>
+                                </div>
+                                <div class="slds-size_1-of-2">
+                                    <lightning:input type="checkbox" value="{!v.recurringChargePriceWrapper.proratedOnOrderNoCharge}" label="Prorated on Order - No Charge:" checked="{!v.recurringChargePriceWrapper.proratedOnOrderNoCharge}"/>
+                                    <lightning:input type="checkbox" value="{!v.recurringChargePriceWrapper.autoPaymentRequired}" label="Auto-Payment Required:" checked="{!v.recurringChargePriceWrapper.autoPaymentRequired}"/>
+                                </div>
+                            </div>
+                            <div class="slds-form-element__row slds-p-top_xx-small slds-p-bottom_xx-small">
+                                <div class="slds-size_1-of-1 custom-horizontal-radio">
+                                    <lightning:radioGroup  name="BillingType" label="Billing Type:" options="{!v.recurringChargePriceWrapper.billingTypeList}" value="{!v.recurringChargePriceWrapper.billingType}" type="radio" disabled = "{!v.isEdit}"/>
+                                </div>
+                            </div> 
+                            <aura:renderIf isTrue = "{!v.recurringChargePriceWrapper.billingType == 'Bill In Advance'}">
+                                <div class="slds-form-element__row slds-p-bottom_xx-small">
+                                    <div class="slds-size_1-of-2">
+                                        <lightning:input type="number" value="{!v.recurringChargePriceWrapper.billInAdvance}" label="Additional Bill In Advance:"/>
+                                    </div>
+                                    <div class="slds-size_1-of-2 custom-lable-display">
+                                        <lightning:select value="{!v.recurringChargePriceWrapper.billInAdvanceUnit}" label="">
+                                            <aura:iteration items="{!v.recurringChargePriceWrapper.billInAdvanceUnitList}" var="billAdvance">
+                                                <option value="{!billAdvance.value}" label="{!billAdvance.label}">
+                                                </option>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </div>
+                                </div>
+                            </aura:renderIf> 
+                            <div class="slds-form-element__row">
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="">Tier</th>
+                                            <th class="">Starting Qty:</th>
+                                            <th class="">Ending Qty:</th>
+                                            <th class="">* Price:</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <aura:iteration items="{!v.recurringChargePriceWrapper.createPriceRangeWrapper}" var="createPriceRange" indexVar="index">
+                                            <tr>
+                                                <td>
+                                                    <lightning:formattedText value="{!createPriceRange.tier}" />                                               
+                                                </td>
+                                                <td class="table-custom-label">
+                                                    <lightning:input type="number" value="{!createPriceRange.startingQuantity}" label=""/>   
+                                                </td>
+                                                <td class="table-custom-label">
+                                                    <lightning:input type="number" value="{!createPriceRange.endingQuantity}" label=""/>   
+                                                </td>
+                                                <td class="table-custom-label">
+                                                    <lightning:input type="number" value="{!createPriceRange.price}" label=""/>   
+                                                </td>
+                                            </tr> 
+                                        </aura:iteration>
+                                    </tbody>
+                                </table> 
+                            </div>
+                            <div class="slds-grid  slds-grid--align-left slds-p-vertical_medium">
+                                <aura:renderIf isTrue = "{! !v.isEdit}">
+                                    <lightning:button class="slds-button slds-button--neutral"  onclick="{!c.addTier}">Add Tier</lightning:button>
+                                </aura:renderIf>
+                                <aura:renderIf isTrue = "{!v.recurringChargePriceWrapper.createPriceRangeWrapper.length >1}">    
+                                    <lightning:button class="slds-button slds-button--neutral"  onclick="{!c.deleteTier}">Delete Tier</lightning:button>
+                                </aura:renderIf>    
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <div class="slds-grid  slds-grid--align-center slds-p-vertical_medium">
+                    <lightning:button class="slds-button slds-button--brand" onclick="{!c.closeModalBox}">Cancel</lightning:button>
+                    <lightning:button class="slds-button slds-button--brand" onclick="{!c.saveProductPrice}">Finish</lightning:button> 
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open" id="productPriceCreationBackground" style="display:block;"></div>
+</aura:component>

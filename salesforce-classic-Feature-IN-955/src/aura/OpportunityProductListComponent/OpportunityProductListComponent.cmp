@@ -1,0 +1,22 @@
+<aura:component controller="TractOppProduct_LT" implements="force:lightningQuickAction,force:hasRecordId" access="global">
+    
+    <aura:attribute name="oppId" type="String"/>
+    <aura:attribute name="message" type="String" default="NoError"/>
+    <aura:attribute name="getUITheme" type="String"  />
+    <aura:handler name="init" value="this" action="{!c.createSalesOrder}" />
+    
+    <lightning:spinner variant="brand" size="large" aura:id="mySpinner"/>
+    
+    <div>
+        <div id="showError" style="display:none;" class="account-create-sec">
+            <div  class="title slds-text-heading--medium cmn_error_msg" >
+                <h3>{!v.message}</h3>
+            </div>
+            <div class="slds-text-align--center slds-size_1-of-1 slds-p-top_medium">
+                <button class="slds-button slds-button_brand" onclick="{!c.cancelBillingAccount}">Go Back</button>
+            </div>
+        </div>
+          
+    </div>
+    
+</aura:component>

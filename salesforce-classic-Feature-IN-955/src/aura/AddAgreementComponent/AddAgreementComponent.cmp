@@ -1,0 +1,131 @@
+<aura:component controller="TractOppProduct_LT">
+	<aura:attribute name="productWrapper" type="Product2AddWrapper"/>
+	<aura:attribute name="agreementWrapper" type="AgreementWrapper"/>
+	<aura:attribute name="agrementPer" type="String"/>
+	<aura:attribute name="selectedAgreementId" type="String"/>
+	<aura:attribute name="selectedAgreementEndAction" type="String"/>
+	<aura:attribute name="nextAgreementId" type="String"/>
+	<aura:attribute name="nextAgreementEndAction" type="String"/>
+	<aura:attribute name="agreement" type="boolean" default="false"/>
+	<aura:attribute name="deactivationDateChecked" type="boolean" default="false"/>
+	<aura:attribute name="message" type="String" default="NoError"/>
+	<aura:registerEvent name="SelectedAgreementReturnEvent" type="c:SelectedAgreementReturnEvent"/>
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+	<div aria-hidden="false" id="selectAgreement" role="dialog" class="slds-modal  slds-fade-in-open cmn_modelbox add-new-prod-model" style="display:block;">
+		<div class="slds-modal__container">
+			<div class="slds-modal__header top-cmn-heading-row">
+				<h1 class="slds-text-heading--Large">Select Agreement</h1>
+				<button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+					<c:svg class="slds-button__icon slds-button__icon--large"
+			        xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+			        ariaHidden="true"
+			        />
+				</button>
+			</div>
+			<div class="slds-modal__content">
+				<div class="account-details" >
+					<div class="panel-body panel_body_details service-table service-table2  heading last">
+						<div id="showErrorAddAgreement" class="cmn_error_msg" style="display:none;text-align:center;padding-right:15%">
+							<ui:outputText value="{!v.message}"/>
+						</div>
+						<div class="cmn-table-responsive">
+							<table>
+								<tr>
+									<td>Select Agreement :</td>
+									<td>
+										<aura:renderIf isTrue="{!v.agreement}">
+											<ui:inputSelect aura:id="agreementValue" change="{!c.onAgreementSelect}" value="{!v.productWrapper.agreementId}">
+												<aura:iteration items="{!v.agreementWrapper.agreementList}" var="agreement">
+													<ui:inputSelectOption text="{!agreement.value}" label="{!agreement.label}" value = "{!agreement.value == v.selectedAgreementId}"/>
+												</aura:iteration>
+											</ui:inputSelect>
+										</aura:renderIf>
+										<aura:renderIf isTrue="{!!v.agreement}">
+		                                	Agreement not Required.
+		                                </aura:renderIf>
+									</td>
+								</tr>
+								<tr class ="showAgreement">
+									<td>Period :</td>
+									<td>
+										<ui:inputText class="slds-input" aura:id="period" value="{!v.productWrapper.agreementPeriod}" change="c.onInputChange"/><div class="slds-p-left_medium slds-show_inline-block">{!v.agrementPer}</div> 
+									</td>
+								</tr>
+								<tr class ="showAgreement">
+									<td>Renew Action :</td>
+									<td>
+										<ui:inputSelect aura:id="renewValue" change = "{!c.handleChangeInAgreementRenewAction}" value="{!v.productWrapper.agreementEndAction}">
+											<aura:iteration items="{!v.agreementWrapper.renewAction}" var="renew"  >
+												<ui:inputSelectOption text="{!renew.value}" label="{!renew.label}" value = "{!renew.value == v.selectedAgreementEndAction}"/>
+											</aura:iteration>
+										</ui:inputSelect>
+									</td>
+								</tr>
+								<aura:renderIf isTrue="{!v.selectedAgreementEndAction == 'CHANGE_AGREEMENT' || v.selectedAgreementEndAction == 'RENEW_AGREEMENT'}">	
+									<tr class ="showAgreement">
+										<td>Renewal Pricing :</td>
+										<td>
+											<lightning:radioGroup name="Renewal Price" options="{!v.agreementWrapper.renewalPricingOption}" value="{!v.productWrapper.renewalPrice}" type="radio"/>                            	
+										</td>
+									</tr>
+								</aura:renderIf>	
+								<tr class ="showAgreement">
+									<td>Override Agreement End Date:</td>
+									<td>
+										<ui:inputCheckbox aura:id="checkbox" change="{!c.handleChanged}"  value ="{!v.deactivationDateChecked}" />
+									</td>
+								</tr >
+								<tr id = "DeactivationDateId" style="display:none;" class="deactivation-date-col">
+									<td>Deactivation Date:</td>
+									<td>
+										<ui:inputDate aura:id="deactivationDate"  displayDatePicker="true" class="slds-input" value="{!v.productWrapper.overrideAgreementEndDate}"/>
+									</td>
+								</tr>
+								<aura:renderIf isTrue="{!v.selectedAgreementEndAction == 'CHANGE_AGREEMENT'}">	
+									<tr class ="showAgreement">
+										<td>Next Agreement :</td>
+										<td>
+											<ui:inputSelect aura:id="agreementValue" change="{!c.handleChangeInNextAgreement}" value="{!v.productWrapper.nextAgreementId}">
+													<aura:iteration items="{!v.agreementWrapper.nextAgreementList}" var="agreement">
+														<ui:inputSelectOption text="{!agreement.value}" label="{!agreement.label}" value = "{!agreement.value == v.nextAgreementId}"/>
+													</aura:iteration>
+											</ui:inputSelect>
+										</td>
+									</tr>
+
+									<tr class ="showAgreement">
+										<td>Next Agreement Renewal Action :</td>
+										<td>
+											<ui:inputSelect aura:id="renewValue" change = "{!c.handleChangeInNextAgreementRenewAction}" value="{!v.productWrapper.nextAgreementEndAction}">
+												<aura:iteration items="{!v.agreementWrapper.nextRenewAction}" var="renew"  >
+													<ui:inputSelectOption text="{!renew.value}" label="{!renew.label}" value = "{!renew.value == v.nextAgreementEndAction}"/>
+												</aura:iteration>
+											</ui:inputSelect>
+										</td>
+									</tr>
+									<aura:renderIf isTrue="{!v.nextAgreementEndAction == 'RENEW_AGREEMENT'}">	
+										<tr class ="showAgreement">
+											<td>Next Renewal Pricing:</td>
+											<td>
+												<lightning:radioGroup name="Next Renewal Price" options="{!v.agreementWrapper.renewalPricingOption}" value="{!v.productWrapper.nextRenewalPrice}" type="radio"/>                            	
+											</td>
+										</tr>
+									</aura:renderIf>
+								</aura:renderIf>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="slds-modal__footer">
+				<div class="slds-x-small-buttons--horizontal">
+					<button class="slds-button slds-button--neutral"  onclick="{!c.closeModalBox}">Cancel</button>
+					<aura:renderIf isTrue="{!v.agreement}">
+						<button class="slds-button slds-button--neutral slds-button--brand" onclick="{!c.selectAgreement}">Finish</button>
+                    </aura:renderIf>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="slds-backdrop slds-backdrop--open" id="selectAgreementBackground" style="display:block;"></div>
+</aura:component>

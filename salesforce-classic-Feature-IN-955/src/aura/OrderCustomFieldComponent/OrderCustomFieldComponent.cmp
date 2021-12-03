@@ -1,0 +1,84 @@
+<aura:component controller="TractOppProduct_LT" >
+    <aura:attribute name="productWrapper" type="Product2AddWrapper"/>
+    <aura:attribute name="oppId" type="String"/>
+    <aura:attribute name="customValueList" type="ServiceCustomFieldValuesWrapper[]"/>
+    <aura:attribute name="validationError" type="boolean" default="false"/> 
+    <aura:attribute name="message" type="String" default="NoError"/>
+    <aura:handler name="init" value="this" action="{!c.doinit}" />
+    <aura:attribute name="isShow" type="boolean" default="true"/>
+    
+    <!--   <aura:handler event="c:OrderCustomFieldEvent" action="{!c.handleOrderCustomFieldEvent}"/>-->
+    <div>
+        <div aria-hidden="false" id="orderCustomField" role="dialog" class="slds-modal  slds-fade-in-open cmn_modelbox add-new-prod-model" style="display:block;">
+            <div class="slds-modal__container">  
+                <div class="slds-modal__header top-cmn-heading-row"> 
+                    <h1 class="slds-text-heading--Large">Order Custom Fields</h1>
+                    <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                        <c:svg class="slds-button__icon slds-button__icon--large"
+                               xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                               ariaHidden="true"
+                               />
+                    </button>
+                </div>
+                <div class="slds-modal__content">
+                    <div class="account-details" >
+                        <div class="panel-body panel_body_details service-table service-table2 heading last">
+                            <div id="showErrorOrderCustomField" class="cmn_error_msg" style="display:none;text-align:center">
+                                <ui:outputText value="{!v.message}"/>
+                            </div>
+                            <aura:renderIf isTrue="{!v.validationError}">
+                                <div id="showErrorOrderCustomField" class="cmn_error_msg" style="text-align:center;">
+                                    <ui:outputText value="{!v.message}"/>
+                                </div>
+                            </aura:renderIf>
+                            <aura:renderIf isTrue="{!v.isShow}">
+                                <div class="cmn-table-responsive">
+                                    <table>
+                                        <aura:iteration items="{!v.customValueList}" var="customField">
+                                            <tr>
+                                                
+                                                <td colspan="2">
+                                                    <ui:outputText aura:id="customFieldName" class="slds-output"
+                                                                value="{!customField.name}"/>
+                                                </td>
+                                                <td >
+                                                    <aura:renderIf isTrue="{!customField.datetype}">
+                                                        <aura:renderIf isTrue="{!!customField.checkListtype}">
+                                                            <ui:inputDate aura:id="Date"  displayDatePicker="true" class="slds-input" format = "dd/MM/yyyy"
+                                                                    value="{!customField.dateField}"/>
+                                                        </aura:renderIf>
+                                                    </aura:renderIf>
+                                                    <aura:renderIf isTrue="{!!or((customField.checkListtype),(customField.datetype))}">
+                                                        <ui:inputText aura:id="paymentMethod" class="slds-input"
+                                                                    value="{!customField.value}"/>
+                                                    </aura:renderIf>
+                                                    <aura:renderIf isTrue="{!customField.checkListtype}">
+                                                        <ui:inputSelect aura:id="recurPeriod" class="slds-select bill-cycle-select"  value="{!customField.serviceListTypeValue}">
+                                                            <aura:iteration items="{!customField.serviceListType}" var="serviceList">
+                                                                <ui:inputSelectOption text="{!serviceList.value}" label="{!serviceList.label}" value = "{!serviceList.value == customField.serviceListTypeValue}"/>
+                                                            </aura:iteration>
+                                                        </ui:inputSelect> 
+                                                    </aura:renderIf>
+                                                </td>
+                                            </tr>  
+                                            
+                                        </aura:iteration>
+                                    </table>    
+                                </div>
+                            </aura:renderIf>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <div class="slds-x-small-buttons--horizontal">
+                        <button class="slds-button slds-button--neutral"  onclick="{!c.closeModalBox}">Cancel</button>
+                        <aura:renderIf isTrue="{!v.isShow}">
+                            <button class="slds-button slds-button--neutral slds-button--brand" onclick="{!c.saveCustomFields}">Finish</button>
+                        </aura:renderIf>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open" id="orderCustomFieldBackground" style="display:block;"></div>
+</aura:component>

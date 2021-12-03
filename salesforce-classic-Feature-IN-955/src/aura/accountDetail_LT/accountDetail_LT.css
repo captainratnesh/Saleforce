@@ -1,0 +1,112 @@
+.THIS .custom-dropdown-menu .slds-dropdown_left {
+    left:auto;
+    right:0;
+}
+.THIS .btn-details .account-btn-height .label{padding:6px 10px} 
+.THIS .cmn_modelbox .service-table .common-add-padding table td:last-child {padding-right:8px}
+.THIS .cmn_modelbox .service-table .common-add-padding table td:first-child {white-space: nowrap;}
+.THIS .tabledata-nowrap {white-space: nowrap;}
+
+.THIS .panel .panel-body{color:rgb(62, 62, 60)}
+.THIS .account-sec{font-size:13px;position:relative}
+.THIS .account-sec .form-horizontal .form-group{margin-right:0;margin-left:0}
+.THIS .account-sec .bg-primary{font-size:0.91rem;padding:5px 10px;background:rgb(243, 242, 242);color: #3e3e3c;font-weight:400;}
+.THIS .account-sec .form-horizontal .control-label{padding-top:0;padding-right:0; color: rgb(112, 110, 107);font-size: .75rem;font-weight: 400;}
+.THIS .service-table table{width:100%}  
+.THIS .service-table table th{color: rgb(62, 62, 60);padding: .5rem .5rem;border-bottom:1px solid rgb(221, 219, 218);;vertical-align:top;font-size:0.8rem; background:#fafaf9}
+.THIS .service-table table td{color:rgb(62, 62, 60);padding: .5rem .5rem;border-bottom:1px solid rgb(221, 219, 218);;vertical-align:top;font-size:0.8rem}
+.THIS .service-table table td:first-child{padding-left:10px}
+.THIS .service-table table tr:hover td{background:#f3f2f2}
+.THIS .service-table2 table td{font-size:14px}
+.THIS .service-table2 table td:first-child{font-weight:700}          
+.THIS .service-table table th:first-child{padding-left:10px}
+.THIS .service-table table td a{white-space:nowrap}
+.THIS .service-table table td span{display:block}    
+.THIS .account-sec .form-group .uiOutputText{display:block;padding-top:1px;color: rgb(112, 110, 107);font-size: .75rem;font-weight: 700;}     
+.THIS .account-sec .d-ib-uiOT .uiOutputText{ display: inline-block;margin-right: 5px;}
+.THIS .service-table table tr:last-child td{border:none}
+.THIS .account-sec.panel .panel-heading{padding:10px 15px; font-size: 16px;color: rgb(22, 50, 92);}
+.THIS .account-sec .panel-body{padding:0 0 15px 0;background:#fff;}
+.THIS .account-sec .panel-body.heading{padding:0;border-radius:5px}
+.THIS .account-sec .panel-body .bg-primary{margin-bottom:10px}
+.THIS .account-sec .panel-body.service-table .bg-primary{border-bottom:1px solid rgb(221, 219, 218); background:#fff;margin-bottom:0;float:left;width:100%}
+.THIS .account-details{border:1px solid rgb(221, 219, 218);border-radius:5px }
+.THIS .account-details:not(:first-child){margin:30px 0 0;}
+.THIS .account-details .custom-height-overflow{max-height: 400px;}
+.THIS .loader{position:absolute;background:rgba(0,0,0,0.3);width:99.7%;height:100%;top:0; z-index:999}
+.THIS .loader img{position: fixed;left:50%;top:50%;transform:translate(-50%, -50%);-webkit-transform:translate(-50%, -50%);}
+.THIS .btn-details{width:100%;text-align:right;padding:15px 15px 0;overflow:show}
+.THIS .btn-details .slds-button .label{text-shadow:none;font-size:11px; background-color: rgb(255, 255, 255);color:#2886d9;padding:5px 10px; border-radius:.25rem; border: 1px solid rgb(216, 221, 230);line-height: 18px;}   
+.THIS .btn-details .uiButton--default{background:none;border:none;padding:0;box-shadow:none;text-shadow:none; color: #2886d9}
+.THIS .btn-details .slds-button:focus{box-shadow: 0 0 3px rgb(0, 112, 210);outline: none;} 
+.THIS .btn-details .slds-button:hover .label{border: 1px solid rgb(216, 221, 230); background-color: rgb(244, 246, 249);} 
+.THIS .uiButton--default.cmn-btn .label{text-shadow:none;font-size:12px; background-color: rgb(255, 255, 255);color:#2886d9;padding:3px 20px; border-radius:.25rem; border: 1px solid rgb(200, 204, 213);line-height: 18px;}      
+.THIS .uiButton--default.cmn-btn{float:right;background:none;border:none;padding:0;box-shadow:none;text-shadow:none; color: #2886d9}    
+.THIS .account-details .panel-body.last{border-radius:5px 5px 5px 5px}
+.THIS .cmn-table-responsive{width:100%;overflow:auto}
+.THIS .tract-model .slds-button.model-btn{padding:0.6rem 1rem;font-size:11px}
+.THIS .tract-model h1{font-weight:400}
+.THIS .tract-model tr select{padding:3px 10px;background:#fff}
+.THIS .font_size{font-size:13px;line-height:17px}
+.THIS .cmn_modelbox .slds-modal__footer .slds-button--neutral{text-shadow:none;font-size:11px;color:#2886d9;}
+.THIS .cmn_modelbox .slds-modal__footer .slds-button--neutral.slds-button--brand{color:#fff}
+.THIS .cmn_modelbox .account-details{margin:15px}
+.THIS .cmn_modelbox .service-table table tr td select{height:32px;background:#fff;border:1px solid #d8dde6;padding:0 10px;border-radius:.25rem;width:100%;color:#647687}
+.THIS .cmn_modelbox h2{font-size:19px}
+.THIS .cmn_modelbox tr td input[type="text"]{padding:0 10px;border-radius:.25rem;color:#647687;height:32px;}
+.THIS .cmn_modelbox tr td form{ position:relative;}
+.THIS .cmn_modelbox .uiInput--datetime .datePicker-openIcon,.THIS .cmn_modelbox .uiInput--datetime .clearIcon{position: absolute;right: 10px;top:8px;left:auto}
+.THIS .cmn_modelbox .uiDatePicker--default a{height:30px;line-height: 30px; font-size:17px}
+.THIS a.uiDayInMonthCell--default {width:100%; height:28px; line-height:28px;font-size:17px}
+.THIS .cmn_modelbox .uiInputDefaultError li{margin-left:0}
+.THIS .cmn_error_msg{font-size:13px; color: rgb(194, 57, 52);}
+
+.THIS .cmn_modelbox .service-table table td{padding:8px 0 8px 7px}
+.THIS .cmn_modelbox tr td input[type="text"].input-amount{width:89%}
+.THIS .cmn_modelbox tr td input[type="text"].input-charge{margin-bottom:8px}
+.THIS .THIS .per-txt{float:right;padding:6px 0 15px 0}
+.THIS .rule-row{overflow:hidden;    padding-top: 5px;}   
+.THIS .rule-row label{font-weight:400}
+.THIS .rule-col{width:48%;float:left;}
+.THIS .rule-col+ .rule-col{float:right}
+.THIS .charge-input-col{width:48%;float:left;}
+.THIS .charge-input-col+.charge-input-col{float:right}
+.THIS .ruq-error{color:red;display:inline!important}
+.THIS .slds-toggle{border-radius: .25em;border: 1px solid  rgb(62, 62, 60); padding: 1px; cursor:pointer}
+.THIS .slds-toggle .slds-icon{width:0.85rem; height:0.85rem;fill:rgb(62, 62, 60)}
+
+/*.THIS .main-account-details .account-details:not(:first-child){display: none;}*/
+
+.THIS .uiButton--default.configure-update-btn .label{text-shadow:none;font-size:12px; background-color: rgb(255, 255, 255);color:#2886d9;padding:3px 20px; border-radius:.25rem; border: 1px solid rgb(200, 204, 213);line-height: 13px;}      
+.THIS .uiButton--default.configure-update-btn{float:right;background:none;border:none;padding:0;box-shadow:none;text-shadow:none; color: #2886d9} 
+.THIS .custom-calendar .slds-form-element .slds-dropdown-trigger{display:flex;align-items: center;}
+.THIS .custom-calendar .slds-has-error .slds-form-element__help{padding-left:5.8rem}
+.THIS .order-combobox .slds-is-open .slds-listbox.slds-listbox_vertical{top: unset;bottom: 100%;max-height: 150px;}
+
+.THIS .custom-btn-cont .label.bBody,
+.THIS .custom-btn-cont .slds-button{
+    line-height: 1;
+    font-weight: bold;
+    float: none;
+    color: rgb(0, 112, 210);
+    padding: 5px 16px;
+    font-size: 0.75rem;
+    border-color: #dcdbda;
+}
+.THIS .custom-btn-cont .slds-button.configure-update-btn{
+    padding: 0;
+    margin-left: 10px;
+}
+
+@media only screen and (max-width: 999px) and (orientation: portrait) {
+    .THIS a.uiDayInMonthCell--default {width:100%; height:26px; line-height:26px;font-size:17px}
+}
+/*@media (min-width: 48em){
+    .THIS .slds-modal__container {
+        width: 100%;
+    }
+}*/
+@media (max-width:767px){   
+    .THIS .service-table-details{width:100%;overflow-x:auto}
+    .THIS .account-sec.panel .panel-heading{font-size:16px;}    
+}

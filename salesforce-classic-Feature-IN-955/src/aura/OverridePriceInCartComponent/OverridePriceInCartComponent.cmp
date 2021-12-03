@@ -1,0 +1,127 @@
+<aura:component>
+	<ltng:require styles="/resource/TRACT3__SLDS/assets/styles/salesforce-lightning-design-system.min.css"/>
+	<aura:attribute name="AddedProductWrapper" type="Product2AddWrapper" />
+    <aura:attribute name="message" type="String" />
+    <aura:attribute name="OldRecurringPriceRanges" type="ProductPriceRangeWrapper[]"/>
+    <aura:attribute name="OldOneTimePriceRanges" type="ProductPriceRangeWrapper[]" />
+    <aura:attribute name="RecurringPriceRanges" type="ProductPriceRangeWrapper[]"/>
+    <aura:attribute name="OneTimePriceRanges" type="ProductPriceRangeWrapper[]" />
+    <aura:handler name="init" value="this" action="{!c.doinit}"/>
+    <aura:registerEvent name="overridePriceReturnEvent" type="c:overridePriceInCartReturnEvent"/>
+	<div aria-hidden="false" id="OverrideQtyInCartModal" role="dialog" class="slds-modal slds-modal--large slds-fade-in-open cmn_modelbox" style="display:block;">
+		<aura:renderIf isTrue="{!v.HideSpinner}">
+			<div class="slds-spinner_container" >
+				<div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+					<span class="slds-assistive-text">Loading, Please Wait...</span>
+					<div class="slds-spinner__dot-a"></div>
+					<div class="slds-spinner__dot-b"></div>
+				</div>
+			</div>
+		</aura:renderIf>
+		<div class="slds-modal__container custom-modal-container">
+			<div class="slds-modal__header">
+				<h1 class="slds-text-heading--small">Override Unit Price</h1>
+				<div id="showErrorrOverridePriceInCart" class="modal-error-msg" style="display:none;">
+					<ui:outputText value="{!v.message}"/>
+				</div>
+				<button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+					<c:svg class="slds-button__icon slds-button__icon--large"
+			        xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+			        ariaHidden="true"
+			        />
+				</button>
+			</div>
+			<div class="slds-modal__content slds-p-around_medium">
+				<div class="slds-grid slds-grid_vertical">
+                    <h3 class="slds-text-heading_small slds-text-align_center slds-m-bottom_small">{!v.AddedProductWrapper.prod.Name}</h3>
+                    <aura:renderIf isTrue="{!(and(not(empty(v.AddedProductWrapper.recurringprice)),(v.AddedProductWrapper.disableRecurring)))}">
+                        <div class="slds-form-element__row">
+                            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                <tr>
+                                    <td><b>Recurring Charge</b></td>
+                                </tr>
+                                <tr>
+                                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="">Tier</th>
+                                                <th class="">Starting Qty:</th>
+                                                <th class="">Ending Qty:</th>
+                                                <th class="">* Price:</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.RecurringPriceRanges}" var="PriceRange" indexVar="index">
+                                                <tr>
+                                                    <td>
+                                                        <lightning:formattedText value="{!'Tier '+PriceRange.level}" />                                                                                              
+                                                    </td>
+                                                    <td class="table-custom-label">
+                                                        <lightning:input type="number" value="{!PriceRange.quantityBeginRange}" label=""/>   
+                                                    </td>
+                                                    <td class="table-custom-label">
+                                                        <lightning:input type="number" value="{!PriceRange.quantityEndRange}" label=""/>   
+                                                    </td>
+                                                    <td class="table-custom-label">
+                                                        <lightning:input type="number" value="{!PriceRange.price}" label=""/>   
+                                                    </td>
+                                                </tr> 
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table> 
+                                </tr>
+                            </table>
+                        </div>
+                    </aura:renderIf>
+
+                    <aura:renderIf isTrue="{!(and(not(empty(v.AddedProductWrapper.oneTimePrice)),(v.AddedProductWrapper.disableonetime)))}">
+                        <div class="slds-form-element__row">
+                            <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                <tr>
+                                    <td><b>One Time Charge</b></td>
+                                </tr>
+                                <tr>
+                                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                        <thead>
+                                            <tr>
+                                                <th class="">Tier</th>
+                                                <th class="">Starting Qty:</th>
+                                                <th class="">Ending Qty:</th>
+                                                <th class="">* Price:</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <aura:iteration items="{!v.OneTimePriceRanges}" var="PriceRange" indexVar="index">
+                                                <tr>
+                                                    <td>
+                                                        <lightning:formattedText value="{!'Tier '+PriceRange.level}" />                                                                                              
+                                                    </td>
+                                                    <td class="table-custom-label">
+                                                        <lightning:input type="number" value="{!PriceRange.quantityBeginRange}" label=""/>   
+                                                    </td>
+                                                    <td class="table-custom-label">
+                                                        <lightning:input type="number" value="{!PriceRange.quantityEndRange}" label=""/>   
+                                                    </td>
+                                                    <td class="table-custom-label">
+                                                        <lightning:input type="number" value="{!PriceRange.price}" label=""/>   
+                                                    </td>
+                                                </tr> 
+                                            </aura:iteration>
+                                        </tbody>
+                                    </table> 
+                                </tr>
+                            </table>
+                        </div>
+                    </aura:renderIf>
+                </div>
+			</div>
+			<div class="slds-modal__footer">
+				<div class="slds-x-small-buttons--horizontal">
+					<button class="slds-button slds-button--neutral"  onclick="{!c.closeModalBox}">Cancel</button>
+					<button class="slds-button slds-button--neutral slds-button--brand" onclick="{!c.overridePrices}">Finish</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="slds-backdrop slds-backdrop--open" id="backGroundSectionOverrideQtyInCartModal" style="display:block;"></div>
+</aura:component>

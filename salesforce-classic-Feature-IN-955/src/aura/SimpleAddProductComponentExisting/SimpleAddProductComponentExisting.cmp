@@ -1,0 +1,142 @@
+<aura:component access="GLOBAL" controller="TractOppProductSimple">
+    <aura:attribute name="addedProduct" type="product2[]" access="global"/>
+    <aura:attribute name="addedProductWrapper" type="Product2AddWrapper[]" access="global"/>
+    <aura:attribute name="proWrap" type="Product2AddWrapper"/>
+    <aura:attribute name="oppId" type="String" access="global"/>
+    <aura:attribute name="proName" type="String"/>
+    <aura:attribute name="priceListValue" type="String" default=" "/>
+    <aura:attribute name="ProdCount" type="Integer" />
+    <aura:attribute name="message" type="String" default="NoError"/>
+    
+    <aura:handler name="init" value="this" action="{!c.doinit}" />
+    
+    <div class="product-modal-parent">
+        <div class = "modal-header slds-modal__header">
+            <h2 class ="title slds-text-heading--medium"> 
+                Configured Selected Products 
+            </h2><br/>
+            <div id="showErrorProductCart" class="configured-error-message" style="display:none;text-align:center;">
+            	<ui:outputText value="{!v.message}"/>
+         	</div>
+        </div>
+        <div class="product-slds-sec-details">
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer configured-select-product">
+            <thead>
+            	<tr class="slds-text-heading--label " >
+                    <th class="slds-truncate slds-is-sortable thAlign">
+                    </th>
+                    <th class="slds-truncate slds-is-sortable thAlign">
+                        <div class="slds-truncate" title="Product Name">Name</div>
+                    </th>
+                    
+                    
+                    <th class="slds-truncate slds-is-sortable thAlign">
+                        <div class="slds-truncate" title="Product Description">priceList</div>
+                    </th>
+                    
+                    <th class="slds-truncate slds-is-sortable thAlign">
+                        <div class="slds-truncate" title="Product Description">Recurrence</div>
+                    </th>
+                    <th class="slds-truncate slds-is-sortable thAlign">
+                        <div class="slds-truncate" title="Product Description">Quantity</div>
+                    </th>
+                    
+                    <th class="slds-truncate slds-is-sortable thAlign">
+                        <div class="slds-truncate" title="Discount">Discount</div>
+                    </th>
+                    
+                    <th class="slds-truncate slds-is-sortable thAlign">
+                        <div class="slds-truncate" title="Discount">Agreement</div>
+                    </th>
+                    
+                    <th class="slds-truncate slds-is-sortable thAlign">
+                        <div class="slds-truncate" title="Price">Price</div>
+                    </th>
+                </tr>
+                </thead>
+                <aura:iteration items="{!v.addedProductWrapper}" var="pro" indexVar="index">
+                    <tbody>
+	                    <tr class="configured-select-heading">
+                            <th  class="slds-truncate slds-is-sortable thAlign">
+                                <ui:outputText aura:id="counter"  class="slds-output" value="{!index+1}"/> 
+                            </th>
+                            <th><ui:outputText aura:id="parentProdName"  class="slds-output" value="{!pro.prod.Name}"/>  </th>  
+                            
+                            <th>  
+                                <ui:inputSelect aura:id="parentPriceList" change="{!c.onParentPriceListChange}" class="slds-select" value="{!pro.priceListValue1}" disabled="{!pro.existing}">
+                                    <aura:iteration items="{!pro.productPriceList}" var="priceList">
+                                        <ui:inputSelectOption text="{!priceList.value + ':' + index}" label="{!priceList.label}"/> 
+                                    </aura:iteration>
+                                </ui:inputSelect> 
+                            </th>
+
+                            <th>
+                                <aura:renderIf isTrue="{!pro.recurrenceoptList.length > 0}">
+                                    <ui:inputSelect aura:id="parentRecurPeriod" class="slds-select bill-cycle-select" change="{!c.onParentRecurPerChange}" value="{!pro.recurrencPer}" disabled="{!pro.existing}">
+                                        <aura:iteration items="{!pro.recurrenceoptList}" var="recList">
+                                            <ui:inputSelectOption text="{!recList.value + ':' + index}" label="{!recList.label}" value = "{!recList.value == pro.recurrencPerValue}"/>
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </aura:renderIf> 
+                            </th>
+                            <th><ui:inputText class="slds-input slds-output slds-size--1-of-1" value="{!pro.quantity}" disabled="true"/></th>
+                            
+                            <th><ui:inputText class="slds-input" value="{!pro.discountName}" change="{!c.onDiscountChange}" disabled="{!pro.existing}"/></th>  
+                            <th>
+                                <aura:renderIf isTrue="{!pro.agreements.agreementList.length > 0}">
+                                    <ui:inputSelect aura:id="parentAgreementValue" value="{!pro.agreementId}" disabled="{!or(pro.existing,!pro.agreements.hasAgreement)}">
+                                        <aura:iteration items="{!pro.agreements.agreementList}" var="agreement" >
+                                            <ui:inputSelectOption text="{!agreement.value}" label="{!agreement.label}" value = "{!agreement.value == pro.agreementId}"/>
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </aura:renderIf>
+                            </th>     
+                            <th><ui:outputText class="slds-output slds-size--1-of-1"/><ui:outputText aura:id="parentTotalPrice"  class="slds-output" value="{!pro.totelPriceValue}"/></th>   
+                        </tr>
+                   </tbody>
+                    <aura:iteration items="{!pro.childProducts}" var="chilld" indexVar="Childindex">
+                        <tr class="configured-inner-product">
+                            <td> </td>
+                            <td><ui:outputText aura:id="prodName"  class="slds-output" value="{!chilld.prod.Name}"/>  </td>  
+                            
+                            <td>  
+                                <ui:inputSelect aura:id="priceList" change="{!c.onPriceListChange}" class="slds-select" value="{!chilld.priceListValue1}" disabled="{!chilld.existing}">
+                                    <aura:iteration items="{!chilld.productPriceList}" var="priceList">
+                                        <ui:inputSelectOption text="{!priceList.value +':' + Childindex + ':' + index}" label="{!priceList.label}" value = "{!priceList.value == chilld.priceListValue1}"/> 
+                                    </aura:iteration>
+                                </ui:inputSelect> 
+                            </td>
+                            
+                            <td>
+                                <aura:renderIf isTrue="{!chilld.recurrenceoptList.length > 0}">
+                                    <ui:inputSelect aura:id="recurPeriod" class="slds-select bill-cycle-select" change="{!c.onRecurPerChange}" value="{!chilld.recurrencPer}" disabled="{!chilld.existing}" >
+                                        <aura:iteration items="{!chilld.recurrenceoptList}" var="recList">
+                                            <ui:inputSelectOption text="{!recList.value + ':' + Childindex + ':' + index}" label="{!recList.label}" value = "{!recList.value == chilld.recurrencPerValue}"/>
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </aura:renderIf> 
+                            </td>
+                            <td><ui:inputText class="slds-input" value="{!chilld.quantity}" updateOn="keyup" keyup="{!c.onQuantityChange}" label="{!Childindex + ':' + index}" labelClass="ItemLabel" /></td>
+                            
+                            <td><ui:inputText class="slds-input" value="{!chilld.discountName}" change="{!c.onDiscountChange}" disabled="{!chilld.existing}" /></td>  
+                            <td>
+                                <aura:renderIf isTrue="{!chilld.agreements.agreementList.length > 0}">
+                                    <ui:inputSelect aura:id="agreementValue" value="{!chilld.agreementId}" disabled="{!or(chilld.existing,!chilld.agreements.hasAgreement)}">
+                                        <aura:iteration items="{!chilld.agreements.agreementList}" var="agreement" >
+                                            <ui:inputSelectOption text="{!agreement.value}" label="{!agreement.label}" value = "{!agreement.value == chilld.agreementId}"/>
+                                        </aura:iteration>
+                                    </ui:inputSelect>
+                                </aura:renderIf>
+                            </td>     
+                            <td><ui:outputText class="slds-output"/><ui:outputText aura:id="prodName"  class="slds-output" value="{!chilld.totelPriceValue}"/></td>   
+                        </tr>
+                    </aura:iteration>
+                </aura:iteration>
+            </table>
+        </div>
+        <div class = "modal-footer slds-modal__footer" id="billingAccountFooter">
+            <button class="slds-button slds-button--neutral" type="button"  onclick="{!c.cancelBtn}">Cancel</button>
+            <button class="slds-button slds-button--brand" type="button" onclick="{!c.createOrder}">Finish</button>
+        </div>
+    </div>
+</aura:component>

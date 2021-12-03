@@ -1,0 +1,6 @@
+<aura:event type="APPLICATION" description="Event template">
+        <aura:attribute name="thisWrapper"
+        access="global"
+        type="PriceListWrapper" 
+        description="TO pass Account Id to reload the component"/>
+</aura:event>

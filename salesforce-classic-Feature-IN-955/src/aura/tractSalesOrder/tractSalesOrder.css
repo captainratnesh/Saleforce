@@ -1,0 +1,321 @@
+.THIS .account-sec {
+    font-size: 13px;
+    position: relative
+}
+.THIS .account-sec .form-horizontal .form-group {
+    margin-right: 0;
+    margin-left: 0
+}
+.THIS html body.sfdcBody {
+    padding: 0
+}
+.THIS .account-sec .bg-primary {
+    padding: 5px 10px;
+    font-size: 14px; 
+    background: #eaebed;
+    color: rgb(22, 50, 92);
+    font-weight: 600;
+    color: #2a94d6
+}
+.THIS .account-sec .form-horizontal .control-label {
+    padding-top: 0
+}
+.THIS .service-table table {
+    width: 100%
+}
+.THIS .service-table table th {
+    color: #647687;
+    padding: 5px 7px;
+    border-bottom: 1px solid #d8dde6;
+    vertical-align: top;
+    font-size: 12px
+}
+.THIS .service-table table td {
+    color: #647687;
+    padding: 5px 7px;
+    border-bottom: 1px solid #d8dde6;
+    vertical-align: top
+}
+.THIS .service-table table td:first-child {
+    padding-left: 10px
+}
+.THIS .service-table2 table td {
+    font-size: 14px
+}
+.THIS .service-table2 table td:first-child {
+    font-weight: 700
+}
+.THIS .service-table table th:first-child {
+    padding-left: 10px
+}
+.THIS .service-table table td a {
+    white-space: nowrap
+}
+.THIS .service-table table td span {
+    display: block
+}
+.THIS .account-sec .form-group .uiOutputText {
+    display: block;
+    padding-top: 1px
+}
+.THIS .service-table table tr:last-child td {
+    border: none
+}
+.THIS .account-sec.panel .panel-heading {
+    padding: 10px 15px
+}
+.THIS .account-details .panel-body {
+    padding: 0 0 15px 0;
+    background: #f4f6f9;
+}
+.THIS .account-details .panel-body.heading {
+    padding: 0 0 15px 0;
+    border-radius: 5px
+}
+.THIS .account-details {
+    margin: 15px 15px 30px;
+    border: 1px solid #d8dde6;
+    border-radius: 5px;
+    font-size: 13px;
+}
+.THIS .loader {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.3);
+    width: 99.7%;
+    height: 100%;
+    top: 0;
+    z-index: 999
+}
+.THIS .loader img {
+    position: absolute;
+    left: 50%;
+    top: 2%;
+    transform: translate(-20%, 160px);
+    -webkit-transform: translate(-20%, 160px);
+}
+.THIS .btn-details {
+    width: 100%;
+    text-align: right;
+    padding: 15px 15px 0;
+    overflow: hidden
+}
+.THIS .btn-details .slds-button .label {
+    text-shadow: none;
+    font-size: 11px;
+    background-color: rgb(255, 255, 255);
+    color: #2886d9;
+    padding: 5px 10px;
+    border-radius: .25rem;
+    border: 1px solid rgb(216, 221, 230);
+    line-height: 18px;
+}
+.THIS .btn-details .uiButton--default {
+    background: none;
+    border: none;
+    padding: 0;
+    box-shadow: none;
+    text-shadow: none;
+    color: #2886d9
+}
+.THIS .btn-details .slds-button:focus {
+    box-shadow: 0 0 3px rgb(0, 112, 210);
+    outline: none;
+}
+.THIS .btn-details .slds-button:hover .label {
+    border: 1px solid rgb(216, 221, 230);
+    background-color: rgb(244, 246, 249);
+}
+.THIS .uiButton--default.cmn-btn .label {
+    text-shadow: none;
+    font-size: 12px;
+    background-color: rgb(255, 255, 255);
+    color: #2886d9;
+    padding: 3px 20px;
+    border-radius: .25rem;
+    border: 1px solid rgb(200, 204, 213);
+    line-height: 18px;
+}
+.THIS .uiButton--default.cmn-btn {
+    float: right;
+    background: none;
+    border: none;
+    padding: 0;
+    box-shadow: none;
+    text-shadow: none;
+    color: #2886d9
+}
+.THIS .account-details .panel-body.last {
+    border-radius: 5px 5px 5px 5px
+}
+.THIS .cmn-table-responsive {
+    width: 100%;
+    overflow: auto
+}
+.THIS .tract-model .slds-button.model-btn {
+    padding: 0.6rem 1rem;
+    font-size: 11px
+}
+.THIS .tract-model h1 {
+    font-weight: 400
+}
+.THIS .tract-model tr select {
+    padding: 3px 10px;
+    background: #fff
+}
+.THIS .font_size {
+    font-size: 13px;
+    line-height: 17px
+}
+.THIS .cmn_modelbox .slds-modal__footer .slds-button--neutral {
+    text-shadow: none;
+    font-size: 11px;
+    color: #2886d9;
+}
+.THIS .cmn_modelbox .slds-modal__footer .slds-button--neutral.slds-button--brand {
+    color: #fff
+}
+.THIS .cmn_modelbox .account-details {
+    margin-bottom: 15px
+}
+.THIS .cmn_modelbox .service-table table tr td select {
+    height: 32px;
+    background: #fff;
+    border: 1px solid #d8dde6;
+    padding: 0 10px;
+    border-radius: .25rem;
+    width: 100%;
+    color: #647687
+}
+.THIS .cmn_modelbox h2 {
+    font-size: 19px
+}
+.THIS .cmn_modelbox tr td input[type="text"] {
+    padding: 0 10px;
+    border-radius: .25rem;
+    color: #647687;
+    height: 32px;
+}
+.THIS .cmn_modelbox tr td form {
+    position: relative;
+}
+.THIS .cmn_modelbox .uiInput--datetime .datePicker-openIcon,
+.THIS .cmn_modelbox .uiInput--datetime .clearIcon {
+    position: absolute;
+    right: 10px;
+    top: 8px;
+    left: auto
+}
+.THIS .cmn_modelbox .uiDatePicker--default a {
+    height: 30px;
+    line-height: 30px;
+    font-size: 17px
+}
+.THIS a.uiDayInMonthCell--default {
+    width: 100%;
+    height: 28px;
+    line-height: 28px;
+    font-size: 17px
+}
+.THIS body,
+.THIS html {
+    font-size: 100%!important
+}
+.THIS .cmn_modelbox .uiInputDefaultError li {
+    margin-left: 0
+}
+.THIS .cmn_error_msg {
+    font-size: 13px;
+    color: rgb(194, 57, 52);
+}
+.THIS .cmn_modelbox .service-table table td {
+    padding: 8px 0 8px 7px
+}
+.THIS .cmn_modelbox tr td input[type="text"].input-amount {
+    width: 89%
+}
+.THIS .cmn_modelbox tr td input[type="text"].input-charge {
+    margin-bottom: 8px
+}
+.THIS .per-txt {
+    float: right;
+    padding: 6px 0 15px 0
+}
+.THIS .rule-row {
+    overflow: hidden;
+    padding-top: 5px;
+}
+.THIS .rule-row label {
+    font-weight: 400
+}
+.THIS .rule-col {
+    width: 48%;
+    float: left;
+}
+.THIS .rule-col+ .rule-col {
+    float: right
+}
+.THIS .charge-input-col {
+    width: 48%;
+    float: left;
+}
+.THIS .charge-input-col+.charge-input-col {
+    float: right
+}
+.THIS .ruq-error {
+    color: red;
+    display: inline!important
+}
+.THIS .firstP {
+    color: rgb(0, 112, 210);
+}
+.THIS .open-sales-order .slds-button {
+    z-index: 1;
+    position: static
+}
+.THIS .sales-order-details .service-table table td:first-child {
+    width: 15px
+}
+.THIS .sales-order-details .service-table table td,
+.THIS .sales-order-details .service-table table th {
+    text-align: right;
+    padding: 7px 12px
+}
+.THIS .sales-order-details .service-table table td:first-child,
+.THIS .sales-order-details .service-table table th:first-child {
+    text-align: left
+}
+.THIS .sales-order-details .service-table table td:nth-child(2) {
+    text-align: left
+}
+.THIS .sales-order-details .service-table table td:nth-child(2) p:first-child,
+.THIS .sales-order-details .service-table table td:nth-child(2) p:last-child {
+    margin-bottom: 0
+}
+.THIS .sales-order-details .service-table table td:nth-child(2) p {
+    margin-bottom: 5px
+}
+.THIS .sales-order-details .service-table table .tfootStyle td:nth-child(2) {
+    text-align: right
+}
+@media only screen and (max-width: 999px) and (orientation: portrait) {
+    .THIS a.uiDayInMonthCell--default {
+        width: 100%;
+        height: 26px;
+        line-height: 26px;
+        font-size: 17px
+    }
+}
+@media (min-width: 48em) {
+    .THIS .slds-modal__container {
+        width: 100%;
+    }
+}
+@media (max-width:767px) {
+    .THIS .service-table-details {
+        width: 100%;
+        overflow-x: auto
+    }
+    .THIS .account-sec.panel .panel-heading {
+        font-size: 1 px
+    }
+}

@@ -1,0 +1,508 @@
+<aura:component access="GLOBAL" controller="TractProductDetailExt" >
+    <ltng:require styles="/resource/TRACT3__SLDS/assets/styles/salesforce-lightning-design-system.min.css"/>
+    <aura:attribute name="productId" type="String" />
+    <aura:attribute name="hasProductEid" type="Boolean" />
+    <aura:attribute name="versionAPI" type="Boolean" />
+    <aura:attribute name="productEid" type="String" />
+    <aura:attribute name="isOneTimeProduct" type="Boolean" />
+    <aura:attribute name="getUITheme" type="String"/>
+    <aura:attribute name="oneTimeProductPriceList" type="ProductPriceWrapper[]"/>
+    <aura:attribute name="recurringProductPriceList" type="ProductPriceWrapper[]"/>
+    <aura:attribute name="agreementList" type="ProductAgreementWrapper[]"/>
+    <aura:attribute name="discountCodeList" type="DiscountCodeWrapper[]"/> 
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+    <aura:attribute name="HideSpinner" type="Boolean" default="true"/>
+    <aura:handler event="c:ReloadProductDetail" action="{!c.jsLoaded}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:attribute name="productCustomFieldValueWrapperList" type="ProductCustomFieldValueWrapper[]"/>
+    <aura:attribute name="productRelationWrapperList" type="ProductRelationWrapper[]"/>  
+    
+    <aura:renderIf isTrue="{!v.HideSpinner}">
+        <div class="slds-spinner_container" >
+            <div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+                <span class="slds-assistive-text">Loading, Please Wait...</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div> 
+    </aura:renderIf>
+    <aura:html tag="style">
+        html body.sfdcBody{padding:0}
+    </aura:html>
+    {!v.body}
+    <div>  
+        <div class="main-product-sec">
+        <aura:renderIf isTrue="{!v.versionAPI}">
+            <div class="common-product-details"> 
+                <div class="slds-box">
+                    <div class="slds-grid slds-grid_align-spread slds-border_bottom">
+                        <h3 class="slds-text-heading--small border-bottom-none">Custom Fields</h3>
+                            <lightning:button label="Add" variant="neutral" class="custom-add-btn" onclick="{!c.showProductCustomFieldConfigurationModal}"/>
+                    </div>
+                    <div >
+                        <div class="product-chart-box">
+                            <table class="slds-table slds-table--bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="head">Name</th>
+                                        <th class="head">Value</th>
+                                    </tr>
+                                </thead>
+                                <aura:iteration items="{!v.productCustomFieldValueWrapperList}" var="prodCustomField">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <ui:outputText aura:id="customFieldName" class="slds-output"
+                                                                    value="{!prodCustomField.name}"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText aura:id="CustomfieldValue" class="slds-output"
+                                                                value="{!prodCustomField.value}"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </aura:iteration>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </aura:renderIf>
+            <aura:renderIf isTrue="{!!v.isOneTimeProduct}">
+            <div class="common-product-details"> 
+                <div class="slds-box">
+                    <div class="slds-grid slds-grid_align-spread slds-border_bottom">
+                        <h3 class="slds-text-heading--small border-bottom-none">Recurring Product Prices</h3>
+                        <aura:renderIf isTrue="{!v.hasProductEid}">
+                            <lightning:button label="Add" variant="neutral" class="custom-add-btn" onclick="{!c.createRecurringPriceModal}"/>
+                            <aura:set attribute="else">
+                                <lightning:button label="Add" variant="neutral" class="custom-add-btn" disabled="true"/>
+                            </aura:set>
+                            
+                        </aura:renderIf>
+                    </div>
+                    <div >
+                        <div class="product-chart-box">
+                            <table class="slds-table slds-table--bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="head">Price Type</th>
+                                        <th class="head">From Date</th>
+                                        <th class="head">Auto-Payment Required</th>
+                                        <th class="head">Price</th>
+                                        <th class="head">Currency</th>
+                                        <th class="head">Pay on Purchase</th>
+                                        <th class="head">Price Override</th>
+                                        <th class="head">Recurrence Period</th>
+                                        <th class="head">Schedule Charge</th>
+                                        <th class="head">Thru Date</th>
+                                    </tr>
+                                </thead>
+                                
+                                <aura:iteration items="{!v.recurringProductPriceList}" var="productPrice" indexVar="count">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <a onclick="{!c.showRecurringPriceDetails}" data-count="{!count}">Recurring Charge</a>
+                                            </td>
+                                            <td>
+                                                <ui:outputDate aura:id="fromDate" class="slds-output"
+                                                               value="{!productPrice.fromDate}" format="MM/dd/yyyy"/>
+                                            </td>
+                                            <td>
+                                                <aura:if isTrue="{!productPrice.recurringPaymentRequired}">
+                                                    <ui:outputText aura:id="AutoPaymentRequired" class="slds-output"
+                                                                   value="true"/>
+                                                    <aura:set attribute="else">
+                                                        <ui:outputText aura:id="AutoPaymentRequired" class="slds-output"
+                                                                       value="false"/>
+                                                    </aura:set>
+                                                </aura:if> 
+                                            </td>
+                                            <td>
+                                                <div class="slds-box">
+                                                    <table class="cmn-table-responsive">
+                                                        <tr>
+                                                            <th>Tier</th>
+                                                            <th>Starting QTY</th>
+                                                            <th>Ending QTY</th>
+                                                            <th>List Price</th>
+                                                        </tr>
+                                                        <aura:iteration items="{!productPrice.priceRangesList}" var="productPriceRange">
+                                                            <tr>
+                                                                <td>
+                                                                    <ui:outputText aura:id="Level" class="slds-output"
+                                                                                   value="{!'Tier '+productPriceRange.level}"/>
+                                                                </td>
+                                                                <td>
+                                                                    <ui:outputNumber aura:id="startQuantity" class="slds-output"
+                                                                                     value="{!productPriceRange.quantityBeginRange}" />
+                                                                </td>
+                                                                <td>
+                                                                    <ui:outputNumber aura:id="EndQuantity" class="slds-output"
+                                                                                     value="{!productPriceRange.quantityEndRange}" format=".00"/>
+                                                                </td>
+                                                                <td>            
+                                                                    <ui:outputNumber aura:id="price" class="slds-output"
+                                                                                     value="{!productPriceRange.price}" format=".00"/>
+                                                                </td>
+                                                            </tr>
+                                                        </aura:iteration>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <ui:outputText aura:id="Currency" class="slds-output"
+                                                               value="{!productPrice.currencyType}"/>
+                                            </td>
+                                            <td>
+                                                <aura:if isTrue="{!productPrice.paymentOnPurchaseRequired}">
+                                                    <ui:outputText aura:id="payOnPurchase" class="slds-output"
+                                                                   value="true"/>
+                                                    <aura:set attribute="else">
+                                                        <ui:outputText aura:id="payOnPurchase" class="slds-output"
+                                                                       value="false"/>
+                                                    </aura:set>
+                                                </aura:if> 
+                                            </td>
+                                            <td>
+                                                <aura:if isTrue="{!productPrice.priceOverride}">
+                                                    <ui:outputText aura:id="priceOverride" class="slds-output"
+                                                                   value="true"/>
+                                                    <aura:set attribute="else">
+                                                        <ui:outputText aura:id="priceOverride" class="slds-output"
+                                                                       value="false"/>
+                                                    </aura:set>
+                                                </aura:if> 
+                                            </td>
+                                            <td>
+                                                <ui:outputText aura:id="recurrencePeriod" class="slds-output"
+                                                               value="{!productPrice.recurrencePeriod}"/>
+                                            </td>
+                                            
+                                            <td>
+                                                <aura:if isTrue="{!productPrice.scheduledCharges}">
+                                                    <ui:outputText aura:id="scheduleCharge" class="slds-output"
+                                                                   value="true"/>
+                                                    <aura:set attribute="else">
+                                                        <ui:outputText aura:id="scheduleCharge" class="slds-output"
+                                                                       value="false"/>
+                                                    </aura:set>
+                                                </aura:if> 
+                                            </td>
+                                            <td>
+                                                <ui:outputDate aura:id="thruDate" class="slds-output"
+                                                               value="{!productPrice.thruDate}" format="MM/dd/yyyy"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </aura:iteration>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </aura:renderIf>
+            
+            
+            <div class="common-product-details"> 
+                <div class="slds-box">
+                    <div class="slds-grid slds-grid_align-spread slds-border_bottom">
+                        <h3 class="slds-text-heading--small border-bottom-none">One-Time Product Prices</h3>
+                        <aura:renderIf isTrue="{!v.hasProductEid}">
+                            <lightning:button label="Add" variant="neutral" class="custom-add-btn" onclick="{!c.createOneTimePriceModel}"/>
+                            <aura:set attribute="else">
+                                <lightning:button label="Add" variant="neutral" class="custom-add-btn" disabled="true"/>
+                            </aura:set>
+                            
+                        </aura:renderIf>
+                    </div>
+                    
+                    <div >
+                        <div class="product-chart-box">
+                            <table class="slds-table slds-table--bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="head">From Date</th>
+                                        <th class="head">Auto-Payment Required</th>
+                                        <th class="head">Price</th>
+                                        <th class="head">Currency</th>
+                                        <th class="head">Pay on Purchase</th>
+                                        <th class="head">Price Override</th>
+                                        <th class="head">Recurrence Period</th>
+                                        <th class="head">Schedule Charge</th>
+                                        <th class="head">Thru Date</th>
+                                    </tr>
+                                </thead>
+                                <aura:iteration items="{!v.oneTimeProductPriceList}" var="productPrice">
+                                    <thead>
+                                        <tr>
+                                            <td>
+                                                <ui:outputDate aura:id="fromDate" class="slds-output"
+                                                               value="{!productPrice.fromDate}" format="MM/dd/yyyy"/>
+                                            </td>
+                                            <td>
+                                                <aura:if isTrue="{!productPrice.recurringPaymentRequired}">
+                                                    <ui:outputText aura:id="AutoPaymentRequired" class="slds-output"
+                                                                   value="true"/>
+                                                    <aura:set attribute="else">
+                                                        <ui:outputText aura:id="AutoPaymentRequired" class="slds-output"
+                                                                       value="false"/>
+                                                    </aura:set>
+                                                </aura:if> 
+                                            </td>
+                                            <td>
+                                                <div class="slds-box">
+                                                    <table class="cmn-table-responsive">
+                                                        <tr>
+                                                            <th>Tier</th>
+                                                            <th>Starting QTY</th>
+                                                            <th>Ending QTY</th>
+                                                            <th>List Price</th>
+                                                        </tr>
+                                                        <aura:iteration items="{!productPrice.priceRangesList}" var="productPriceRange">
+                                                            <tr>
+                                                                <td>
+                                                                    <ui:outputText aura:id="Level" class="slds-output"
+                                                                                   value="{!'Tier '+productPriceRange.level}"/>
+                                                                </td>
+                                                                <td>
+                                                                    <ui:outputNumber aura:id="startQuantity" class="slds-output"
+                                                                                     value="{!productPriceRange.quantityBeginRange}" />
+                                                                </td>
+                                                                <td>
+                                                                    <ui:outputNumber aura:id="EndQuantity" class="slds-output"
+                                                                                     value="{!productPriceRange.quantityEndRange}" format=".00"/>
+                                                                </td>
+                                                                <td>            
+                                                                    <ui:outputNumber aura:id="price" class="slds-output"
+                                                                                     value="{!productPriceRange.price}" format=".00"/>
+                                                                </td>
+                                                            </tr>
+                                                        </aura:iteration>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <ui:outputText aura:id="Currency" class="slds-output"
+                                                               value="{!productPrice.currencyType}"/>
+                                            </td>
+                                            <td>
+                                                <aura:if isTrue="{!productPrice.paymentOnPurchaseRequired}">
+                                                    <ui:outputText aura:id="payOnPurchase" class="slds-output"
+                                                                   value="true"/>
+                                                    <aura:set attribute="else">
+                                                        <ui:outputText aura:id="payOnPurchase" class="slds-output"
+                                                                       value="false"/>
+                                                    </aura:set>
+                                                </aura:if> 
+                                            </td>
+                                            <td>
+                                                <aura:if isTrue="{!productPrice.priceOverride}">
+                                                    <ui:outputText aura:id="priceOverride" class="slds-output"
+                                                                   value="true"/>
+                                                    <aura:set attribute="else">
+                                                        <ui:outputText aura:id="priceOverride" class="slds-output"
+                                                                       value="false"/>
+                                                    </aura:set>
+                                                </aura:if> 
+                                            </td>
+                                            <td>
+                                                <ui:outputText aura:id="recurrencePeriod" class="slds-output"
+                                                               value="{!productPrice.recurrencePeriod}"/>
+                                            </td>
+                                            
+                                            <td>
+                                                <aura:if isTrue="{!productPrice.scheduledCharges}">
+                                                    <ui:outputText aura:id="scheduleCharge" class="slds-output"
+                                                                   value="true"/>
+                                                    <aura:set attribute="else">
+                                                        <ui:outputText aura:id="scheduleCharge" class="slds-output"
+                                                                       value="false"/>
+                                                    </aura:set>
+                                                </aura:if> 
+                                            </td>
+                                            <td>
+                                                <ui:outputDate aura:id="thruDate" class="slds-output"
+                                                               value="{!productPrice.thruDate}" format="MM/dd/yyyy"/>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    
+                                </aura:iteration>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="common-product-details"> 
+                <div class="slds-box">
+                    <div class="slds-grid slds-grid_align-spread slds-border_bottom">
+                        <h3 class="slds-text-heading--small border-bottom-none">Related Products</h3>
+                    </div>
+                    <div >
+                        <div class="product-chart-box">
+                            <table class="slds-table slds-table--bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="head">Product Name</th>
+                                        <th class="head">Relationship Type</th>
+                                        <th class="head">Scope</th>
+                                        <th class="head">Actions</th>
+                                    </tr>
+                                </thead>
+                                <aura:iteration items="{!v.productRelationWrapperList}" var="productRelation" indexVar="count">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <ui:outputText aura:id="ProductName" class="slds-output"
+                                                                    value="{!productRelation.productName}"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText aura:id="relationshipType" class="slds-output"
+                                                                value="{!productRelation.relationShipType}"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText aura:id="Scope" class="slds-output"
+                                                                    value="{!productRelation.scope}"/>
+                                            </td>
+                                            <td>
+                                                <a onclick="{!c.deleteProductRelation}" data-count = "{!count}" >
+                                                    <u>Delete</u>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </aura:iteration>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="common-product-details"> 
+                <div class="slds-box">
+                    <div class="slds-grid slds-grid_align-spread slds-border_bottom">
+                        <h3 class="slds-text-heading--small border-bottom-none">Associated Agreements</h3>
+                       
+                <aura:renderIf isTrue="{!v.hasProductEid}">
+                        <lightning:button label="Add" variant="neutral" class="custom-add-btn" onclick="{!c.clickCreateAgreement}"/>
+                    <aura:set attribute="else">
+                        <lightning:button label="Add" variant="neutral" class="custom-add-btn" disabled="true"/>
+                    </aura:set>
+                    
+                </aura:renderIf>
+                    </div>
+                    <div >
+                        <div class="product-chart-box">
+                            <table class="slds-table slds-table--bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="head">Name</th>
+                                        <th class="head">Agreement Period</th>
+                                        <th class="head">Renew Action</th>
+                                        <th class="head">Adjustment Category</th>
+                                        <th class="head">Termination Charge</th>
+                                        <th class="head">Actions</th>
+                                    </tr>
+                                </thead>
+                                <aura:iteration items="{!v.agreementList}" var="agreement" indexVar="count">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <ui:outputText aura:id="AgreementName" class="slds-output"
+                                                               value="{!agreement.name}"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText aura:id="AgreementPeriod" class="slds-output"
+                                                               value="{!agreement.agreementPeriod+' '+agreement.agreementPeriodType}"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText aura:id="RenewalAction" class="slds-output"
+                                                               value="{!agreement.endAction}"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText aura:id="AdjustmentCategory" class="slds-output"
+                                                               value="{!agreement.adjustmentCategory}"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText aura:id="TerminationCharge" class="slds-output"
+                                                               value="{!agreement.terminationFlatCharge}"/>
+                                            </td>
+                                            <td>
+                                                <a onclick="{!c.deleteAgre}" data-count = "{!count}" >
+                                                    <u>Delete</u>
+                                                </a>
+                                            </td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </aura:iteration>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+            
+            
+            <div class="common-product-details"> 
+                <div class="slds-box">
+                    <h3 class="slds-text-heading--small">Discount Codes</h3>
+                    <div >
+                        <div class="product-chart-box">
+                            <table class="slds-table slds-table--bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="head">Name</th>
+                                        <th class="head">Status</th>
+                                        <th class="head">Description</th>
+                                        <th class="head">ChargeCategory</th>
+                                        <th class="head">Available From</th>
+                                        <th class="head">Discount</th>
+                                        
+                                    </tr>
+                                </thead>
+                                <aura:iteration items="{!v.discountCodeList}" var="discountCode">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <ui:outputText aura:id="Name" class="slds-output"
+                                                               value="{!discountCode.name}"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText aura:id="status" class="slds-output"
+                                                               value="{!discountCode.status}"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText aura:id="description" class="slds-output"
+                                                               value="{!discountCode.description}"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText aura:id="chargeCategory" class="slds-output"
+                                                               value="{!discountCode.chargeCategory}"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText aura:id="availableFrom" class="slds-output"
+                                                               value="{!discountCode.availableFrom}"/>
+                                            </td>
+                                            <td>
+                                                <ui:outputText aura:id="discount" class="slds-output"
+                                                               value="{!discountCode.discount}"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </aura:iteration>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>	
+        </div>
+    </div>
+</aura:component>

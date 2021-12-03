@@ -1,0 +1,45 @@
+<apex:page standardController="Account" sidebar="false" showHeader="true" showQuickActionVfHeader="false">
+   
+    <apex:includeLightning />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+ <apex:stylesheet value="{!URLFOR($Resource.SLDS, '/assets/styles/salesforce-lightning-design-system.min.css')}"/>
+    <div id="vf-app">
+         
+    </div>
+    <div class="slds-spinner_container" id="test">
+      <div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+        <span class="slds-assistive-text">Loading</span>
+        <div class="slds-spinner__dot-a"></div>
+        <div class="slds-spinner__dot-b"></div>
+      </div> 
+    </div>
+    <script>
+        var getUITheme = "{!$User.UIThemeDisplayed}";
+        var accountId = "{!$CurrentPage.parameters.id}";
+        $Lightning.use("TRACT3:TabbedAccountApp", function() {
+                $Lightning.createComponent(
+                    "TRACT3:TabbedAccount",
+                    { "AccountId" : accountId,
+                    "getUITheme" : getUITheme},
+                    "vf-app",
+                    function(cmp) {
+                    $("#test").hide()
+                    });                        
+                });
+    </script>
+    <script type='text/javascript' src='/canvas/sdk/js/publisher.js'></script>
+<script> 
+    Sfdc.canvas.publisher.subscribe({name: "publisher.showPanel",
+        onData:function(e) {
+            Sfdc.canvas.publisher.publish({name:"publisher.setValidForSubmit", payload:"true"});
+    }});
+    Sfdc.canvas.publisher.subscribe({ name: "publisher.post",
+        onData: function(e) {
+            
+            alert("call some remote action here");
+            Sfdc.canvas.publisher.publish({ name: "publisher.close",
+                payload:{ refresh:"true" }});
+    }}); 
+</script>
+
+</apex:page>

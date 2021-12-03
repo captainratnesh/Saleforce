@@ -1,0 +1,31 @@
+<apex:page standardController="TRACT_Setup__c">
+    <apex:includeLightning />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+   <!-- <apex:stylesheet value="{!URLFOR($Resource.SLDS, '/assets/styles/salesforce-lightning-design-system.min.css')}"/> -->       
+  <style>
+       html{height:100%}
+    #vf-app{height: 100%;overflow: auto;box-sizing: border-box;background: url(/resource/TRACT3__lightningBlueBG) no-repeat;padding: 0.75rem;background-size: cover;}
+    .loader{position:absolute;background:rgba(0,0,0,0.3);width:99.7%;height:100%;top:0; z-index:999}
+    .loader img{position:absolute;left:50%;top:2%;transform:translate(-20%, 80px);-webkit-transform:translate(-20%,80px;  }
+    .slds-scope .slds-card,.slds-card{background-color:#000!important}
+  </style>
+    <div id="vf-app">
+         
+    </div> 
+    <div class="slds-spinner_container" id="test">
+      <div class="loader">
+            <img src="{!$Resource.TRACT3__SLDSSpinner}" class="img-responsive center-block" style="height: 100px;"/>
+         </div>
+    </div>
+    <script>
+        $Lightning.use("TRACT3:TractConfigurationApp", function() {
+                $Lightning.createComponent(
+                    "TRACT3:TractConfigComponentNew2",
+                    { },
+                    "vf-app",
+                    function(cmp) {
+                        $("#test").hide()
+                    });                        
+                });
+    </script>
+</apex:page>

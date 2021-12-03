@@ -1,0 +1,267 @@
+<aura:component access="GLOBAL" implements = "lightning:actionOverride,force:hasRecordId" controller="TractOppProduct_LT">
+<aura:registerEvent name="ServiesActionEvent" type="c:ServicesActionEvent"/>    
+<aura:attribute name="OLIId" type="String"/>
+<aura:attribute name="oppId" type="String" access="global" />
+<aura:attribute name="productWrapper" type="Product2AddWrapper"/>
+<aura:attribute name="columns" type="List" default = "[{label: 'Name',type: 'text',fieldName: 'Name'},
+                                                        {label: 'Value', type: 'text',fieldName: 'Value'}]"/>
+<aura:attribute name="columns2" type="List" default = "[{label: 'Charge Description',type: 'text',fieldName: 'SchdeuleDescription'},
+                                                        {label: 'Charge Date', type: 'Date',fieldName: 'SchdeuleDate'},{label: 'Charge Amount', type: 'text',fieldName: 'SchdeuleAmount'}]"/>
+<aura:attribute name="usageWrapList" type="ProductUsesWrapper[]"/>
+<aura:attribute name="HideSpinner" type="Boolean" default="true"/>
+<aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+<aura:handler event="aura:waiting" action="{!c.waiting}"/>
+<aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/> 
+<aura:handler event="c:SelectedAgreementReturnEvent" action="{!c.handleSelectedAgreementReturnEvent}" />
+<aura:handler event="c:ServiceResourceReturnAction" action="{!c.handleServiceResourceReturnAction}" />
+<aura:handler event="c:ConfigServiceCustomFieldReturnEvent" action="{!c.handleConfigServiceCustomFieldReturnEvent}" />
+<aura:handler event="c:ScheduleChargeReturnEvent" action="{!c.handleScheduleChargeReturnEvent}" />
+<aura:handler event="c:ConfigureChargeRuleAction" action="{!c.handleConfigureChargeRuleAction}"/>
+<aura:handler event="c:EditBasicProductDetailsReturnEvent" action="{!c.handleBasicProductEdit}"/>
+   
+
+ 
+<aura:html tag="style">
+    .slds-template_default{background:#fff;height:auto}
+    .slds-spinner_container.custom-spinner{z-index:9999!important}
+</aura:html>
+    <aura:renderIf isTrue="{!v.HideSpinner}">
+    <div class="slds-spinner_container custom-spinner">
+        <div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+            <span class="slds-assistive-text">Loading, Please Wait...</span>
+            <div class="slds-spinner__dot-a"></div>
+            <div class="slds-spinner__dot-b"></div>
+        </div>
+    </div> 
+
+</aura:renderIf>
+<div aria-labelledby="newexpenseform">
+    <!-- BOXED AREA -->
+    <div class="slds-box slds-theme_default ">
+        <h3 id="newexpenseform" class="slds-text-heading--medium slds-m-bottom--small font-normal slds-grid heading-box">
+            <lightning:icon iconName="standard:event" alternativeText="Event" />Edit Product
+        </h3>
+        <lightning:card >
+            
+            <aura:set attribute = "title">
+                <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                    <h3 class="slds-text-heading--small font-normal">Product Details</h3>
+                    <lightning:button label="Edit" 
+                                        
+                                        variant="neutral"
+                                        onclick="{!c.editBasicDetails}"/> 
+                    
+                </div>
+            </aura:set>
+            <!-- lightning:card body section starts -->
+            <p class="slds-p-horizontal_medium">
+                <!-- Forming a grid of two equal columns -->
+                
+                <div class="slds-box oli-table">
+                    <table class="slds-table slds-table_bordered">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Quantity</th>
+                                <th>Price List</th>
+                                <th>Recurring Price</th>                      
+                                <th>One Time Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <td>{!v.productWrapper.prod.Name}</td>
+                            <td>{!v.productWrapper.quantity}</td>              
+                            <td>{!v.productWrapper.priceListValue1}</td>
+                            <td><lightning:formattedNumber value="{!v.productWrapper.recurringprice}" style="currency" currencyCode="{!v.productWrapper.pricebookNames[1]}" currencyDisplayAs="symbol"/></td>
+                            <td><lightning:formattedNumber value="{!v.productWrapper.oneTimePrice}" style="currency" currencyCode="{!v.productWrapper.pricebookNames[1]}" currencyDisplayAs="symbol"/></td>
+                        </tbody>
+                    </table>
+                </div>
+            </p>    
+            
+        </lightning:card>
+        <lightning:card>
+            <aura:set attribute = "title">
+                <div class="slds-grid slds-grid_align-spread slds-grid--vertical-align-center">
+                    <h3 class="slds-text-heading--small font-normal">Agreement Details</h3>
+                    <lightning:button label="Edit" 
+                                        variant="neutral"
+                                        onclick="{!c.clickCreateAgreement}"/> 
+                    
+                </div>
+            </aura:set>
+            <!-- lightning:card body section starts -->
+            <p class="slds-p-horizontal_medium">
+                <div class="slds-box oli-table">
+                    <table class="slds-table slds-table_bordered">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Period</th>
+                                <th>End Action</th>
+                                <th>End Date</th>                      
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <td>{!v.productWrapper.agreementName}</td>
+                            <td>{!v.productWrapper.agreementPeriod} &nbsp; {!v.productWrapper.agreementPeriodType}</td>              
+                            <td>{!v.productWrapper.agreementEndAction}</td>
+                            <td>{!v.productWrapper.overrideAgreementEndDate}</td>
+                        </tbody>
+                    </table>
+                </div>
+                
+            </p>
+        </lightning:card>  
+        <aura:renderIf isTrue="{!v.productWrapper.minServiceResource > 0 || v.productWrapper.maxServiceResource > 0}"> 
+            <lightning:card >
+                <aura:set attribute = "title">
+                    <div class="slds-grid slds-grid_align-spread">
+                        <h3 class="slds-text-heading--small font-normal">Service Resource Details</h3>
+                        <lightning:button label="Edit"
+                                            variant="neutral"
+                                            onclick="{!c.clickCreateServiceResource}"/> 
+                        
+                    </div>
+                </aura:set>
+                <!-- lightning:card body section starts -->
+                <p class="slds-p-horizontal_medium">
+                    <!-- Forming a grid of two equal columns -->
+                    <div class="slds-grid">
+                        <div class="slds-col">
+                            <h1> <lightning:formattedText value="Current Service Resource: " />
+                                <b>{!v.productWrapper.newServiceResource}</b></h1>
+                        </div>
+                        <!--<div class="slds-col slds-size_1-of-2">
+                <lightning:button label="Edit Service Resource" 
+                                        class="newButton1"
+                                        variant="neutral"
+                                        onclick="{!c.clickCreateServiceResource}"/> 
+            </div>-->
+                    </div>
+                </p>
+            </lightning:card>
+        </aura:renderIf>
+        <lightning:card >
+            <aura:set attribute = "title">
+                <div class="slds-grid slds-grid_align-spread slds-grid--vertical-align-center">
+                    <h3 class="slds-text-heading--small font-normal">Service Custom Field Details</h3>
+                    <lightning:button label="Edit" 
+                                        variant="neutral"
+                                        onclick="{!c.clickCreateServiceCustomField}"/> 
+                    
+                </div>
+            </aura:set>
+            <div class="slds-col">
+                <div class="slds-m-horizontal_medium">
+                    <lightning:datatable class="oli-data-table"
+                                            
+                                            data="{! v.productWrapper.serviceCustomFieldValueList }"
+                                            columns="{! v.columns }"
+                                            keyField="id"
+                                            hideCheckboxColumn="true"/>
+                </div>
+            </div>
+            <!-- <div class="slds-col slds-size_1-of-2">$
+        <lightning:button label="Edit Service Custom Fields" 
+                                class="newButton2"
+                                variant="neutral"
+                                onclick="{!c.clickCreateServiceCustomField}"/> 
+    </div>-->       
+        </lightning:card>
+        <aura:renderIf isTrue="{!v.productWrapper.oneTimeChargeEnable}"> 
+            <lightning:card >
+                <aura:set attribute = "title">
+                    <div class="slds-grid slds-grid_align-spread slds-grid--vertical-align-center">
+                        <h3 class="slds-text-heading--small font-normal">Schedule Charge Details</h3>
+                        <lightning:button label="Edit"
+                                            variant="neutral"
+                                            onclick="{!c.clickCreateScheduleCharge}"/> 
+                        
+                    </div>
+                </aura:set>
+                <div class="slds-col">
+                    <div class="slds-m-horizontal_medium">
+                        <lightning:datatable class="oli-data-table"
+                                                
+                                                data="{! v.productWrapper.scheduleChargeList }"
+                                                columns="{! v.columns2 }"
+                                                keyField="id"
+                                                hideCheckboxColumn="true"/>
+                    </div>
+                </div>
+                <!--<div class="slds-col slds-size_1-of-2">
+                <lightning:button label="Edit Schedule Charges" 
+                                    class="newButton3"
+                                    variant="neutral"
+                                    onclick="{!c.clickCreateScheduleCharge}"/> 
+            </div>-->
+                
+            </lightning:card>
+        </aura:renderIf>
+        <aura:renderIf isTrue="{!v.productWrapper.ruleOverride}">
+            <lightning:card >
+                <aura:set attribute = "title">
+                    <div class="slds-grid slds-grid_align-spread slds-grid--vertical-align-center">
+                        <h3 class="slds-text-heading--small font-normal">Activity Charge Rule Details</h3>
+                        <lightning:button label="Edit" 
+                                            variant="neutral"
+                                            onclick="{!c.clickAddActivityCharge}"/> 
+                        
+                    </div>
+                </aura:set>
+                <p class="slds-p-horizontal_medium">
+                        <div class="slds-box oli-table">
+                            <table class="slds-table slds-table_bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Rule</th>
+                                        <th>Rate</th>
+                                        <th>Allowance</th>  
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                            <aura:iteration items="{!v.usageWrapList}" var="Usage" indexVar="count">
+                                <tbody>
+                                    <td>{!Usage.chargeName}</td>
+                                    <td>{!Usage.rule}</td>              
+                                    <td>{!Usage.rate}</td>
+                                    <td>{!Usage.taper}</td>
+                                    <td>{!Usage.status}</td>
+                                    <td>
+                                        <a onclick="{!c.removeChargeRule}" data-countdelete="{!count}">
+                                            <u>Delete</u>
+                                        </a>
+                                    </td>
+                                </tbody>
+                                </aura:iteration>
+                            </table>
+                        </div>
+                        
+                    </p>
+                
+            </lightning:card>
+        </aura:renderIf>
+        {!v.body}
+        <div class="slds-grid slds-grid_align-center slds-p-top_medium">
+            <lightning:button label="Close" 
+                                class="slds-button slds-button_destructive "
+                                variant="neutral"
+                                onclick="{!c.closeModalBox}"/>
+            <lightning:button label="Finish" 
+                                class="slds-button slds-button--neutral"
+                                variant="brand"
+                                onclick="{!c.saveChanges}"/>
+        </div>
+        
+        
+    </div>
+    
+    <!-- / BOXED AREA -->
+</div>
+
+<c:ConfigCustomFieldComponent />
+<c:ConfigureChargeRuleComponent />
+</aura:component>

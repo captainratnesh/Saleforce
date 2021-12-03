@@ -1,0 +1,76 @@
+<aura:component access="GLOBAL" controller="MarketPlaceController">
+    <aura:attribute name="marketPlaceWrap" type="MarketPlaceWrapper"/>
+    <aura:attribute name="ListsofPriceLists" type="PriceListWrapper[]"/>
+    <aura:attribute name="HideSpinner" type="Boolean" default="true"/>
+    <aura:registerEvent name="openPriceListProduct" type="c:GetPricelistProductEvt" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/> 
+    <div aria-hidden="false" id="PriceListModal" role="dialog" style="display:block;"> 
+            <aura:renderIf isTrue="{!v.HideSpinner}">
+                    <div class="loader">
+                        <img src="/resource/TRACT3__SLDS/assets/images/spinners/slds_spinner_brand.gif" class="img-responsive center-block" style="height: 100px;"/>
+                    </div>
+                </aura:renderIf>
+            <lightning:card >
+                    <aura:set attribute = "title">
+                            <div class="slds-grid slds-grid_align-spread slds-grid--vertical-align-center">
+                                    <h3 class="slds-text-heading--small font-normal">Marketplace General Information</h3>
+                                </div> 
+                            </aura:set>
+                            <p class="slds-p-horizontal_medium">
+                                    <div class="slds-box oli-table slds-p-around_none">
+                                        <table class="slds-table slds-table_bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Description</th>
+                                                </tr>
+                                            </thead>
+                                     
+                                            <tbody>
+                                              <td>
+                                            
+                                                {!v.marketPlaceWrap.name}
+                                              </td>              
+                                              <td>{!v.marketPlaceWrap.description}</td>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                </p>
+                </lightning:card>
+                      <lightning:card >
+                          <aura:set attribute = "title">
+                            <div class="slds-grid slds-grid_align-spread slds-grid--vertical-align-center">
+                                    <h3 class="slds-text-heading--small font-normal">PriceLists</h3>
+                                </div>
+                          </aura:set>
+                          <p class="slds-p-horizontal_medium">
+                                  <div class="slds-box oli-table slds-p-around_none">
+                                      <table class="slds-table slds-table_bordered">
+                                          <thead>
+                                              <tr>
+                                                  <th>Name</th>
+                                                  <th>Description</th>
+                                              </tr>
+                                          </thead>
+                                      <aura:iteration items="{!v.ListsofPriceLists}" var="market" indexVar="count">
+                                          <tbody>
+                                            <td>
+                                                <a onclick="{!c.getPriceListProduct}" data-getpricelist="{!count}">
+                                                    <u>{!market.name}</u>
+                                                </a>
+                                            </td>              
+                                            <td>{!market.description}</td>
+                                          </tbody>
+                                          </aura:iteration>
+                                      </table>
+                                  </div>
+                                  
+                              </p>
+                    <div class="slds-grid slds-grid_align-spread"></div>
+            </lightning:card>
+            {!v.body}
+    </div>
+</aura:component>

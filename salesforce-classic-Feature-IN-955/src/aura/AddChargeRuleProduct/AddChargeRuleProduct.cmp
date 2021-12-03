@@ -1,0 +1,265 @@
+<aura:component access="GLOBAL" controller="TractOppProduct_LT">
+     <aura:attribute name="oppId" type="String" access="global"/>
+     <aura:attribute name="productWrapper" type="Product2AddWrapper"/>
+     <aura:attribute name="message" type="String" default="NoError"/>
+     <aura:attribute name="productDetail" type="product2" />
+     <aura:attribute name="ProductEid" type="String"/> 
+     <aura:attribute name="RuleType" type="String"/>
+     <aura:attribute name="chargeRuleWrapper" type="ChargeRulesWrapper"  /> 
+     <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+     <aura:registerEvent name="ConfigureChargeRuleAction" type="c:ConfigureChargeRuleAction"/>
+     <div aria-hidden="false" id="prodAddActivityChargeModal" role="dialog" class="slds-modal slds-fade-in-open  slds-modal_large cmn_modelbox add-new-prod-model" style="display:block;">
+        <div class="slds-modal__container slds-scrollable--y">
+<!-- *************************************Header************************************************* -->            
+            <div class="slds-modal__header">
+                <h2>Add Activity Charge Rules</h2>.
+                <div id="showErrorrAddActivityProduct" class="cmn_error_msg" style="display:none;">
+                    <ui:outputText value="{!v.message}"/>
+                </div>
+               
+                <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                    <c:svg class="slds-button__icon slds-button__icon--large"
+                        xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                        ariaHidden="true"
+                    />
+                    <span class="slds-assistive-text">Close</span>
+                </button>
+            </div>
+<!-- *************************************Body************************************************* -->
+           <div class="full forcePageBlockSectionRow" style="overflow-y:auto">
+            <div class="slds-modal__content">      
+               <div class="account-details">
+                    <div class="panel-body panel_body_details service-table service-table2 heading last">
+                        <div class="cmn-table-responsive">
+                          <table>
+                                <tr>
+                                    <td>* Name</td>
+                                    <td>     
+                                       <ui:inputText aura:id="chargeRuleName" value="{!v.chargeRuleWrapper.serviceUsageRuleName}" class="slds-input" />
+                                    </td> 
+                                </tr>                        
+                                <tr>
+                                    <td>* Status :</td>
+                                    <td>
+                                        <ui:inputSelect aura:id="chargeRuleStatus"  value="{!v.chargeRuleWrapper.selectStatusListValue}" class="slds-select" >
+                                            <aura:iteration items="{!v.chargeRuleWrapper.selectStatusList1}" var="status">
+                                                <ui:inputSelectOption text="{!status.value}" label="{!status.label}"/>
+                                            </aura:iteration>
+                                        </ui:inputSelect>     
+                                    </td> 
+                                </tr>
+                                <tr>
+                                    <td>* Product Usage Rule Type :</td>
+                                    <td>
+                                        <ui:inputSelect aura:id="RuleType" change="{!c.onRuleTypeChange}" value="{!v.chargeRuleWrapper.productUsageRuleListValue}" class="slds-select">
+                                            <aura:iteration items="{!v.chargeRuleWrapper.productUsageRuleList1}" var="UsageRule">
+                                                <ui:inputSelectOption text="{!UsageRule.value}" label="{!UsageRule.label}"/>
+                                            </aura:iteration>
+                                        </ui:inputSelect>     
+                                    </td>
+                                </tr>
+                                  
+                                 <tr id="formulaUsagesType" style="display:none;">
+                                    <td>* Field :</td>
+                                   <td>
+                                       <ui:inputSelect aura:id="formulaFieldType"  value="{!v.chargeRuleWrapper.formulaFieldValue}" class="slds-select" >
+                                            <aura:iteration items="{!v.chargeRuleWrapper.formulaField1}" var="formula">
+                                                <ui:inputSelectOption text="{!formula.value}" label="{!formula.label}"/>
+                                            </aura:iteration>
+                                       </ui:inputSelect> 
+                                       <div class="rule-row">
+                                   <div class="rule-col">
+                                    <label>* Operation :</label>
+                                        <ui:inputSelect aura:id="opearationValue" value="{!v.chargeRuleWrapper.operationListValue}" class="slds-select">
+                                                <aura:iteration items="{!v.chargeRuleWrapper.operationList1}" var="operation">
+                                                    <ui:inputSelectOption text="{!operation.value}" label="{!operation.label}"/>
+                                                </aura:iteration>
+                                        </ui:inputSelect> 
+                                        </div>
+                                       <div class="rule-col"> 
+                                     <label>* Value :</label>
+                                        <ui:inputText aura:id="operationValue" value="{!v.chargeRuleWrapper.activityFormulaValue}" class="slds-input"/>
+                                    </div>
+                                    </div>
+                                    </td>
+                                 </tr> 
+                                 
+                                 <tr id="globalUsagesType" style="display:none;"    >
+                                     <td>
+                                        * Formula Usage Rule Specification: 
+                                     </td> 
+                                     <td>
+                                        <ui:inputSelect aura:id="specificationValue" change="{!c.onSpecificationChange}" value="{!v.chargeRuleWrapper.formulaUsageRuleListValue}"  class="slds-select">
+                                                <aura:iteration items="{!v.chargeRuleWrapper.formulaUsageRuleList}" var="UsageRule">
+                                                    <ui:inputSelectOption text="{!UsageRule.value}" label="{!UsageRule.label}"/>
+                                                </aura:iteration>
+                                        </ui:inputSelect>  
+                                     </td> 
+                                 </tr> 
+                                 
+                                 <tr id="rateType">
+                                    <td>
+                                        Rate Type :
+                                    </td>
+                                    <td>
+                                        <ui:inputSelect aura:id="rateTypeValue" change="{!c.onRateTypeChange}" value="{!v.chargeRuleWrapper.rateTypeListValue}"  class="slds-select">
+                                                <aura:iteration items="{!v.chargeRuleWrapper.rateTypeList1}" var="rateType">
+                                                    <ui:inputSelectOption text="{!rateType.value}" label="{!rateType.label}"/>
+                                                </aura:iteration>
+                                        </ui:inputSelect>  
+                                    </td>
+                                 </tr>
+                                 
+                                 <tr id="flatRateType"  >
+                                    <td style="vertical-align:top;">
+                                        * Charge :
+                                    </td>
+                                    <td>
+                                        <ui:inputText aura:id="chargeName" value="{!v.chargeRuleWrapper.chargeValue}"  class="slds-input input-amount"/>
+                                        <span class="per-txt" style="padding-right:5px">Per</span>
+                                        <ui:inputSelect aura:id="chargesValueFlat"  value="{!v.chargeRuleWrapper.chargesPicklistValue}"  class="slds-select">
+                                                <aura:iteration items="{!v.chargeRuleWrapper.chargesPicklist1}" var="charge">
+                                                    <ui:inputSelectOption text="{!charge.value}" label="{!charge.label}"/>
+                                                </aura:iteration>
+                                        </ui:inputSelect> 
+                                        
+                                    </td>
+                                 </tr>
+                                 
+                                 <tr  id="tableRateType" style="display:none;">
+                                    <td>
+                                        * Charge :
+                                    </td>
+                                    <td>
+                                    <div class="charge-input-col">
+                                        <ui:inputSelect aura:id="rateTypeValue" value="{!v.chargeRuleWrapper.formulaFieldValue}"  class="slds-select">
+                                                <aura:iteration items="{!v.chargeRuleWrapper.formulaField1}" var="formula">
+                                                    <ui:inputSelectOption text="{!formula.value}" label="{!formula.label}"/>
+                                                </aura:iteration>
+                                        </ui:inputSelect> 
+                                        </div>
+                                        <div class="charge-input-col">
+                                        <ui:inputSelect aura:id="chargeBytes" value="{!v.chargeRuleWrapper.chargeListBytesValue}" class="slds-select">
+                                                <aura:iteration items="{!v.chargeRuleWrapper.chargeListBytes}" var="chargeByte">
+                                                    <ui:inputSelectOption text="{!chargeByte.value}" label="{!chargeByte.label}"/>
+                                                </aura:iteration>
+                                        </ui:inputSelect> 
+                                        </div>
+                                        
+                                    </td>
+                                 </tr>
+                                 <tr  id="passthroughRateType" style="display:none;">
+                                    <td>
+                                        * Charge :
+                                    </td>
+                                    <td>
+                                       <ui:inputSelect aura:id="passthroughValue" value="{!v.chargeRuleWrapper.passThroughChargeListValue}" class="slds-select">
+                                                <aura:iteration items="{!v.chargeRuleWrapper.passThroughChargeList1}" var="passthrough">
+                                                    <ui:inputSelectOption text="{!passthrough.value}" label="{!passthrough.label}"/>
+                                                </aura:iteration>
+                                        </ui:inputSelect>  
+                                    </td>
+                                 </tr>
+                                 
+                                 <tr>
+                                    <td>
+                                        * Allowance :
+                                    </td>
+                                    <td>
+                                       <ui:inputSelect aura:id="allowanceValue" change="{!c.onAllowanceChange}"  value="{!v.chargeRuleWrapper.allowanceTypeListValue}"  class="slds-select">
+                                                <aura:iteration items="{!v.chargeRuleWrapper.allowanceTypeList1}" var="allowanceType">
+                                                    <ui:inputSelectOption text="{!allowanceType.value}" label="{!allowanceType.label}"/>
+                                                </aura:iteration>
+                                       </ui:inputSelect>
+                                       <div id="allowanceValueList" style="display:none;">
+                                            <ui:inputSelect aura:id="chargesValue"  value="{!v.chargeRuleWrapper.chargesPicklistValue}" class="slds-select">
+                                                <aura:iteration items="{!v.chargeRuleWrapper.chargesPicklist1}" var="charges">
+                                                    <ui:inputSelectOption text="{!charges.value}" label="{!charges.label}"/>
+                                                </aura:iteration>
+                                            </ui:inputSelect>
+                                       </div>
+                                       
+                                          
+                                    </td>
+                                 </tr>
+                                 
+                                 <tr id="amountValue">
+                                    <td style="vertical-align:top;">
+                                        * Amount :
+                                    </td>
+                                    <td>
+                                       <ui:inputText aura:id="ammount" value="{!v.chargeRuleWrapper.ammountValue}"  class="slds-input input-charge" />
+                                       <ui:inputSelect aura:id="ammountValues" value="{!v.chargeRuleWrapper.chargesPicklistValue2}" class="slds-select">
+                                                <aura:iteration items="{!v.chargeRuleWrapper.chargesPicklist1}" var="charges">
+                                                    <ui:inputSelectOption text="{!charges.value}" label="{!charges.label}"/>
+                                                </aura:iteration>
+                                       </ui:inputSelect>
+                                          
+                                    </td>
+                                 </tr>
+                                 
+                                 
+                                 <tr id="chargeCategory">
+                                    <td>
+                                        * Charge Category :
+                                    </td>
+                                    <td>
+                                       <ui:inputSelect aura:id="chargeCat" value="{!v.chargeRuleWrapper.chargeCategoryListValue}" class="slds-select">
+                                                <aura:iteration items="{!v.chargeRuleWrapper.chargeCategoryList}" var="chargeCategory">
+                                                    <ui:inputSelectOption text="{!chargeCategory.value}" label="{!chargeCategory.label}"/>
+                                                </aura:iteration>
+                                       </ui:inputSelect>
+                                          
+                                    </td>
+                                 </tr>
+                                
+                                 <tr id="prorateOnOrder">
+                                    <td>
+                                        Prorate on Order:
+                                    </td>
+                                    <td>
+                                        <ui:inputCheckbox aura:id="ProrateOrder" value="{!v.chargeRuleWrapper.prorateOnOrder}" Class="slds-checkbox slds-input slds-form-element__control"/> 
+                                    </td>
+                                 </tr>
+                                 
+                                 <tr id="prorateOnCancel">
+                                    <td>
+                                        Prorate on Cancel:
+                                    </td>
+                                    <td>
+                                        <ui:inputCheckbox aura:id="ProrateCancel" value="{!v.chargeRuleWrapper.prorateOnCancel}" /> 
+                                    </td>
+                                 </tr>
+                                 
+                                 <tr id="rollOver">
+                                    <td >
+                                        * Roll Over:
+                                    </td>
+                                    <td>
+                                        <ui:inputSelect aura:id="chargesValue" value="{!v.chargeRuleWrapper.roleOverListValue}" class="slds-select">
+                                            <aura:iteration items="{!v.chargeRuleWrapper.roleOverList1}" var="roleOver">
+                                                <ui:inputSelectOption text="{!roleOver.value}" label="{!roleOver.label}"/>
+                                            </aura:iteration>
+                                       </ui:inputSelect>
+                                    </td>
+                                 </tr>
+                                
+                              </table>                          
+                                
+                        </div>
+                    </div>
+                   </div>
+                </div>
+            </div>
+<!-- *************************************Footer************************************************* -->
+            <div class="slds-modal__footer">
+                <div class="slds-x-small-buttons--horizontal">
+                    <button class="slds-button slds-button--neutral" onclick="{!c.closeModalBox}">Cancel</button>
+                    <button class="slds-button slds-button--neutral slds-button--brand" onclick="{!c.addChargeRules}">Finish</button>
+                </div>
+            </div>
+ <!-- *************************************Footer************************************************* -->      
+        </div>
+    </div>
+ <div class="slds-backdrop slds-backdrop--open" id="prodBackGroundAddActivityCharge" style="display:block;"></div>   
+</aura:component>

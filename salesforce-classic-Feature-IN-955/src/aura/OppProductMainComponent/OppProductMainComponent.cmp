@@ -1,0 +1,25 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes" controller="TractOppProduct_LT" access="global">
+    <aura:attribute name="oppId" type="String"/>
+    <aura:attribute name="addedProductWrapper" type="Product2AddWrapper[]"/>
+    <aura:attribute name="getUITheme" type="String"  />
+    <aura:handler event="c:AddTractProductEvent" action="{!c.NavigateAddProduct}" />
+    <aura:handler event="c:AddMoreTractProductEvent" action="{!c.addProduct}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+    <aura:attribute name="wait" type="String"/>
+    
+    <div class="wait">
+        <div id= "showspinner" class="product-spinner"> 
+            <div class="slds-spinner_container" >
+                <div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>    
+    </div>
+    {!v.body}
+</aura:component>

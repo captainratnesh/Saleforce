@@ -1,0 +1,24 @@
+.THIS .classicTModel .uiInput--checkbox input,.THIS input.uiInput--checkbox{
+    display: block;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    vertical-align: -.25em;
+    border: 1px solid rgb(221, 219, 218);
+    border-radius: .125rem;
+    background: rgb(255, 255, 255);
+    transition: .5s ease all;
+    width: 20px;
+    height: 20px;
+}
+.THIS .classicTModel .uiInput--checkbox input[type=checkbox]:checked,.THIS input.uiInput--checkbox[type=checkbox]:checked{
+    background-image: url(/resource/TRACT3__SLDS/assets/icons/utility/check.svg);
+    background-size: cover;
+    background-color: rgb(75, 202, 129);
+    border: 1px solid rgb(216, 221, 230);
+}
+.THIS .classicTModel .product-slds-sec-details{
+    height: calc(100vh - 206px);
+    min-height: auto;
+    max-height: none;
+}

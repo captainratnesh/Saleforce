@@ -1,0 +1,70 @@
+<apex:page standardController="Product2" sidebar="false" showHeader="false">
+    <apex:includeLightning />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <apex:stylesheet value="{!URLFOR($Resource.SLDS, '/assets/styles/salesforce-lightning-design-system.min.css')}"/>
+  <style>
+    .loader{position:fixed;background:rgba(0,0,0,0.3);width:100%;height:100%;top:0;left: 0;z-index:999}
+    .loader img{position:absolute;left:50%;top:2%;transform:translate(-20%, 80px);-webkit-transform:translate(-20%,80px;  }
+  </style>
+    <div id="vf-app">
+         
+    </div>
+    
+    <script>
+        var getUITheme = "{!$User.UIThemeDisplayed}";
+        $Lightning.use("TRACT3:ActivateProductApp", function() {
+                $Lightning.createComponent(
+                    "TRACT3:MarketPlaceComponent",
+                    {
+                    "getUITheme" : getUITheme},
+                    "vf-app",
+                    function(cmp) {
+                        $("#test").hide();
+                        $A.eventService.addHandler({ "event": "TRACT3:getPriceListEvt", "handler" : visualForceFunction});
+                    });                        
+                });
+    </script>
+    <script>
+    var visualForceFunction = function(event)
+            {
+                
+                var myEventData1 = event.getParam("thisWrapper");
+                
+                $Lightning.use("TRACT3:ActivateProductApp", function() {
+                $Lightning.createComponent(
+                    "TRACT3:GetMarketplacePricelistCmp",
+                    {
+                        "marketPlaceWrap" : myEventData1
+                    },
+                    "vf-app",
+                    function(cmp) {
+                        $("#test").hide();
+                        $A.eventService.addHandler({ "event": "TRACT3:GetPricelistProductEvt", "handler" : visualForceFunc});
+                    });                        
+                });
+
+            }; 
+          </script>
+          <script>
+         var visualForceFunc = function(event)
+            {
+                
+                var myEventData1 = event.getParam("thisWrapper");
+                console.log('Event Handled');
+                console.log('Event Handled::::'+myEventData1);
+                $Lightning.use("TRACT3:ActivateProductApp", function() {
+                $Lightning.createComponent(
+                    "TRACT3:ProductFromPricelistCmp",
+                    {
+                        "priceListWrap" : myEventData1
+                    },
+                    "vf-app",
+                    function(cmp) {
+                        $("#test").hide();
+                      
+                    });                        
+                });
+
+            };
+          </script>
+</apex:page>

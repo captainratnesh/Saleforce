@@ -1,0 +1,1744 @@
+<aura:component access="GLOBAL" controller="AccountDetailController_LT">
+    <ltng:require styles="/resource/TRACT3__SLDS/assets/styles/salesforce-lightning-design-system.min.css" />
+    <ltng:require styles="/resource/TRACT3__bootstrap,/resource/TRACT3__JqueryDataTableCSS"
+        scripts='/resource/TRACT3__jquery/jquery/js/jquery3.js,/resource/TRACT3__bootstrapjs, /resource/TRACT3__JqueryDataTableJS'
+        afterScriptsLoaded="{!c.firstPage}" />
+    <aura:registerEvent name="ServiesActionEvent" type="c:ServicesActionEvent" />
+    <aura:registerEvent name="SuspendServiceEvent" type="c:SuspendServiceEvent" />
+    <aura:registerEvent name="ActivityChargeEvent" type="c:ActivityChargeEvent" />
+    <aura:registerEvent name="CreateTractAccountEvent" type="c:CreateTractAccountEvent" />
+    <aura:registerEvent name="ResumeServiceEvent" type="c:ResumeServiceEvent" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="c:ReloadAccountDetail" action="{!c.jsLoaded}" />
+    <aura:attribute name="tractBillingAccount" type="TRACTAccountWrapper" description="" />
+    <aura:attribute name="listval" type="Boolean" />
+    <aura:attribute name="listval2" type="Boolean" />
+    <aura:attribute name="listval3" type="Boolean" />
+    <aura:attribute name="listval4" type="Boolean" />
+    <aura:attribute name="listval5" type="Boolean" />
+    <aura:attribute name="listval6" type="Boolean" />
+    <aura:attribute name="listval7" type="Boolean" />
+    <aura:attribute name="listval8" type="Boolean" />
+    <aura:attribute name="listval9" type="Boolean" />
+    <aura:attribute name="listval10" type="Boolean" />
+    <aura:attribute name="listval11" type="Boolean" />
+    <aura:attribute name="listval12" type="Boolean" />
+    <aura:attribute name="listval13" type="Boolean" />
+    <aura:attribute name="listval14" type="Boolean" />
+    <aura:attribute name="listval15" type="Boolean" />
+    <aura:attribute name="listval16" type="Boolean" />
+    <aura:attribute name="listval17" type="Boolean" />
+    <aura:attribute name="listval18" type="Boolean" />
+    <aura:attribute name="enableAddCreditDebit" type="Boolean" />
+    <aura:attribute name="myMap" type="Map" />
+    <aura:attribute type="Integer" name="pageNumber" default="1" />
+    <aura:attribute type="Integer" name="maxPage" default="1" />
+    <aura:attribute name="currentPageNumber" type="Integer" default="1" />
+    <aura:attribute name="maxPageNumber" type="Integer" />
+    <aura:attribute name="thisAccount" type="Account" />
+    <aura:attribute name="tractAccount" type="Account" />
+    <aura:attribute name="accountId" type="String" />
+    <aura:attribute name="wrappers" type="ProductServiceWrapper[]" />
+    <aura:attribute name="getPayments" type="PaymentWrapper[]" />
+    <aura:attribute name="getDebitList" type="AdjustmentWrapper[]" />
+    <aura:attribute name="getEventList" type="ActivityUsagesWrapper[]" />
+    <aura:attribute name="getCreditList" type="AdjustmentWrapper[]" />
+    <aura:attribute name="getInvoiceList" type="InvoiceWrapper[]" />
+    <aura:attribute name="HideSpinner" type="Boolean" default="true" />
+    <aura:attribute name="checkBillingAccount" type="Boolean" default="false" />
+    <aura:attribute name="checkpage" type="Boolean" default="true" />
+    <aura:attribute name="checkpage2" type="Boolean" default="true" />
+    <aura:attribute name="checkall" type="Boolean" default="true" />
+    <aura:attribute name="ServiceName" type="String" default="true" />
+    <aura:attribute name="ServiceEid" type="String" default="true" />
+    <aura:attribute name="WrapperToPerformAction" type="ProductServiceWrapper" />
+    <aura:attribute name="RecordsOfPaymentMethod" type="PaymentMethodWrapper[]" />
+    <aura:attribute name="ListOfNotes" type="NotesWrapper[]" />
+    <aura:attribute name="ListOfContacts" type="ContactWrapper[]" />
+    <aura:attribute name="listval19" type="Boolean" />
+    <aura:attribute name="listval20" type="Boolean" />
+    <aura:attribute name="listval21" type="Boolean" />
+    <!-- Attributes to add pagination while Querying Sales order -->
+    <aura:attribute name="currentPageNumberOrder" type="Integer" default="1" />
+    <aura:attribute name="maxPageNumberOrder" type="Integer" />
+    <!--<aura:attribute name="outerHeight" type="Integer" /> -->
+    <aura:attribute name="salesOrdersWrap" type="TractSalesOrderWrapper" />
+    <aura:attribute name="showpage" type="Boolean" default="true" />
+    <aura:attribute name="showpage2" type="Boolean" default="true" />
+    <aura:attribute name="showall" type="Boolean" default="true" />
+    <!-- Attributes to add pagination while Querying services -->
+    <aura:attribute name="currentPageNumberService" type="Integer" default="1" />
+    <aura:attribute name="maxPageNumberService" type="Integer" />
+    <aura:attribute name="checkpageService" type="Boolean" default="true" />
+    <aura:attribute name="checkpage2Service" type="Boolean" default="true" />
+    <aura:attribute name="checkallService" type="Boolean" default="true" />
+    <!-- Attributes to add pagination while Querying Invoice -->
+    <aura:attribute name="currentPageNumberInvoice" type="Integer" default="1" />
+    <aura:attribute name="maxPageNumberInvoice" type="Integer" />
+    <aura:attribute name="checkpageInvoice" type="Boolean" default="true" />
+    <aura:attribute name="checkpage2Invoice" type="Boolean" default="true" />
+    <aura:attribute name="checkallInvoice" type="Boolean" default="true" />
+    <!-- Attributes to add pagination while Querying Payment -->
+    <aura:attribute name="currentPageNumberPayment" type="Integer" default="1" />
+    <aura:attribute name="maxPageNumberPayment" type="Integer" />
+    <aura:attribute name="checkpagePayment" type="Boolean" default="true" />
+    <aura:attribute name="checkpage2Payment" type="Boolean" default="true" />
+    <aura:attribute name="checkallPayment" type="Boolean" default="true" />
+    <!-- Attributes to add pagination while Querying debit adjustment -->
+    <aura:attribute name="currentPageNumberdebit" type="Integer" default="1" />
+    <aura:attribute name="maxPageNumberdebit" type="Integer" />
+    <aura:attribute name="checkpagedebit" type="Boolean" default="true" />
+    <aura:attribute name="checkpage2debit" type="Boolean" default="true" />
+    <aura:attribute name="checkalldebit" type="Boolean" default="true" />
+    <!-- Attributes to add pagination while Querying credit adjustment -->
+    <aura:attribute name="currentPageNumbercredit" type="Integer" default="1" />
+    <aura:attribute name="maxPageNumbercredit" type="Integer" />
+    <aura:attribute name="checkpagecredit" type="Boolean" default="true" />
+    <aura:attribute name="checkpage2credit" type="Boolean" default="true" />
+    <aura:attribute name="checkallcredit" type="Boolean" default="true" />
+    <!-- Attributes to add pagination while Querying payment methods -->
+    <aura:attribute name="currentPageNumberPaymentMethod" type="Integer" default="1" />
+    <aura:attribute name="maxPageNumberPaymentMethod" type="Integer" />
+    <aura:attribute name="checkPagePaymentMethod" type="Boolean" default="true" />
+    <aura:attribute name="checkPage2PaymentMethod" type="Boolean" default="true" />
+    <aura:attribute name="checkAllPaymentMethod" type="Boolean" default="true" />
+    <!-- Attributes to add pagination while Querying contacts -->
+    <aura:attribute name="currentPageNumberContact" type="Integer" default="1" />
+    <aura:attribute name="maxPageNumberContact" type="Integer" />
+    <aura:attribute name="checkPageContact" type="Boolean" />
+    <aura:attribute name="checkPage2Contact" type="Boolean" default="true" />
+    <aura:attribute name="checkAllContact" type="Boolean" default="true" />
+    <!-- Attributes to add pagination while Querying Notes -->
+    <aura:attribute name="currentPageNumberNote" type="Integer" default="1" />
+    <aura:attribute name="maxPageNumberNote" type="Integer" />
+    <aura:attribute name="checkPageNote" type="Boolean" default="true" />
+    <aura:attribute name="checkPage2Note" type="Boolean" default="true" />
+    <aura:attribute name="checkAllNote" type="Boolean" default="true" />
+    <aura:attribute name="canEdit" type="boolean" default="false" />
+    <aura:attribute name="accountCustomFieldList" type="AccountCustomFieldValueWrapper[]" />
+    <aura:attribute name="listval22" type="Boolean" />
+    <aura:attribute name="OneTimeOrderItemList" type="GTVOneTimeOrderItemWrapper[]" />
+    <aura:attribute name="showOneTimePurchase" type="Boolean" />
+    <aura:registerEvent name="reloadAccount" type="c:handleAccountReload" />
+    <aura:registerEvent name="scrollAccount" type="c:handleScroll" />
+    <aura:handler event="c:handleAccountDetailReload" action="{!c.reloadAccount}" />
+    <!--<aura:registerEvent name="FinishHandle" type="c:handleFnishReload" />-->
+    <!-- <aura:attribute name="billingAccWrapArr" type="Object" /> -->
+    <aura:attribute name="isModalOpen" type="Boolean" default="false" />
+    <aura:attribute name="isPayment" type="Boolean" default="false" />
+    <aura:attribute name="isPaymentOpen" type="Boolean" default="false" />
+    <aura:attribute name="hideButton" type="Boolean" default="true" />
+
+    <aura:html tag="style">
+        html body.sfdcBody{padding:0}
+        body, html{font-size:100%;}
+        .body-hidden{overflow:hidden}
+    </aura:html>
+    <div>
+        <div class="panel panel-primary account-sec" id="account-detail-scroll">
+            <aura:renderIf isTrue="{!v.HideSpinner}">
+                <div class="loader">
+                    <img src="/resource/TRACT3__SLDS/assets/images/spinners/slds_spinner_brand.gif"
+                        class="img-responsive center-block" style="height: 100px;" />
+                </div>
+            </aura:renderIf>
+            <div class="btn-details">
+                <aura:renderIf isTrue="{!v.wrappers[0].createBillingAccount}">
+                    <ui:button label="Open Account" class="slds-button slds-button--neutral account-btn-height"
+                        labelClass="label" press="{!c.showTractAccount}" />
+                    <aura:renderIf isTrue="{!v.tractBillingAccount.status != 'DEACTIVATED'}">
+                        &nbsp;
+                        <lightning:buttonMenu class="custom-dropdown-menu" alternativeText="Account configuration"
+                            onselect="{!c.handleAccountConfiguration}" iconSize="medium" aura:id="accountConfig"
+                            iconName="utility:settings">
+                            <aura:renderIf isTrue="{!v.tractBillingAccount.status  != 'SUSPENDED'}">
+                                <lightning:menuItem label="Suspend Billing Account" value="suspendaccountservice" />
+                                <aura:set attribute="else">
+                                    <lightning:menuItem label="Resume Billing Account" value="resumeaccountservice" />
+                                </aura:set>
+                            </aura:renderIf>
+                            <lightning:menuItem label="Deactivate Billing Account" value="deactivateaccountservice" />
+                        </lightning:buttonMenu>
+                    </aura:renderIf>
+                </aura:renderIf>
+
+            </div>
+            {!v.body}
+            <div class="main-account-details">
+                <div class="account-details">
+                    <div class="panel-body panel_body_details heading">
+                        <aura:renderIf isTrue="{!!v.canEdit}">
+                            <p class="bg-primary">
+                                Your account has not been created in GTV yet. To create a GTV account:<br />
+                                1. Click the Configure button below to configure/edit the required details.<br />
+                                2. Click the Create Account button to move this account in GTV.<br />
+                            </p>
+                        </aura:renderIf>
+                        <div class="bg-primary slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                            <p>Account Details</p>
+                            <div class="custom-btn-cont">
+                                <aura:renderIf isTrue="{!!v.canEdit}">
+                                    <lightning:button label="Preview" title="Neutral action"
+                                        onclick="{! c.showAccMapping }" />
+                                    <ui:button class="configure-update-btn slds-button slds-button--neutral"
+                                        label="Configure" press="{!c.editBasicAccountDetails}" />
+                                </aura:renderIf>
+                            </div>
+                        </div>
+                        <div class="form-horizontal information-box">
+                            <div class="form-group">
+                                <label class="col-xs-2 control-label">Name:</label>
+                                <div class="col-xs-4 d-ib-uiOT">
+                                    <ui:outputText aura:id="accName1"
+                                        value="{!v.tractBillingAccount.billingAccount.Name}" />
+                                    <aura:renderIf isTrue="{!v.tractBillingAccount.eid != null}">
+                                        <a onclick="{!c.accountHierarchy}">
+                                            <u>Account Hierarchy</u>
+                                        </a>
+                                    </aura:renderIf>
+                                </div>
+                                <label class="col-xs-2 control-label">Email:</label>
+                                <div class="col-xs-4">
+                                    <ui:outputText aura:id="email2" value="{!v.tractBillingAccount.email}" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-xs-2 control-label">Billing Account Category:</label>
+                                <div class="col-xs-4">
+                                    <ui:outputText aura:id="BillingAccountCategory"
+                                        value="{!v.tractBillingAccount.accountCategory }" />
+                                </div>
+                                <label class="col-xs-2 control-label">Billing Cycle:</label>
+                                <div class="col-xs-4 d-ib-uiOT">
+                                    <ui:outputText aura:id="BillCycleName"
+                                        value="{!v.tractBillingAccount.billCycleName}" />
+                                    <aura:renderIf isTrue="{!v.tractBillingAccount.eid != null}">
+                                        <a onclick="{!c.showBillingHierarchyModal}"> <u>Billing Hierarchy</u> </a>
+                                    </aura:renderIf>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-xs-2 control-label">Currency :</label>
+                                <div class="col-xs-4">
+                                    <ui:outputText aura:id="AccountCurrency"
+                                        value="{!v.tractBillingAccount.accountCurrency}" />
+                                </div>
+                                <label class="col-xs-2 control-label"> Payment Terms:</label>
+                                <div class="col-xs-4">
+                                    <ui:outputText aura:id="PaymentTerm" value="{!v.tractBillingAccount.paymentTerm}" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-xs-2 control-label">Start Date :</label>
+                                <div class="col-xs-4">
+                                    <ui:outputDate aura:id="StartDate" value="{!v.tractBillingAccount.validFrom}"
+                                        format="MM/dd/yyyy" />
+                                </div>
+                                <label class="col-xs-2 control-label"> Tax Exempt:</label>
+                                <div class="col-xs-4">
+                                    <ui:outputCheckbox aura:id="TaxExempt" value="{!v.tractBillingAccount.taxExempt}" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-xs-2 control-label">Invoice Type:</label>
+                                <div class="col-xs-4">
+                                    <ui:outputText aura:id="BillType" value="{!v.tractBillingAccount.billType}" />
+                                </div>
+                                <label class="col-xs-2 control-label"> Billing Account #:</label>
+                                <div class="col-xs-4">
+                                    <ui:outputText aura:id="TractBillingAccoutNum"
+                                        value="{!v.tractBillingAccount.tractBillingAccountNumber}" />
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-xs-2 control-label">Current Balance:</label>
+                                <div class="col-xs-4">
+                                    <ui:outputText aura:id="currentBalance" value="{!v.tractBillingAccount.balance}" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <aura:renderIf isTrue="{!v.canEdit}">
+                        <aura:renderIf isTrue="{!v.listval2}">
+                            <div class="panel-body panel_body_details heading">
+                                <p class="bg-primary">Billing Address</p>
+                                <div class="form-horizontal information-box">
+                                    <div class="form-group">
+                                        <label class="col-xs-2 control-label">Street:</label>
+                                        <div class="col-xs-4">
+                                            <ui:outputText aura:id="AccStreet"
+                                                value="{!v.tractBillingAccount.billingAccount.BillingStreet}" />
+                                        </div>
+                                        <label class="col-xs-2 control-label">City:</label>
+                                        <div class="col-xs-4">
+                                            <ui:outputText aura:id="City"
+                                                value="{!v.tractBillingAccount.billingAccount.BillingCity}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-xs-2 control-label">Postal Code:</label>
+                                        <div class="col-xs-4">
+                                            <ui:outputText aura:id="PostalCode"
+                                                value="{!v.tractBillingAccount.billingAccount.BillingPostalCode}" />
+                                        </div>
+                                        <label class="col-xs-2 control-label">Country:</label>
+                                        <div class="col-xs-4">
+                                            <ui:outputText aura:id="Country"
+                                                value="{!v.tractBillingAccount.billingAccount.BillingCountry}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-xs-2 control-label">State:</label>
+                                        <div class="col-xs-4">
+                                            <ui:outputText aura:id="State"
+                                                value="{!v.tractBillingAccount.billingAccount.BillingState}" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:renderIf>
+                        <aura:renderIf isTrue="{!v.listval3}">
+                            <div class="panel-body panel_body_details heading">
+                                <p class="bg-primary">Shipping Address</p>
+                                <div class="form-horizontal information-box">
+                                    <div class="form-group">
+                                        <label class="col-xs-2 control-label">Street:</label>
+                                        <div class="col-xs-4">
+                                            <ui:outputText aura:id="ShippingStreet"
+                                                value="{!v.tractBillingAccount.billingAccount.ShippingStreet}" />
+                                        </div>
+                                        <label class="col-xs-2 control-label">City:</label>
+                                        <div class="col-xs-4">
+                                            <ui:outputText aura:id="ShippingCity"
+                                                value="{!v.tractBillingAccount.billingAccount.ShippingCity}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-xs-2 control-label">Postal Code:</label>
+                                        <div class="col-xs-4">
+                                            <ui:outputText aura:id="ShippingPostalCode"
+                                                value="{!v.tractBillingAccount.billingAccount.ShippingPostalCode}" />
+                                        </div>
+                                        <label class="col-xs-2 control-label">Country:</label>
+                                        <div class="col-xs-4">
+                                            <ui:outputText aura:id="ShippingCountry"
+                                                value="{!v.tractBillingAccount.billingAccount.ShippingCountry}" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-xs-2 control-label">State:</label>
+                                        <div class="col-xs-4">
+                                            <ui:outputText aura:id="ShippingState"
+                                                value="{!v.tractBillingAccount.billingAccount.ShippingState}" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </aura:renderIf>
+                    </aura:renderIf>
+                </div>
+                <aura:renderIf isTrue="{!v.canEdit}">
+                    <aura:renderIf isTrue="{!v.listval22}">
+                        <div class="account-details">
+                            <div class="panel-body panel_body_details service-table heading last">
+                                <div class="bg-primary">
+                                    <p>
+                                        Account Custom Fields
+                                        <aura:renderIf isTrue="{!v.canEdit}">
+                                            <ui:button
+                                                class="cmn-btn slds-button slds-button--neutral custom-update-btn custom-update-btn"
+                                                label="Add" press="{!c.showAccountCustomField}" />
+                                        </aura:renderIf>
+                                    </p>
+                                </div>
+                                <div class="form-horizontal information-box service-table-details">
+                                    <div class="cmn-table-responsive custom-height-overflow">
+                                        <table>
+                                            <tr>
+                                                <th class="head">Name</th>
+                                                <th class="head">Value</th>
+                                            </tr>
+                                            <aura:iteration items="{!v.accountCustomFieldList}" var="customField">
+                                                <tr>
+                                                    <td>
+                                                        <ui:outputText aura:id="customFieldName" class="slds-output"
+                                                            value="{!customField.name}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="CustomfieldValue" class="slds-output"
+                                                            value="{!customField.value}" />
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:renderIf>
+                    <aura:renderIf isTrue="{!v.listval4}">
+                        <div class="account-details">
+                            <div class="panel-body panel_body_details service-table heading last">
+                                <p class="bg-primary">Payments
+                                    <aura:renderIf isTrue="{!v.hideButton}">
+                                        <ui:button class="cmn-btn slds-button slds-button--neutral custom-update-btn"
+                                            label="Execute Payment" press="{!c.showPaymentMethodModal}" />
+                                    </aura:renderIf>
+                                </p>
+
+                                <div class="form-horizontal information-box service-table-details">
+                                    <div class="cmn-table-responsive custom-height-overflow">
+                                        <table>
+                                            <tr>
+                                                <th class="head">Payment Id</th>
+                                                <th class="head">Payment Method</th>
+                                                <th class="head slds-text-align_right">Amount</th>
+                                                <th class="head">Invoices</th>
+                                                <th class="head">Description</th>
+                                                <th class="head">Payment Date</th>
+                                                <th class="head">Status</th>
+                                            </tr>
+                                            <aura:iteration items="{!v.getPayments}" var="payment">
+                                                <tr>
+                                                    <td>
+                                                        <ui:outputText aura:id="paymentName" class="slds-output"
+                                                            value="{!payment.name}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="paymentMethod" class="slds-output"
+                                                            value="{!payment.paymentMethodType}" />
+                                                    </td>
+                                                    <td class="slds-text-align_right">
+                                                        <ui:outputText aura:id="paymentBalance" class="slds-output"
+                                                            value="{!payment.paymentAmount}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="paymentPaid" class="slds-output"
+                                                            value="{!payment.invoicesPaid}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="paymentDescription" class="slds-output"
+                                                            value="{!payment.description}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputDate aura:id="paymentOccurred" class="slds-output"
+                                                            value="{!payment.occurredOn}" format="MM/dd/yyyy" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="paymentStatus" class="slds-output"
+                                                            value="{!payment.status}" />
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </table>
+                                    </div>
+                                    <div class="slds-float--right" role="group">
+                                        <aura:renderIf isTrue="{!v.checkallPayment}">
+                                            <aura:renderIf isTrue="{!v.checkpage2Payment}">
+                                                <button onclick="{!c.firstPaymentPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    First
+                                                </button>
+                                                <button onclick="{!c.prevPaymentPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Prev
+                                                </button>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!v.checkpagePayment}">
+                                                <button onclick="{!c.nextPaymentPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Next
+                                                </button>
+                                                <button onclick="{!c.lastPaymentPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Last
+                                                </button>
+                                            </aura:renderIf>
+                                        </aura:renderIf>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:renderIf>
+                    <aura:renderIf isTrue="{!v.listval5}">
+                        <div class="account-details">
+                            <div class="panel-body panel_body_details service-table heading last">
+                                <p class="bg-primary">Invoices</p>
+                                <div class="form-horizontal information-box service-table-details">
+                                    <div class="cmn-table-responsive custom-height-overflow">
+                                        <table>
+                                            <tr>
+                                                <th class="head">Invoice #</th>
+                                                <th class="head slds-text-align_right">Amount</th>
+                                                <th class="head slds-text-align_right">Amount To Pay</th>
+                                                <th class="head">Due Date</th>
+                                                <th class="head">Invoice Date</th>
+                                                <th class="head">Paid Date</th>
+                                                <th class="head">Status</th>
+                                                <th class="head">Action</th>
+                                            </tr>
+                                            <aura:iteration items="{!v.getInvoiceList}" var="invoices" indexVar="count">
+                                                <tr>
+                                                    <td>
+                                                        <a onclick="{!c.showInvoice}" data-url="{!invoices.name}"
+                                                            data-count="{!count}">
+                                                            <u>{!invoices.name}</u>
+                                                        </a>
+                                                    </td>
+                                                    <td class="slds-text-align_right">
+                                                        <ui:outputText aura:id="invoiceBalance" class="slds-output"
+                                                            value="{!invoices.invoiceAmount}" />
+                                                    </td>
+                                                    <td class="slds-text-align_right">
+                                                        <ui:outputText aura:id="invoiceCurrency" class="slds-output"
+                                                            value="{!invoices.invoiceAmountToPay}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputDate aura:id="invoiceDue" class="slds-output"
+                                                            value="{!invoices.dueDate}" format="MM/dd/yyyy" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputDate aura:id="invoiceDate" class="slds-output"
+                                                            value="{!invoices.invoicedDate}" format="MM/dd/yyyy" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputDate aura:id="invoicePaid" class="slds-output"
+                                                            value="{!invoices.paidDate}" format="MM/dd/yyyy" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="invoiceStatus" class="slds-output"
+                                                            value="{!invoices.status}" />
+                                                    </td>
+                                                    <td>
+                                                        <aura:renderIf isTrue="{!v.listval13}">
+                                                            <aura:if isTrue="{!invoices.checkInvoiceStatus}">
+                                                                <!-- Original code was not working, Ali fix to onclick, however it looks like data-pdfurl is also wrong? -->
+                                                                <a onclick="{!c.pdfDwnload}"
+                                                                    data-pdfurl="{!invoices.invoicePdf}">
+                                                                    <u>PDF</u>
+                                                                </a>
+                                                                <br />
+                                                            </aura:if>
+                                                        </aura:renderIf>
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </table>
+                                    </div>
+                                    <div class="slds-float--right" role="group">
+                                        <aura:renderIf isTrue="{!v.checkallInvoice}">
+                                            <aura:renderIf isTrue="{!v.checkpage2Invoice}">
+                                                <button onclick="{!c.firstInvoicePage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    First
+                                                </button>
+                                                <button onclick="{!c.prevInvoicePage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Prev
+                                                </button>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!v.checkpageInvoice}">
+                                                <button onclick="{!c.nextInvoicePage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Next
+                                                </button>
+                                                <button onclick="{!c.lastInvoicePage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Last
+                                                </button>
+                                            </aura:renderIf>
+                                        </aura:renderIf>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:renderIf>
+                    <aura:renderIf isTrue="{!v.listval6}">
+                        <div class="account-details">
+                            <div class="panel-body panel_body_details service-table heading last">
+                                <p class="bg-primary">Sales Orders</p>
+                                <div class="form-horizontal information-box service-table-details">
+                                    <div class="cmn-table-responsive custom-height-overflow">
+                                        <table>
+                                            <tr>
+                                                <th class="head">Order #</th>
+                                                <th class="head">Note</th>
+                                                <th class="head">Order Date</th>
+                                                <th class="head">Purchase Order #</th>
+                                                <th class="head">Status</th>
+                                            </tr>
+                                            <aura:iteration items="{!v.salesOrdersWrap.salesOrderWrapperList}"
+                                                var="order">
+                                                <tr>
+                                                    <td>
+                                                        <ui:outputText aura:id="orderNumber" class="slds-output"
+                                                            value="{!order.name}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="orderNote" class="slds-output"
+                                                            value="{!order.note}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputDate aura:id="orderDate" class="slds-output"
+                                                            value="{!order.orderDate}" format="MM/dd/yyyy" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="purchaseOrderNumber" class="slds-output"
+                                                            value="{!order.purchaseOrderNumber}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="orderStatus" class="slds-output"
+                                                            value="{!order.orderStatus}" />
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="slds-float--right" role="group">
+                                    <aura:renderIf isTrue="{!v.showall}">
+                                        <aura:renderIf isTrue="{!v.showpage2}">
+                                            <button onclick="{!c.firstOrderPage}"
+                                                class="slds-button slds-button--neutral">
+                                                First
+                                            </button>
+                                            <button onclick="{!c.prevOrderPage}"
+                                                class="slds-button slds-button--neutral">
+                                                Prev
+                                            </button>
+                                        </aura:renderIf>
+                                        <aura:renderIf isTrue="{!v.showpage}">
+                                            <button onclick="{!c.nextOrderPage}"
+                                                class="slds-button slds-button--neutral">
+                                                Next
+                                            </button>
+                                            <button onclick="{!c.lastOrderPage}"
+                                                class="slds-button slds-button--neutral">
+                                                Last
+                                            </button>
+                                        </aura:renderIf>
+                                    </aura:renderIf>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:renderIf>
+                    <aura:renderIf isTrue="{!v.listval7}">
+                        <div class="account-details">
+                            <div class="panel-body panel_body_details service-table heading">
+                                <p class="bg-primary">Services</p>
+                                <div class="form-horizontal information-box service-table-details">
+                                    <div class="cmn-table-responsive custom-height-overflow">
+                                        <table>
+                                            <tr>
+                                                <th></th>
+                                                <th class="head">Service</th>
+                                                <th class="head">Qty</th>
+                                                <th class="head slds-text-align_right">Price</th>
+                                                <th class="head">Parent Service</th>
+                                                <th class="head">Committed Thru</th>
+                                                <th class="head">Renew Action</th>
+                                                <th class="head">Status Date</th>
+                                                <th class="head">Status</th>
+                                                <th class="head">Action</th>
+                                            </tr>
+                                            <aura:iteration items="{!v.wrappers}" var="wrap" indexVar="count">
+                                                <tr>
+                                                    <aura:renderIf isTrue="{!wrap.checkChildElement}">
+                                                        <td class="clickable parent-service" data-toggle="collapse"
+                                                            id="{!wrap.serviceEid}"
+                                                            data-target="{! '.' + wrap.serviceEid}">
+                                                            <lightning:icon iconName="utility:add" alternativeText=""
+                                                                class="slds-toggle" onclick="{!c.expend}" />
+                                                        </td>
+                                                    </aura:renderIf>
+                                                    <aura:renderIf isTrue="{!!wrap.checkChildElement}">
+                                                        <td></td>
+                                                    </aura:renderIf>
+                                                    <td>
+                                                        <a onclick="{!c.showService}" data-url="{!wrap.serviceEid}"
+                                                            data-count="{!count}">
+                                                            <u>{!wrap.serviceName}</u>
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="servicePrice" class="slds-output"
+                                                            value="{!wrap.quantity}" />
+                                                    </td>
+                                                    <td class="tabledata-nowrap slds-text-align_right">
+                                                        <ui:outputText aura:id="servicePrice" class="slds-output"
+                                                            value="{!wrap.servicePrice}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="parentServiceName" class="slds-output"
+                                                            value="{!wrap.parentServiceName}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="committedThru" class="slds-output"
+                                                            value="{!wrap.committedThru}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="renewAction" class="slds-output"
+                                                            value="{!wrap.renewAction}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="statusDate" class="slds-output"
+                                                            value="{!wrap.statusDate}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="status" class="slds-output"
+                                                            value="{!wrap.status}" />
+                                                    </td>
+                                                    <td>
+                                                        <aura:renderIf isTrue="{!wrap.checkDeactivateService}">
+                                                            <aura:renderIf isTrue="{!wrap.canAddServiceResource}">
+                                                                <a class="custom-update-btn"
+                                                                    onclick="{!c.AddServiceResource}"
+                                                                    data-countaddserviceresource="{!count}">
+                                                                    <u>Add Service Resource</u>
+                                                                </a>
+                                                                <br />
+                                                            </aura:renderIf>
+                                                            <aura:renderIf isTrue="{!v.listval16}">
+                                                                <a class="custom-update-btn"
+                                                                    onclick="{!c.DeactivateService}"
+                                                                    data-countdeactivateservice="{!count}">
+                                                                    <u>Deactivate</u>
+                                                                </a>
+                                                                <br />
+                                                            </aura:renderIf>
+                                                            <aura:renderIf isTrue="{!v.listval15}">
+                                                                <a class="custom-update-btn"
+                                                                    onclick="{!c.ChangeSubscription}"
+                                                                    data-countchangesubscription="{!count}">
+                                                                    <u>Change Service</u>
+                                                                </a>
+                                                                <br />
+                                                            </aura:renderIf>
+
+                                                            <a class="custom-update-btn"
+                                                                onclick="{!c.showChangeCreateOrderModal}"
+                                                                data-countchangeorder="{!count}">
+                                                                <u>Create Change Order</u>
+                                                            </a>
+                                                            <br />
+                                                            <aura:renderIf isTrue="{!v.listval14}">
+                                                                <a class="custom-update-btn" onclick="{!c.AddAddress}"
+                                                                    data-countaddaddress="{!count}">
+                                                                    <u>Add Address</u>
+                                                                </a>
+                                                                <br />
+                                                            </aura:renderIf>
+                                                            <aura:renderIf isTrue="{!v.listval17}">
+                                                                <a class="custom-update-btn"
+                                                                    onclick="{!c.SuspendServices}"
+                                                                    data-countservice="{!count}">
+                                                                    <u>Suspend</u>
+                                                                </a>
+                                                                <br />
+                                                            </aura:renderIf>
+                                                            <aura:renderIf isTrue="{!!wrap.serialized}">
+                                                                <aura:renderIf isTrue="{!v.listval18}">
+                                                                    <a class="custom-update-btn"
+                                                                        onclick="{!c.UpdateQuantity}"
+                                                                        data-countupdate="{!count}">
+                                                                        <u>Update Quantity</u>
+                                                                    </a>
+                                                                    <br />
+                                                                </aura:renderIf>
+                                                            </aura:renderIf>
+                                                            <aura:renderIf isTrue="{!wrap.checkRuleOverrideValue}">
+                                                                <a class="custom-update-btn"
+                                                                    onclick="{!c.ConfigActivityCharge}"
+                                                                    data-count="{!count}">
+                                                                    <u>Configure Activity Charge Rules</u>
+                                                                </a>
+                                                                <br />
+                                                            </aura:renderIf>
+                                                        </aura:renderIf>
+                                                        <aura:renderIf isTrue="{!wrap.checkSuspendService}">
+                                                            <aura:renderIf isTrue="{!v.listval16}">
+                                                                <a class="custom-update-btn"
+                                                                    onclick="{!c.DeactivateService}"
+                                                                    data-countdeactivateservice="{!count}">
+                                                                    <u>Deactivate</u>
+                                                                </a>
+                                                                <br />
+                                                            </aura:renderIf>
+                                                            <a class="custom-update-btn" onclick="{!c.ResumeService}"
+                                                                data-resumesericecount="{!count}">
+                                                                <u>Resume</u>
+                                                            </a>
+                                                            <br />
+                                                        </aura:renderIf>
+                                                        <aura:renderIf isTrue="{!wrap.checkTrailService}">
+                                                            <a class="custom-update-btn"
+                                                                onclick="{!c.ConvertTrialService}"
+                                                                data-convertsericecount="{!count}">
+                                                                <u>Convert</u>
+                                                            </a>
+                                                            <br />
+                                                            <a class="custom-update-btn"
+                                                                onclick="{!c.DeactivateService}"
+                                                                data-countdeactivateservice="{!count}">
+                                                                <u>Deactivate</u>
+                                                            </a>
+                                                            <br />
+                                                        </aura:renderIf>
+                                                    </td>
+                                                </tr>
+                                                <aura:iteration items="{!wrap.childElements}" var="child"
+                                                    indexVar="countChild">
+                                                    <tr class="{! 'collapse' +' ' +wrap.serviceEid}">
+                                                        <aura:renderIf isTrue="{!child.checkChildElement}">
+                                                            <td class="clickable parent-service-child"
+                                                                data-toggle="collapse" id="{!child.serviceEid}"
+                                                                data-target="{! '.' + child.serviceEid}"
+                                                                style="padding-left: 30px;">
+                                                                <lightning:icon iconName="utility:add"
+                                                                    alternativeText="" class="slds-toggle"
+                                                                    onclick="{!c.expend}" />
+                                                            </td>
+                                                        </aura:renderIf>
+                                                        <aura:renderIf isTrue="{!!child.checkChildElement}">
+                                                            <td></td>
+                                                        </aura:renderIf>
+                                                        <td style="padding-left: 30px;">
+                                                            <aura:renderIf isTrue="{!!child.checkServiceResource}">
+                                                                <a onclick="{!c.showChildService}"
+                                                                    data-url="{!child.serviceEid}"
+                                                                    data-count="{!count + ':'+countChild}">
+                                                                    <u>{!child.serviceName}</u>
+                                                                </a>
+                                                                <aura:set attribute="else">
+                                                                    <ui:outputText aura:id="serviceProductName"
+                                                                        class="slds-output"
+                                                                        value="{!child.serviceName}" />
+                                                                </aura:set>
+                                                            </aura:renderIf>
+                                                        </td>
+                                                        <td>
+                                                            <ui:outputText aura:id="servicePrice" class="slds-output"
+                                                                value="{!child.quantity}" />
+                                                        </td>
+                                                        <td class="tabledata-nowrap slds-text-align_right">
+                                                            <ui:outputText aura:id="servicePrice" class="slds-output"
+                                                                value="{!child.servicePrice}" />
+                                                        </td>
+                                                        <td>
+                                                            <ui:outputText aura:id="parentServiceName"
+                                                                class="slds-output"
+                                                                value="{!child.parentServiceName}" />
+                                                        </td>
+                                                        <td>
+                                                            <ui:outputText aura:id="committedThru" class="slds-output"
+                                                                value="{!child.committedThru}" />
+                                                        </td>
+                                                        <td>
+                                                            <ui:outputText aura:id="renewAction" class="slds-output"
+                                                                value="{!child.renewAction}" />
+                                                        </td>
+                                                        <td>
+                                                            <ui:outputText aura:id="statusDate" class="slds-output"
+                                                                value="{!child.statusDate}" />
+                                                        </td>
+                                                        <td>
+                                                            <ui:outputText aura:id="status" class="slds-output"
+                                                                value="{!child.status}" />
+                                                        </td>
+                                                        <td>
+                                                            <aura:renderIf isTrue="{!child.checkDeactivateService}">
+                                                                <aura:renderIf isTrue="{!!child.checkServiceResource}">
+                                                                    <aura:renderIf
+                                                                        isTrue="{!wrap.canAddServiceResource}">
+                                                                        <a class="custom-update-btn"
+                                                                            onclick="{!c.AddServiceResourceToChild}"
+                                                                            data-countaddserviceresource="{! count + ':'+countChild}">
+                                                                            <u>Add Service Resource</u>
+                                                                        </a>
+                                                                        <br />
+                                                                    </aura:renderIf>
+                                                                    <aura:renderIf isTrue="{!v.listval16}">
+                                                                        <a class="custom-update-btn"
+                                                                            onclick="{!c.DeactivateChildService}"
+                                                                            data-countdeactivateservice="{! count + ':'+countChild}">
+                                                                            <u>Deactivate</u>
+                                                                        </a>
+                                                                        <br />
+                                                                    </aura:renderIf>
+                                                                    <aura:renderIf isTrue="{!v.listval15}">
+                                                                        <a class="custom-update-btn"
+                                                                            onclick="{!c.ChangeSubscriptionChild}"
+                                                                            data-countchangesubscription="{! count + ':'+countChild}">
+                                                                            <u>Change Service</u>
+                                                                        </a>
+                                                                        <br />
+                                                                    </aura:renderIf>
+                                                                    <aura:renderIf isTrue="{!v.listval14}">
+                                                                        <a class="custom-update-btn"
+                                                                            onclick="{!c.AddChildAddress}"
+                                                                            data-countaddaddress="{! count + ':'+countChild}">
+                                                                            <u>Add Address</u>
+                                                                        </a>
+                                                                        <br />
+                                                                    </aura:renderIf>
+                                                                    <aura:renderIf isTrue="{!v.listval17}">
+                                                                        <a class="custom-update-btn"
+                                                                            onclick="{!c.SuspendChildServices}"
+                                                                            data-countservice="{! count + ':'+countChild}">
+                                                                            <u>Suspend</u>
+                                                                        </a>
+                                                                        <br />
+                                                                    </aura:renderIf>
+                                                                    <aura:renderIf isTrue="{!!child.serialized}">
+                                                                        <aura:renderIf isTrue="{!v.listval18}">
+                                                                            <a class="custom-update-btn"
+                                                                                onclick="{!c.UpdateQuantityChild}"
+                                                                                data-countupdate="{! count + ':'+countChild}">
+                                                                                <u>Update Quantity</u>
+                                                                            </a>
+                                                                            <br />
+                                                                        </aura:renderIf>
+                                                                    </aura:renderIf>
+                                                                    <aura:renderIf
+                                                                        isTrue="{!child.checkRuleOverrideValue}">
+                                                                        <a class="custom-update-btn"
+                                                                            onclick="{!c.ConfigChildActivityCharge}"
+                                                                            data-count="{! count + ':'+countChild}">
+                                                                            <u>Configure Activity Charge Rules</u>
+                                                                        </a>
+                                                                        <br />
+                                                                    </aura:renderIf>
+                                                                </aura:renderIf>
+                                                            </aura:renderIf>
+                                                            <aura:renderIf isTrue="{!!child.childServiceSuspendCheck}">
+                                                                <aura:renderIf isTrue="{!child.checkSuspendService}">
+                                                                    <aura:renderIf isTrue="{!v.listval16}">
+                                                                        <a class="custom-update-btn"
+                                                                            onclick="{!c.DeactivateChildService}"
+                                                                            data-countdeactivateservice="{! count + ':'+countChild}">
+                                                                            <u>Deactivate</u>
+                                                                        </a>
+                                                                        <br />
+                                                                    </aura:renderIf>
+                                                                    <aura:renderIf
+                                                                        isTrue="{!!child.checkServiceResource}">
+                                                                        <a class="custom-update-btn"
+                                                                            onclick="{!c.ResumeChildService}"
+                                                                            data-resumesericecount="{! count + ':'+countChild}">
+                                                                            <u>Resume</u>
+                                                                        </a>
+                                                                        <br />
+                                                                    </aura:renderIf>
+                                                                </aura:renderIf>
+                                                            </aura:renderIf>
+                                                            <aura:renderIf isTrue="{!child.checkServiceResource}">
+                                                                <aura:renderIf isTrue="{!!child.checkSuspendService}">
+                                                                    <aura:renderIf isTrue="{!v.listval15}">
+                                                                        <aura:renderIf isTrue="{!v.listval15}">
+                                                                            <a class="custom-update-btn"
+                                                                                onclick="{!c.ChangeChildServiceResource}"
+                                                                                data-countchangeserviceresource="{! count + ':'+countChild}">
+                                                                                <u>Change</u>
+                                                                            </a>
+                                                                            <br />
+                                                                        </aura:renderIf>
+                                                                    </aura:renderIf>
+                                                                </aura:renderIf>
+                                                            </aura:renderIf>
+                                                            <aura:renderIf isTrue="{!wrap.checkTrailService}">
+                                                                <a class="custom-update-btn"
+                                                                    onclick="{!c.ConvertTrialService}"
+                                                                    data-convertsericecount="{!count}">
+                                                                    <u>Convert</u>
+                                                                </a>
+                                                                <br />
+                                                                <a class="custom-update-btn"
+                                                                    onclick="{!c.DeactivateService}"
+                                                                    data-countdeactivateservice="{!count}">
+                                                                    <u>Deactivate</u>
+                                                                </a>
+                                                                <br />
+                                                            </aura:renderIf>
+                                                        </td>
+                                                    </tr>
+                                                    <aura:iteration items="{!child.childElements}" var="Grandchild"
+                                                        indexVar="countGrandChild">
+                                                        <tr class="{! 'collapse' +' ' +child.serviceEid}">
+                                                            <td></td>
+                                                            <td style="padding-left: 60px;">
+                                                                <ui:outputText aura:id="serviceProductName"
+                                                                    class="slds-output"
+                                                                    value="{!Grandchild.serviceName}" />
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="servicePrice"
+                                                                    class="slds-output"
+                                                                    value="{!Grandchild.quantity}" />
+                                                            </td>
+                                                            <td class="tabledata-nowrap slds-text-align_right">
+                                                                <ui:outputText aura:id="servicePrice"
+                                                                    class="slds-output"
+                                                                    value="{!Grandchild.servicePrice}" />
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="parentServiceName"
+                                                                    class="slds-output"
+                                                                    value="{!Grandchild.parentServiceName}" />
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="committedThru"
+                                                                    class="slds-output"
+                                                                    value="{!Grandchild.committedThru}" />
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="renewAction" class="slds-output"
+                                                                    value="{!Grandchild.renewAction}" />
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="statusDate" class="slds-output"
+                                                                    value="{!Grandchild.statusDate}" />
+                                                            </td>
+                                                            <td>
+                                                                <ui:outputText aura:id="status" class="slds-output"
+                                                                    value="{!Grandchild.status}" />
+                                                            </td>
+                                                            <td>
+                                                                <aura:renderIf
+                                                                    isTrue="{!Grandchild.checkDeactivateService}">
+                                                                    <aura:renderIf
+                                                                        isTrue="{!!Grandchild.checkServiceResource}">
+                                                                        <aura:renderIf
+                                                                            isTrue="{!wrap.canAddServiceResource}">
+                                                                            <a class="custom-update-btn"
+                                                                                onclick="{!c.AddServiceResourceToGrandChild}"
+                                                                                data-countaddserviceresource="{! count + ':' + countChild + ':' + countGrandChild}">
+                                                                                <u>Add Service Resource</u>
+                                                                            </a>
+                                                                            <br />
+                                                                        </aura:renderIf>
+                                                                        <aura:renderIf isTrue="{!v.listval16}">
+                                                                            <a class="custom-update-btn"
+                                                                                onclick="{!c.DeactivateGrandChildService}"
+                                                                                data-countdeactivateservice="{! count + ':' + countChild + ':' + countGrandChild}">
+                                                                                <u>Deactivate</u>
+                                                                            </a>
+                                                                            <br />
+                                                                        </aura:renderIf>
+                                                                        <aura:renderIf isTrue="{!v.listval15}">
+                                                                            <a class="custom-update-btn"
+                                                                                onclick="{!c.ChangeGrandChildSubscription}"
+                                                                                data-countchangesubscription="{! count + ':' + countChild + ':' + countGrandChild}">
+                                                                                <u>Change Service</u>
+                                                                            </a>
+                                                                            <br />
+                                                                        </aura:renderIf>
+                                                                        <aura:renderIf isTrue="{!v.listval14}">
+                                                                            <a class="custom-update-btn"
+                                                                                onclick="{!c.AddGrandChildAddress}"
+                                                                                data-countaddaddress="{! count + ':' + countChild + ':' + countGrandChild}">
+                                                                                <u>Add Address</u>
+                                                                            </a>
+                                                                            <br />
+                                                                        </aura:renderIf>
+                                                                        <aura:renderIf isTrue="{!v.listval17}">
+                                                                            <a class="custom-update-btn"
+                                                                                onclick="{!c.SuspendGrandChildServices}"
+                                                                                data-countservice="{! count + ':' + countChild + ':' + countGrandChild}">
+                                                                                <u>Suspend</u>
+                                                                            </a>
+                                                                            <br />
+                                                                        </aura:renderIf>
+                                                                        <aura:renderIf
+                                                                            isTrue="{!Grandchild.checkRuleOverrideValue}">
+                                                                            <a class="custom-update-btn"
+                                                                                onclick="{!c.ConfigGrandChildActivityCharge}"
+                                                                                data-count="{! count + ':' + countChild + ':' + countGrandChild}">
+                                                                                <u>Configure Activity Charge Rules</u>
+                                                                            </a>
+                                                                            <br />
+                                                                        </aura:renderIf>
+                                                                    </aura:renderIf>
+                                                                </aura:renderIf>
+                                                                <aura:renderIf
+                                                                    isTrue="{!!Grandchild.childServiceSuspendCheck}">
+                                                                    <aura:renderIf
+                                                                        isTrue="{!Grandchild.checkSuspendService}">
+                                                                        <aura:renderIf isTrue="{!v.listval16}">
+                                                                            <a class="custom-update-btn"
+                                                                                onclick="{!c.DeactivateGrandChildService}"
+                                                                                data-countdeactivateservice="{! count + ':' + countChild + ':' + countGrandChild}">
+                                                                                <u>Deactivate</u>
+                                                                            </a>
+                                                                            <br />
+                                                                        </aura:renderIf>
+                                                                        <aura:renderIf
+                                                                            isTrue="{!!Grandchild.checkServiceResource}">
+                                                                            <a class="custom-update-btn"
+                                                                                onclick="{!c.ResumeGrandChildService}"
+                                                                                data-resumesericecount="{! count + ':' + countChild + ':' + countGrandChild}">
+                                                                                <u>Resume</u>
+                                                                            </a>
+                                                                            <br />
+                                                                        </aura:renderIf>
+                                                                    </aura:renderIf>
+                                                                </aura:renderIf>
+                                                                <aura:renderIf
+                                                                    isTrue="{!Grandchild.checkServiceResource}">
+                                                                    <aura:renderIf
+                                                                        isTrue="{!!Grandchild.checkSuspendService}">
+                                                                        <aura:renderIf isTrue="{!v.listval15}">
+                                                                            <aura:renderIf isTrue="{!v.listval15}">
+                                                                                <a class="custom-update-btn"
+                                                                                    onclick="{!c.ChangeGrandChildServiceResource}"
+                                                                                    data-countchangeserviceresource="{! count + ':' + countChild + ':' + countGrandChild}">
+                                                                                    <u>Change</u>
+                                                                                </a>
+                                                                                <br />
+                                                                            </aura:renderIf>
+                                                                        </aura:renderIf>
+                                                                    </aura:renderIf>
+                                                                </aura:renderIf>
+                                                                <aura:renderIf isTrue="{!wrap.checkTrailService}">
+                                                                    <a class="custom-update-btn"
+                                                                        onclick="{!c.ConvertTrialService}"
+                                                                        data-convertsericecount="{!count}">
+                                                                        <u>Convert</u>
+                                                                    </a>
+                                                                    <br />
+                                                                    <a class="custom-update-btn"
+                                                                        onclick="{!c.DeactivateService}"
+                                                                        data-countdeactivateservice="{!count}">
+                                                                        <u>Deactivate</u>
+                                                                    </a>
+                                                                    <br />
+                                                                </aura:renderIf>
+                                                            </td>
+                                                        </tr>
+                                                    </aura:iteration>
+                                                </aura:iteration>
+                                            </aura:iteration>
+                                        </table>
+                                    </div>
+                                    <div class="slds-float--right" role="group">
+                                        <aura:renderIf isTrue="{!v.checkallService}">
+                                            <aura:renderIf isTrue="{!v.checkpage2Service}">
+                                                <button onclick="{!c.firstServicePage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    First
+                                                </button>
+                                                <button onclick="{!c.prevServicePage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Prev
+                                                </button>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!v.checkpageService}">
+                                                <button onclick="{!c.nextServicePage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Next
+                                                </button>
+                                                <button onclick="{!c.lastServicePage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Last
+                                                </button>
+                                            </aura:renderIf>
+                                        </aura:renderIf>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:renderIf>
+                    <aura:renderIf isTrue="{!v.showOneTimePurchase}">
+                        <div class="account-details">
+                            <div class="panel-body panel_body_details service-table heading last">
+                                <p class="bg-primary">One-time Product Purchases</p>
+                                <div class="form-horizontal information-box service-table-details">
+                                    <div class="cmn-table-responsive custom-height-overflow">
+                                        <table>
+                                            <tr>
+                                                <th class="head">Product</th>
+                                                <th class="head">Description</th>
+                                                <th class="head">Order #</th>
+                                                <th class="head">Purchase Date</th>
+                                                <th class="head">Status</th>
+                                                <th class="head slds-text-align_right">Unit Price</th>
+                                                <th class="head">Quantity</th>
+                                                <th class="head slds-text-align_right">Total</th>
+                                            </tr>
+                                            <aura:iteration items="{!v.OneTimeOrderItemList}" var="oneTimeOrderItem"
+                                                indexVar="count">
+                                                <tr>
+                                                    <td>
+                                                        <a onclick="{!c.showOneTimePurchaseDetail}"
+                                                            data-count="{!count}">
+                                                            <u>{!oneTimeOrderItem.productName}</u>
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="Description" class="slds-output"
+                                                            value="{!oneTimeOrderItem.description}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="OrderNumber" class="slds-output"
+                                                            value="{!oneTimeOrderItem.orderNumber}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputDate aura:id="PurchaseDate" class="slds-output"
+                                                            value="{!oneTimeOrderItem.purchaseDate}"
+                                                            format="MM/dd/yyyy" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="status" class="slds-output"
+                                                            value="{!oneTimeOrderItem.status}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="unitPrice"
+                                                            class="slds-output slds-text-align_right"
+                                                            value="{!oneTimeOrderItem.unitPrice}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="quantity" class="slds-output"
+                                                            value="{!oneTimeOrderItem.quantity}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="Total"
+                                                            class="slds-output slds-text-align_right"
+                                                            value="{!oneTimeOrderItem.totalPrice}" />
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:renderIf>
+                    <aura:renderIf isTrue="{!v.listval8}">
+                        <div class="account-details">
+                            <div class="panel-body panel_body_details service-table heading last">
+                                <div class="bg-primary">
+                                    <p>
+                                        Debit Adjustments
+                                        <aura:renderIf isTrue="{!and(v.listval12, v.enableAddCreditDebit)}">
+                                            <ui:button
+                                                class="cmn-btn slds-button slds-button--neutral custom-update-btn"
+                                                label="Add" press="{!c.showDebitAdjustment}" />
+                                        </aura:renderIf>
+                                    </p>
+                                </div>
+                                <div class="form-horizontal information-box service-table-details">
+                                    <div class="cmn-table-responsive custom-height-overflow">
+                                        <table>
+                                            <tr>
+                                                <th class="head">Number</th>
+                                                <th class="head slds-text-align_right">Amount</th>
+                                                <th class="head">Type</th>
+                                                <th class="head">Reason</th>
+                                                <th class="head">Description</th>
+                                                <th class="head">Status</th>
+                                                <th class="head">Date</th>
+                                            </tr>
+                                            <aura:iteration items="{!v.getDebitList}" var="debit">
+                                                <tr>
+                                                    <td>
+                                                        <ui:outputText aura:id="debitName" class="slds-output"
+                                                            value="{!debit.name}" />
+                                                    </td>
+                                                    <td class="slds-text-align_right">
+                                                        <ui:outputText aura:id="debitAmount" class="slds-output"
+                                                            value="{!debit.showAdjustmentAmount}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="debitType" class="slds-output"
+                                                            value="{!debit.type}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="debitdescription" class="slds-output"
+                                                            value="{!debit.description}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="debitStatus" class="slds-output"
+                                                            value="{!debit.status}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputDate aura:id="debitOccuredOn" class="slds-output"
+                                                            value="{!debit.occurredOn}" format="MM/dd/yyyy" />
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </table>
+                                    </div>
+                                    <div class="slds-float--right" role="group">
+                                        <aura:renderIf isTrue="{!v.checkalldebit}">
+                                            <aura:renderIf isTrue="{!v.checkpage2debit}">
+                                                <button onclick="{!c.firstdebitPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    First
+                                                </button>
+                                                <button onclick="{!c.prevdebitPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Prev
+                                                </button>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!v.checkpagedebit}">
+                                                <button onclick="{!c.nextdebitPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Next
+                                                </button>
+                                                <button onclick="{!c.lastdebitPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Last
+                                                </button>
+                                            </aura:renderIf>
+                                        </aura:renderIf>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:renderIf>
+                    <aura:renderIf isTrue="{!v.listval9}">
+                        <div class="account-details">
+                            <div class="panel-body panel_body_details service-table heading last">
+                                <div class="bg-primary">
+                                    <p>
+                                        Credit Adjustments
+                                        <aura:renderIf isTrue="{!and(v.listval11, v.enableAddCreditDebit)}">
+                                            <ui:button
+                                                class="cmn-btn slds-button slds-button--neutral custom-update-btn"
+                                                label="Add" press="{!c.showCreditAdjustment}" />
+                                        </aura:renderIf>
+                                    </p>
+                                </div>
+                                <div class="form-horizontal information-box service-table-details">
+                                    <div class="cmn-table-responsive custom-height-overflow">
+                                        <table>
+                                            <tr>
+                                                <th class="head">Number</th>
+                                                <th class="head slds-text-align_right">Amount</th>
+                                                <th class="head">Manually Apply</th>
+                                                <th class="head">Reason</th>
+                                                <th class="head">Description</th>
+                                                <th class="head">Invoice</th>
+                                                <th class="head">Status</th>
+                                                <th class="head">Effective Date</th>
+                                                <th class="head">Entered Date</th>
+                                                <th class="head slds-text-align_right">Unapplied</th>
+                                            </tr>
+                                            <aura:iteration items="{!v.getCreditList}" var="credit">
+                                                <tr>
+                                                    <td>
+                                                        <ui:outputText aura:id="creditName" class="slds-output"
+                                                            value="{!credit.name}" />
+                                                    </td>
+                                                    <td class="slds-text-align_right">
+                                                        <ui:outputText aura:id="creditAmount" class="slds-output"
+                                                            value="{!credit.showAdjustmentAmount}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="creditApply" class="slds-output"
+                                                            value="{!credit.manuallyApply}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="creditReason" class="slds-output"
+                                                            value="{!credit.reason}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="creditdescription" class="slds-output"
+                                                            value="{!credit.description}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="creditInvoice" class="slds-output"
+                                                            value="{!credit.invoice}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="creditStatus" class="slds-output"
+                                                            value="{!credit.status}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputDate aura:id="creditOccuredOn" class="slds-output"
+                                                            value="{!credit.occurredOn}" format="MM/dd/yyyy" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputDate aura:id="creditPostedOn" class="slds-output"
+                                                            value="{!credit.postedOn}" format="MM/dd/yyyy" />
+                                                    </td>
+                                                    <td class="slds-text-align_right">
+                                                        <ui:outputText aura:id="creditUnapplied" class="slds-output"
+                                                            value="{!credit.creditUnappliedAmount}" />
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </table>
+                                    </div>
+                                    <div class="slds-float--right" role="group">
+                                        <aura:renderIf isTrue="{!v.checkallcredit}">
+                                            <aura:renderIf isTrue="{!v.checkpage2credit}">
+                                                <button onclick="{!c.firstcreditPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    First
+                                                </button>
+                                                <button onclick="{!c.prevcreditPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Prev
+                                                </button>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!v.checkpagecredit}">
+                                                <button onclick="{!c.nextcreditPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Next
+                                                </button>
+                                                <button onclick="{!c.lastcreditPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Last
+                                                </button>
+                                            </aura:renderIf>
+                                        </aura:renderIf>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:renderIf>
+                    <!-- Payment Method  Details-->
+                    <aura:renderIf isTrue="{!v.listval19}">
+                        <div class="account-details">
+                            <div class="panel-body panel_body_details service-table heading last">
+                                <div class="bg-primary">
+                                    <p>
+                                        Payment Methods
+                                        <!-- <div class=">       
+                                    </div> -->
+                                        <aura:renderIf isTrue="{!v.hideButton}">
+                                            <ui:button
+                                                class="cmn-btn slds-button slds-button--neutral custom-update-btn"
+                                                label="Add Payment Method" press="{!c.showPaymentMethodModal}" />
+                                        </aura:renderIf>
+                                    </p>
+                                </div>
+                                <div class="form-horizontal information-box service-table-details">
+                                    <div class="cmn-table-responsive custom-height-overflow">
+                                        <table>
+                                            <tr>
+                                                <th class="head">Nickname</th>
+                                                <th class="head">Description</th>
+                                                <th class="head">Address</th>
+                                                <th class="head">Valid From</th>
+                                                <th class="head">Valid To</th>
+                                                <th class="head">Phone</th>
+                                                <th class="head">Email</th>
+                                            </tr>
+                                            <aura:iteration items="{!v.RecordsOfPaymentMethod}" var="paymentRec">
+                                                <tr>
+                                                    <td>
+                                                        <ui:outputText aura:id="paymentNickname" class="slds-output"
+                                                            value="{!paymentRec.nickName}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="paymentDescription" class="slds-output"
+                                                            value="{!paymentRec.description}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="paymentAddress" class="slds-output"
+                                                            value="{!paymentRec.address}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputDateTime aura:id="paymentValidFrom"
+                                                            class="slds-output" value="{!paymentRec.validFrom}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputDateTime aura:id="paymentValidTo" class="slds-output"
+                                                            value="{!paymentRec.validTo}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="paymentPhone" class="slds-output"
+                                                            value="{!paymentRec.phone}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="paymentEmail" class="slds-output"
+                                                            value="{!paymentRec.email}" />
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </table>
+                                    </div>
+                                    <div class="slds-float--right" role="group">
+                                        <aura:renderIf isTrue="{!v.checkAllPaymentMethod}">
+                                            <aura:renderIf isTrue="{!v.checkPage2PaymentMethod}">
+                                                <button onclick="{!c.firstPaymentMethodPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    First
+                                                </button>
+                                                <button onclick="{!c.prevPaymentMethodPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Prev
+                                                </button>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!v.checkPagePaymentMethod}">
+                                                <button onclick="{!c.nextPaymentMethodPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Next
+                                                </button>
+                                                <button onclick="{!c.lastPaymentMethodPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Last
+                                                </button>
+                                            </aura:renderIf>
+                                        </aura:renderIf>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:renderIf>
+                    <!-- Contacts Details-->
+                    <aura:renderIf isTrue="{!v.listval20}">
+                        <div class="account-details">
+                            <div class="panel-body panel_body_details service-table heading last">
+                                <div class="bg-primary">
+                                    <p>
+                                        Contacts
+                                    </p>
+                                </div>
+                                <div class="form-horizontal information-box service-table-details">
+                                    <div class="cmn-table-responsive custom-height-overflow">
+                                        <table>
+                                            <tr>
+                                                <th class="head">Name</th>
+                                                <th class="head">Category</th>
+                                                <th class="head">Department</th>
+                                                <th class="head">Title</th>
+                                                <th class="head">Email</th>
+                                                <th class="head">Phone</th>
+                                            </tr>
+                                            <aura:iteration items="{!v.ListOfContacts}" var="contactRec">
+                                                <tr>
+                                                    <td>
+                                                        <ui:outputText aura:id="contactName" class="slds-output"
+                                                            value="{!contactRec.name}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="contactCategory" class="slds-output"
+                                                            value="{!contactRec.categoryName}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="contactDepartment" class="slds-output"
+                                                            value="{!contactRec.department}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="contactTitle" class="slds-output"
+                                                            value="{!contactRec.title}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="contactEmail" class="slds-output"
+                                                            value="{!contactRec.email}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="contactPhone" class="slds-output"
+                                                            value="{!contactRec.phone}" />
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </table>
+                                    </div>
+                                    <div class="slds-float--right" role="group">
+                                        <aura:renderIf isTrue="{!v.checkAllContact}">
+                                            <aura:renderIf isTrue="{!v.checkPage2Contact}">
+                                                <button onclick="{!c.firstContactPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    First
+                                                </button>
+                                                <button onclick="{!c.prevContactPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Prev
+                                                </button>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!v.checkPageContact}">
+                                                <button onclick="{!c.nextContactPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Next
+                                                </button>
+                                                <button onclick="{!c.lastContactPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Last
+                                                </button>
+                                            </aura:renderIf>
+                                        </aura:renderIf>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:renderIf>
+                    <!-- Notes Details-->
+                    <aura:renderIf isTrue="{!v.listval21}">
+                        <div class="account-details">
+                            <div class="panel-body panel_body_details service-table heading last">
+                                <div class="bg-primary">
+                                    <p>
+                                        Notes
+                                    </p>
+                                </div>
+                                <div class="form-horizontal information-box service-table-details">
+                                    <div class="cmn-table-responsive custom-height-overflow">
+                                        <table>
+                                            <tr>
+                                                <th class="head">Party</th>
+                                                <th class="head">User</th>
+                                                <th class="head">Notes</th>
+                                                <th class="head">Type</th>
+                                            </tr>
+                                            <aura:iteration items="{!v.ListOfNotes}" var="note">
+                                                <tr>
+                                                    <td>
+                                                        <ui:outputText aura:id="noteParty" class="slds-output"
+                                                            value="{!note.party}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="noteUserData" class="slds-output"
+                                                            value="{!note.userData}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="noteContent" class="slds-output"
+                                                            value="{!note.noteContent}" />
+                                                    </td>
+                                                    <td>
+                                                        <ui:outputText aura:id="noteType" class="slds-output"
+                                                            value="{!note.typeOfNote}" />
+                                                    </td>
+                                                </tr>
+                                            </aura:iteration>
+                                        </table>
+                                    </div>
+                                    <div class="slds-float--right" role="group">
+                                        <aura:renderIf isTrue="{!v.checkAllNote}">
+                                            <aura:renderIf isTrue="{!v.checkPage2Note}">
+                                                <button onclick="{!c.firstNotePage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    First
+                                                </button>
+                                                <button onclick="{!c.prevNotePage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Prev
+                                                </button>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!v.checkPageNote}">
+                                                <button onclick="{!c.nextNotePage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Next
+                                                </button>
+                                                <button onclick="{!c.lastNotePage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Last
+                                                </button>
+                                            </aura:renderIf>
+                                        </aura:renderIf>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:renderIf>
+                    <aura:renderIf isTrue="{!v.listval10}">
+                        <div class="account-details">
+                            <div class="panel-body panel_body_details service-table heading last">
+                                <div class="bg-primary">
+                                    <p>
+                                        Activity Events
+                                    </p>
+                                </div>
+                                <div class="form-horizontal information-box service-table-details">
+                                    <div class="cmn-table-responsive custom-height-overflow">
+                                        <table id="accountTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>Event Time</th>
+                                                    <th>Service Identifier</th>
+                                                    <th>Reference ID</th>
+                                                    <th>Sequence ID</th>
+                                                    <th>Description</th>
+                                                    <th class="slds-text-align_right">Amount</th>
+                                                    <th>Unit of Measure</th>
+                                                    <th class="slds-text-align_right">Total Charge</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <aura:iteration items="{!v.getEventList}" var="evt">
+                                                    <tr>
+                                                        <td>
+                                                            <ui:outputDateTime aura:id="eventTime" class="slds-output"
+                                                                value="{!evt.eventTime}" />
+                                                        </td>
+                                                        <td>
+                                                            <ui:outputText aura:id="ServiceIdentifier"
+                                                                class="slds-output" value="{!evt.serviceIdentifier}" />
+                                                        </td>
+                                                        <td>
+                                                            <ui:outputText aura:id="ReferenceID" class="slds-output"
+                                                                value="{!evt.referenceID}" />
+                                                        </td>
+                                                        <td>
+                                                            <ui:outputText aura:id="SequenceID" class="slds-output"
+                                                                value="{!evt.sequenceID}" />
+                                                        </td>
+                                                        <td>
+                                                            <ui:outputText aura:id="Description" class="slds-output"
+                                                                value="{!evt.description}" />
+                                                        </td>
+                                                        <td class="slds-text-align_right">
+                                                            <ui:outputText aura:id="Amount" class="slds-output"
+                                                                value="{!evt.amount}" />
+                                                        </td>
+                                                        <td>
+                                                            <ui:outputText aura:id="UnitofMeasure" class="slds-output"
+                                                                value="{!evt.unitOfMeasure}" />
+                                                        </td>
+                                                        <td class="slds-text-align_right">
+                                                            <ui:outputText aura:id="totalCharge" class="slds-output"
+                                                                value="{!evt.totalCharge}" />
+                                                        </td>
+                                                    </tr>
+                                                </aura:iteration>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="slds-float--right" role="group">
+                                        <aura:renderIf isTrue="{!v.checkall}">
+                                            <aura:renderIf isTrue="{!v.checkpage2}">
+                                                <button onclick="{!c.firstPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    First
+                                                </button>
+                                                <button onclick="{!c.prevPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Prev
+                                                </button>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!v.checkpage}">
+                                                <button onclick="{!c.nextPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Next
+                                                </button>
+                                                <button onclick="{!c.lastPage}"
+                                                    class="slds-button slds-button--neutral">
+                                                    Last
+                                                </button>
+                                            </aura:renderIf>
+                                        </aura:renderIf>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:renderIf>
+                </aura:renderIf>
+            </div>
+        </div>
+    </div>
+    <aura:renderIf isTrue="{!v.isModalOpen}">
+        <c:createPaymentMethodComponent accountId="{!v.accountId}" onaddPaymentMethod="{!c.jsLoaded}"
+            onclosePaymentMethod="{!c.closePaymentMethod}" />
+    </aura:renderIf>
+    <aura:renderIf isTrue="{!v.isPaymentOpen}">
+        <c:executePaymentComponent accountId="{!v.accountId}" onaddPaymentMethod="{!c.jsLoaded}"
+            onclosePaymentMethod="{!c.closePaymentMethod}" />
+    </aura:renderIf>
+    <c:RenewServices />
+    <c:ActivityChargeRule />
+    <c:ResumeServiceCmp />
+    <c:ConvertServiceCmp />
+</aura:component>

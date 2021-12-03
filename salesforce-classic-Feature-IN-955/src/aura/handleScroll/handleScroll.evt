@@ -1,0 +1,6 @@
+<aura:event type="APPLICATION" access="global">
+    <aura:attribute name="testVar"
+    access="global"
+    type="Boolean" 
+    description="TO pass Account Id to reload the component"/>
+</aura:event>

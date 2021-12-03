@@ -1,0 +1,6 @@
+.THIS #UpdateQtyModal .slds-modal__container{
+    max-width: 500px;
+}
+.THIS .PriceOverride input{
+    width: 100%;
+}

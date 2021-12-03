@@ -1,0 +1,120 @@
+{!REQUIRESCRIPT("/soap/ajax/20.0/connection.js")} 
+{!REQUIRESCRIPT('//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js')} 
+{!REQUIRESCRIPT('//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js')} 
+{!REQUIRESCRIPT("/soap/ajax/30.0/apex.js")} 
+{!REQUIRESCRIPT("/soap/ajax/15.0/connection.js")} 
+{!REQUIRESCRIPT("/soap/ajax/15.0/apex.js")} 
+
+var tractConEid = "{!Contact.TRACT3__Tract_Contact_Eid__c}" 
+var parentAccount = "{!Account.TRACT3__Tract_Billing_Account__c}"; 
+var str = ""; 
+
+if(parentAccount =="") 
+{ 
+var htmlContent4 = " <style>.dlgfixed{position:fixed !important;top:50px !important;right:0 !important;left:0 !important;z-index:99999 !important;width:400px !important;margin:auto !important;}</style><center><p><font size='3' color='#322A2A'><strong>Parent Account does not exist.</strong></font></p></center></br></br>"; 
+var html4 = '<div id="dialog4" style="display: none" title="Add Contact">'+htmlContent4+'</div>'; 
+var $j = jQuery.noConflict(); 
+$j(function() { 
+$j('head').append('<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" type="text/css"/>'); 
+
+$j('body').append(html4); 
+$j("#dialog4").dialog({ 
+autoOpen: true, 
+modal: true, 
+dialogClass: 'dlgfixed', 
+buttons: { 
+"Ok": function() { 
+$j(this).dialog("close"); 
+}	
+
+} 
+
+}); 
+}); 
+
+
+} 
+
+else if(null != tractConEid && '' != tractConEid) 
+{ 
+var htmlContent3 = " <style>.dlgfixed{position:fixed !important;top:50px !important;right:0 !important;left:0 !important;z-index:99999 !important;width:400px !important;margin:auto !important;}</style><center><p><font size='3' color='#322A2A'><strong>This contact has been already moved in TRACT.</strong></font></p></center></br></br>"; 
+var html3 = '<div id="dialog3" style="display: none" title="Add Contact">'+htmlContent3+'</div>'; 
+var $j = jQuery.noConflict(); 
+$j(function() { 
+$j('head').append('<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" type="text/css"/>'); 
+
+$j('body').append(html3); 
+$j("#dialog3").dialog({ 
+autoOpen: true, 
+modal: true, 
+dialogClass: 'dlgfixed', 
+buttons: { 
+"Ok": function() { 
+$j(this).dialog("close"); 
+}	
+
+} 
+
+}); 
+}); 
+
+
+} 
+
+else{ 
+var htmlContent1 = " <style>.dlgfixed{position:fixed !important;top:50px !important;right:0 !important;left:0 !important;z-index:99999 !important;width:400px !important;margin:auto !important;}</style><center><p><font size='3' color='#322A2A'><strong>Are you sure you would like to add contact to the Billing Account ?</strong></font></p></center></br></br>"; 
+var html1 = '<div id="dialog1" style="display: none" title=" Add Contact">'+htmlContent1+'</div>'; 
+
+var $j = jQuery.noConflict(); 
+$j(function() { 
+$j('head').append('<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" type="text/css"/>'); 
+
+$j('body').append(html1); 
+$j("#dialog1").dialog({ 
+autoOpen: true, 
+modal: true, 
+dialogClass: 'dlgfixed', 
+buttons: { 
+
+"Confirm": function() { 
+
+str = sforce.apex.execute("TRACT3.SoapApi30Adapter","contactUpdateOnAccount",{contactId:"{!Contact.Id}"}); 
+//alert(str); 
+var htmlContent5 = " <style>.dlgfixed{position:fixed !important;top:50px !important;right:0 !important;left:0 !important;z-index:99999 !important;width:400px !important;margin:auto !important;}</style><center><p><font size='3' color='#322A2A'><strong>"+str+"</strong></font></p></center></br></br>"; 
+var html5 = '<div id="dialog5" style="display: none" title="Add Contact">'+htmlContent5+'</div>'; 
+var $j = jQuery.noConflict(); 
+$j(function() { 
+$j('head').append('<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css" type="text/css"/>'); 
+
+$j('body').append(html5); 
+$j("#dialog5").dialog({ 
+autoOpen: true, 
+modal: true, 
+dialogClass: 'dlgfixed', 
+buttons: { 
+
+"Close": function() { 
+
+$j(this).dialog("close"); 
+location.reload(true); 
+
+} 
+} 
+
+}); 
+}); 
+
+$j(this).dialog("close"); 
+
+}, 
+"Cancel": function() { 
+
+$j(this).dialog("close"); 
+
+} 
+} 
+
+}); 
+}); 
+
+}

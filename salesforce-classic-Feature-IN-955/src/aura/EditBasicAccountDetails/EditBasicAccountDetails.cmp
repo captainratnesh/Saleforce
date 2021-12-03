@@ -1,0 +1,113 @@
+<aura:component controller="AccountDetailController_LT">
+    <aura:attribute name="accountWrapper" type="AccountEditWrapper"/>
+    <aura:attribute name="accountId" type="String"/>
+    <aura:attribute name="getUITheme" type="String"/>
+    <aura:attribute name="selectedValueCurrency" type="String" default='USD'/>
+    <aura:attribute name="selectedValueCategory" type="String" />
+    <aura:attribute name="billCycleList" type="SelectOption[]"/>
+    <aura:registerEvent name="reloadAccount" type="c:handleAccountReload" />
+    <aura:attribute name="HideSpinner" type="Boolean" default="true"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}" />
+    <aura:handler event="c:ReloadAccountDetail" action="{!c.jsLoaded}"/>
+    
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/> 
+    <div>
+        <div aria-hidden="false" id="serviceResource" role="dialog" class="slds-modal slds-fade-in-open slds-modal_medium add-new-prod-model" style="display:block;">
+            <aura:renderIf isTrue="{!v.HideSpinner}">
+                <div class="loader">
+                    <img src="/resource/TRACT3__SLDS/assets/images/spinners/slds_spinner_brand.gif" class="img-responsive center-block" style="height: 100px;"/>
+                </div>
+            </aura:renderIf>
+            <div class="slds-modal__container">  
+                <div class="slds-modal__header top-cmn-heading-row"> 
+                    <h1 class="slds-text-heading_medium">Configure Account</h1>
+                    <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                        <c:svg class="slds-button__icon slds-button__icon--large"
+                               xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                               ariaHidden="true"
+                               />
+                    </button>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium slds-form-element_compound">
+                    <div class="slds-form-element__row">
+                        <div class="slds-size_1-of-2">
+                            <lightning:select value="{!v.accountWrapper.selectedCurrency}" label="Currency" onchange="{!c.onCurrenChange}" required= "true">
+                                <aura:iteration items="{!v.accountWrapper.currencyType}" var="item">
+                                    <option value="{!item.value}" label="{!item.label}" selected="{!item.value==v.accountWrapper.selectedCurrency}">
+                                    </option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                        <div class="slds-size_1-of-2">
+                            <lightning:select value="{!v.accountWrapper.accountCategory}" label="Billing Account Category" onchange="{!c.onCurrenChange}" required= "true">
+                                <aura:iteration items="{!v.accountWrapper.accountCategoryList}" var="item">
+                                    <option value="{!item.value}" text="{!item.label}" selected="{!item.value==v.accountWrapper.accountCategory}">
+                                    </option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                    </div>
+                    <div class="slds-form-element__row">
+                        <div class="slds-size_1-of-2">   
+                            <lightning:select value="{!v.accountWrapper.billCycleName}" label="Bill Cycle" required= "true">
+                                <option value="">Choose One</option>
+                                <aura:iteration items="{!v.billCycleList}" var="item">
+                                    <option value="{!item.value}" text="{!item.label}" selected="{!item.value==v.accountWrapper.billCycleName}">
+                                    </option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                        <div class="slds-size_1-of-2">
+                            <lightning:select value="{!v.accountWrapper.paymentTerm}" label="Payment Terms">
+                                <aura:iteration items="{!v.accountWrapper.paymentTermList}" var="item">
+                                    <option value="{!item.value}" text="{!item.label}" selected="{!item.value==v.accountWrapper.paymentTerm}">
+                                    </option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                    </div>
+                    
+                    <div class="slds-form-element__row">
+                        <div class="slds-size_1-of-2">   
+                            <lightning:select value="{!v.accountWrapper.billType}" label="Invoice Type" required= "true">
+                                <option value="">Choose One</option>
+                                <aura:iteration items="{!v.accountWrapper.billTypeList}" var="item">
+                                    <option value="{!item.value}" text="{!item.label}" selected="{!item.value==v.accountWrapper.billType}">
+                                    </option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                        <div class="slds-size_1-of-2">
+                            <lightning:input type="Date" class="slds-p-horizontal_none" autocomplete="none"  label="Create Date"
+                                                name="Start Date" value="{!v.accountWrapper.createDate}" />
+                        </div>
+                    </div>
+                    
+                    <div class="slds-form-element__row">
+                        <div class="slds-size_1-of-2">
+                            <lightning:input type="email" label="Email" name="mail" autocomplete="none" value="{!v.accountWrapper.email}"/>
+                        </div>
+                        <div class="slds-size_1-of-2">
+                            <lightning:input type="checkbox" class="slds-custom-checkbox" label="Tax Exempt"
+                                                name="tax"
+                                                checked="{!v.accountWrapper.taxExempt}"
+                                                value="{!v.accountWrapper.taxExempt}"
+                                                />
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <div class="slds-x-small-buttons--horizontal">
+                        <div class="slds-x-small-buttons--horizontal">
+                        <button class="slds-button slds-button--destructive"  onclick="{!c.closeModalBox}">Cancel</button>
+                            <button class="slds-button slds-button--neutral slds-button--brand" onclick="{!c.saveDetails}">Save</button>
+
+                    </div>                 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slds-backdrop slds-backdrop--open custom-slds-backdrop" id="accountCustomFieldBackground" style="display:block;"></div>
+    </div>    
+</aura:component>

@@ -1,0 +1,482 @@
+<aura:component access="GLOBAL" controller="TractOppProduct_LT" implements="lightning:isUrlAddressable">
+    <aura:attribute name="productListWrapper" type="GTVProductListWrapper"/>
+    <aura:attribute name="searchedProductList" type="Product2[]"/>
+    <aura:attribute name="opportunityId" type="String"/>
+    <aura:attribute name="searchedProduct" type="String" default=""/>
+    <aura:attribute type="Map" name="productListMap"  default="{}" />
+    <aura:attribute type="Integer" name="currentPage"  default="1" />
+    <aura:attribute type="Integer" name="totelPage"  default="0" />
+    <aura:attribute name="disableNext" type="boolean"  default="false"/>
+    <aura:attribute name="disablePrev" type="boolean"  default="true"/>
+    <aura:attribute name="disableFirst" type="boolean"  default="true"/>
+    <aura:attribute name="disableLast" type="boolean"  default="false"/>
+    <aura:attribute name="disableProduct" type="boolean"  default="false"/>
+    <aura:attribute name="message" type="String" default="NoError"/>
+    <aura:attribute name="isConfiguration" type="boolean"  default="false"/>
+    <aura:attribute name="ProdCount" type="Integer" />
+    <aura:handler name="init" value="this" action="{!c.doinit}" />
+    <aura:handler event="c:AddToCartConfigurationModalReturnEvt" action="{!c.addProductToCart}"/>
+    <aura:handler event="c:OverrirdeQtyInCartReturnEvent" action="{!c.overrideQtyReturn}"/>
+    <aura:attribute name="existingProductWrapperList" type="Product2AddWrapper[]"/>
+    <aura:attribute name="ShowCartProducts" type="boolean"  default="false"/>
+    <aura:handler event="aura:waiting" action="{!c.waiting}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.doneWaiting}"/>
+    <aura:handler event="c:ProductDiscountCodeReturnEvent" action="{!c.handleProductDiscountCodeReturnEvent}" />
+	<aura:handler event="c:SelectedAgreementReturnEvent" action="{!c.handleSelectedAgreementReturnEvent}" />
+	<aura:handler event="c:ServiceResourceReturnAction" action="{!c.handleServiceResourceReturnAction}" />
+	<aura:handler event="c:ReturnOverrideTrailLength" action="{!c.handleReturnOverrideTrialLength}" />
+    <aura:handler event="c:OpportunityProductErrorEvent" action="{!c.handleOpportunityProductErrorEvent}" />
+	<aura:handler event="c:SetParentEvent" action="{!c.handleSetParentEvent}" />
+	<aura:handler event="c:ScheduleChargeReturnEvent" action="{!c.handleScheduleChargeReturnEvent}" />
+	<aura:handler event="c:EditShortDescriptionReturnEvent" action="{!c.handleEditShortDescriptionReturnEvent}" />
+    <aura:handler event="c:ConfigServiceCustomFieldReturnEvent" action="{!c.handleConfigServiceCustomFieldReturnEvent}" />
+    <aura:registerEvent name="ConfigureChargeRuleAction" type="c:ConfigureChargeRuleAction" />
+    <aura:registerEvent name="ConfigCustomFieldEvent" type="c:ConfigCustomFieldEvent" />
+    <aura:registerEvent name="ProductDiscountCodeEvent" type="c:ProductDiscountCodeEvent" />
+    <aura:handler event="c:overridePriceInCartReturnEvent" action="{!c.handleoverridePriceReturn}"/>
+    <aura:attribute name="ApiVersion" type="Boolean"/>
+    <aura:attribute name="ChangeOrderService" type="Boolean" default="false"/>
+    <aura:attribute name="gtvServiceList" type="GTVServiceListWrapper"/>
+    <aura:attribute name="searchedService" type="String" default=""/>
+    <aura:attribute name="searchedServiceList" type="GTVServiceWrapper[]"/>
+    <aura:attribute name="serviceListMap" type="Map" default="{}" />
+    <aura:attribute name="currencyCode" type="String" default=""/>
+    <aura:attribute name="ShowHideOrderService" type="Boolean" default="true"/>
+
+    <div class="wait">
+        <div id= "showspinner" class="product-spinner"> 
+            <div class="slds-spinner_container custom-pos-fixed" >
+                <div class="slds-spinner--brand slds-spinner slds-spinner--large" role="alert">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div> 
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>    
+    </div>
+    <div class="slds-col">
+        <div class="slds-no-flex">
+            <div id="showErrorproductListWrap" class="cmn_error_msg" style="display:none;text-align:center">
+                <ui:outputText value="{!v.message}"/>
+            </div>
+            <div id="showError" class="slds-grid slds-grid--align-center slds-wrap slds-p-top_x-small slds-text-align--center" style="display:none">
+				<p class="slds-text-heading--small">
+                    {!v.message}
+				</p>
+				<div class=" slds-text-align--center slds-size_1-of-1 slds-p-top_medium">
+					<ui:button label="Go Back" class="slds-button slds-button--brand blue-btn"  press="{!c.closeModalBox}" />
+				</div>
+			</div>
+        </div>
+    </div>
+    <aura:renderIf isTrue="{!v.ChangeOrderService}">
+    <aura:renderIf isTrue="{!v.ShowHideOrderService}">
+    <aura:renderIf isTrue="{!!v.disableProduct}">
+        <div class="slds-grid slds-grid_align-spread slds-card slds-p-around_medium slds-m-bottom_medium">
+            <div class="slds-size_1-of-3">
+                <div class="slds-grid">
+                    
+                        <div class="slds-col slds-size_4-of-5 custom-label-hidden">
+                            <lightning:input type="text" placeholder="Search Service" value="{!v.searchedService}"/>
+                        </div>
+                        <div class="slds-col slds-m-left_small">
+                            <lightning:button label="Filter" title="Neutral action" onclick="{!c.searchService}"/>
+                        </div>
+                    
+                </div>
+            </div>
+            
+        </div>
+        <div class="slds-grid slds-gutters">
+            <div class="slds-col">
+                <lightning:card >
+        
+                    <aura:set attribute = "title">
+                        <div >
+                            <h3 class="slds-text-heading--small font-normal">Active Services</h3>
+                        </div>
+                    </aura:set>
+                    <p class="slds-p-horizontal_medium">
+                        <!-- Forming a grid of two equal columns -->
+                        
+                        <div class="slds-box slds-scrollable">
+                            <table class="slds-table">
+                                <thead>
+                                    <tr>
+                                        <th>Service Name</th>
+                                        <th>Product Type</th>
+                                        <th>Description</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <aura:iteration items="{!v.searchedServiceList}" var="serviceDetail" indexVar="count">
+                                        <tr>
+                                            <td>{!serviceDetail.serviceName}</td>
+                                            <td>{!serviceDetail.productType}</td>
+                                            <td>{!serviceDetail.description}</td>
+                                            <td>{!serviceDetail.quantity}</td>
+                                            <td>{!serviceDetail.total}</td>
+                                            <td>
+                                                <a onclick="{!c.changeOrderModal}" data-count="{!count}">
+                                                    <u>Create Change Order</u>
+                                                </a>
+                                                </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </tbody>
+                            </table>
+                        </div>
+                    </p> 
+                    <div class="slds-card__footer slds-grid" >
+                        <div class="slds-col slds-size--1-of-2" style="text-align:left; font-size: 110%;" data-aura-rendered-by="89:2;a">
+                            Page {!v.currentPage}  of {!v.totelPage}
+                        </div>
+                        <div class="slds-col slds-size--1-of-2" >
+                            <button class="slds-button slds-button--brand " disabled="{!v.disableFirst}" onclick = "{!c.firstService}">First</button>
+                            <button class="slds-button slds-button--brand " disabled="{!v.disablePrev}" onclick = "{!c.previousService}">Previous</button>
+                            <button class="slds-button slds-button--brand " disabled="{!v.disableNext}" onclick = "{!c.nextService}">Next</button>
+                            <button class="slds-button slds-button--brand " disabled="{!v.disableLast}" onclick = "{!c.lastService}">Last</button>
+                        </div>
+                    </div>
+                </lightning:card>
+    
+            </div>
+            
+        </div>
+    </aura:renderIf>
+</aura:renderIf>
+{!v.body}
+</aura:renderIf>
+    <aura:renderIf isTrue="{!!v.ChangeOrderService}">
+    <aura:renderIf isTrue="{!!v.disableProduct}">
+    <div class="slds-grid slds-grid_align-spread slds-card slds-p-around_medium slds-m-bottom_medium">
+        <div class="slds-size_1-of-3">
+            <div class="slds-grid">
+                <aura:renderIf isTrue="{!!v.isConfiguration}">
+                    <div class="slds-col slds-size_4-of-5 custom-label-hidden">
+                        <lightning:input type="text" placeholder="Search Products" value="{!v.searchedProduct}"/>
+                    </div>
+                    <div class="slds-col slds-m-left_small">
+                        <lightning:button label="Filter" title="Neutral action" onclick="{!c.searchKeyChange}"/>
+                    </div>
+                </aura:renderIf>
+            </div>
+        </div>
+        <div>
+            <aura:renderIf isTrue="{!v.isConfiguration}">
+                <lightning:button label="Configure Order Custom Fields" title="Neutral action" onclick="{!c.addOrderCustomField }"/>
+                <lightning:button label="Add More Products" title="Neutral action" onclick="{!c.AddMoreProducts }"/> 
+                <lightning:button label="Save and Close" title="Neutral action" onclick="{!c.createOrder }"/> 
+                <aura:set attribute="else">
+                    <lightning:button label="Cancel" title="Neutral action" onclick="{!c.closeModalBox}"/>
+                    <lightning:button label="Configure" title="Neutral action" onclick="{!c.SaveAndClose}"/>
+                </aura:set>
+            </aura:renderIf>
+            <!-- <lightning:button label="Save and Close" title="Neutral action" onclick="{!c.SaveAndClose }"/>     -->
+        </div>
+    </div>
+    <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-size_2-of-3">
+            <aura:renderIf isTrue="{!!v.isConfiguration}">
+            <lightning:card >
+            
+                <aura:set attribute = "title">
+                    <div >
+                        <h3 class="slds-text-heading--small font-normal">Items</h3>
+                    </div>
+                </aura:set>
+                <!-- lightning:card body section starts -->
+                <p class="slds-p-horizontal_medium">
+                    <!-- Forming a grid of two equal columns -->
+                    
+                    <div class="slds-box slds-scrollable">
+                        <table class="slds-table">
+                            <thead>
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Product Type</th>
+                                    <th>Description</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.searchedProductList}" var="proDetails" indexVar="count">
+                                    <tr>
+                                        <td>{!proDetails.Name}</td>
+                                        <td>{!proDetails.ProductCode}</td>              
+                                        <td class="white-space-normal">{!proDetails.Description}</td>
+                                        <td>
+                                        <a onclick="{!c.openthisProduct}" data-count="{!count}">
+                                        <u>Add To Cart</u>
+                                        </a>
+                                        </td>
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </p>    
+            <div class="slds-card__footer slds-grid" >
+                <div class="slds-col slds-size--1-of-2" style="text-align:left; font-size: 110%;" data-aura-rendered-by="89:2;a">
+                    Page {!v.currentPage}  of {!v.totelPage}
+                </div>
+                <div class="slds-col slds-size--1-of-2" >
+                    <button class="slds-button slds-button--brand " disabled="{!v.disableFirst}" onclick = "{!c.firstProduct}">First</button>
+                    <button class="slds-button slds-button--brand " disabled="{!v.disablePrev}" onclick = "{!c.prevProduct}">Previous</button>
+                    <button class="slds-button slds-button--brand " disabled="{!v.disableNext}"  onclick = "{!c.nextProduct}">Next</button>
+                    <button class="slds-button slds-button--brand " disabled="{!v.disableLast}"  onclick = "{!c.lastProduct}">Last</button>
+                </div>
+            </div>
+                
+        </lightning:card>
+            <aura:set attribute="else">
+                <lightning:card >
+            
+                    <aura:set attribute = "title">
+                        <div >
+                            <h3 class="slds-text-heading--small font-normal">Items</h3>
+                        </div>
+                    </aura:set>
+                    <!-- lightning:card body section starts -->
+                    <p class="slds-p-horizontal_medium">
+                        <!-- Forming a grid of two equal columns -->
+                        
+                        <div class="slds-box slds-scrollable">
+                            <table class="slds-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Product Name</th>
+                                        <th>Quantity</th>
+                                        <th>Price List</th>
+                                        <th>Recurring Price</th>
+                                        <th>OneTime Price</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <aura:iteration items="{!v.existingProductWrapperList}" var="productToConfigure" indexVar="index">
+                                    <tr class="vertical-align-top">
+                                        <td>
+                                            <ui:outputText aura:id="counter" class="slds-output" value="{!index+1}" />
+                                        </td>
+                                        <td>{!productToConfigure.prod.Name}
+                                            <aura:renderIf isTrue="{!not(empty(productToConfigure.oLineItem.Description))}">
+                                                <p><b>Short Description: </b> {!productToConfigure.oLineItem.Description}</p>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!not(empty(productToConfigure.agreementName))}">
+                                                <p><b>Agreement Name: </b> {!productToConfigure.agreementName}</p>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!not(empty(productToConfigure.agreementPeriod))}">
+                                                <p><b>Period: </b> {!productToConfigure.agreementPeriod} &nbsp;{!productToConfigure.agreementPeriodType}</p>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!not(empty(productToConfigure.overrideAgreementEndDate))}">
+                                                <p><b>End Date: </b> {!productToConfigure.overrideAgreementEndDate}</p>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!not(empty(productToConfigure.agreementName))}">
+                                                <p><b>End Action: </b> {!productToConfigure.agreementEndAction}</p>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!productToConfigure.renewalPrice == 'Service Price'}">
+                                                <p><b>Preserve Service Price: </b>Yes</p>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!not(empty(productToConfigure.nextAgreementName))}">
+                                                <p><b>Next Agreement: </b> {!productToConfigure.nextAgreementName}</p>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!not(empty(productToConfigure.nextAgreementName))}">
+                                                <p><b>Next End Action: </b> {!productToConfigure.nextAgreementEndAction}</p>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!productToConfigure.nextRenewalPrice == 'Service Price'}">
+                                                <p><b>Preserve Next Service Price: </b>Yes</p>
+                                            </aura:renderIf>				
+                                            <aura:renderIf isTrue="{!not(empty(productToConfigure.discountEid))}">
+                                                <p><b>Discount: </b> {!productToConfigure.discountName}</p>
+                                            </aura:renderIf>									
+                                            <aura:renderIf isTrue="{!not(productToConfigure.parentServiceEId == ' ')|| not(empty(productToConfigure.serviceName))}">
+                                                <p><b>Applied To: </b> {!productToConfigure.serviceName}</p>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!not(productToConfigure.newServiceResource == '') || (not(productToConfigure.serviceResourceName == ''))}">
+                                                <p><b>Service Resource: </b> {!productToConfigure.newServiceResource}</p>
+                                            </aura:renderIf>
+                                        </td>
+                                        
+                                        <td>{!productToConfigure.quantity}</td>              
+                                        <td>{!productToConfigure.priceListName}</td> 
+                                        <td>{!productToConfigure.recurringprice}</td> 
+                                        <td>{!productToConfigure.oneTimePrice}</td> 
+                                        <td>
+                                            <a onclick="{!c.removeProductFromCart}" data-count="{!index}">
+                                                <u>Remove</u>
+                                            </a>
+                                            <br />
+                                            <aura:renderIf isTrue="{!productToConfigure.prod.ProductCode == 'Add-on' || productToConfigure.prod.ProductCode == 'ADD-ON' }">
+                                                <a onclick="{!c.addParent}" data-count="{!index}">
+                                                    <aura:renderIf isTrue="{!not(productToConfigure.parentServiceEId == ' ') || (not(empty(productToConfigure.service)))}">
+                                                        <u>Edit Service</u>
+                                                        <aura:set attribute="else">
+                                                            <u>Select Service</u>
+                                                        </aura:set>
+                                                    </aura:renderIf>
+                                                </a>
+                                                <br />
+                                            </aura:renderIf>
+                                            <a onclick="{!c.editdescription}" data-count="{!index}">
+                                                <aura:renderIf isTrue="{!not(empty(productToConfigure.oLineItem.Description))}">
+                                                    <u>Edit Short Description</u>
+                                                    <aura:set attribute="else">
+                                                        <u>Add Short Description</u>
+                                                    </aura:set>
+                                                </aura:renderIf>
+                                            </a>
+                                            <br />
+                                            <aura:renderIf isTrue="{!productToConfigure.enabledAgreementConfiguration}">
+                                                <a onclick="{!c.selectAgreement}" data-count="{!index}">
+                                                    <aura:renderIf isTrue="{!not(empty(productToConfigure.agreementName))}">
+                                                        <u>Edit Agreement</u>
+                                                        <aura:set attribute="else">
+                                                            <u>Add Agreement</u> 
+                                                        </aura:set>
+                                                    </aura:renderIf>
+                                                </a>
+                                                <br/>
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!productToConfigure.productTrialOverride}">
+                                                <a onclick="{!c.overridetrail}" data-count="{!index}">
+                                                    <aura:renderIf isTrue="{!not(empty(productToConfigure.overridedTrialLength))}">
+                                                        <u>Edit Trial Length</u>
+                                                        <aura:set attribute="else">
+                                                            <u>Add Trial Length</u>
+                                                        </aura:set>
+                                                    </aura:renderIf>
+                                                </a>
+                                                <br />
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!productToConfigure.minServiceResource > 0 || productToConfigure.maxServiceResource > 0}">
+                                                <a onclick="{!c.addServiceResource}" data-count="{!index}">
+                                                    <aura:renderIf isTrue="{!not(productToConfigure.newServiceResource == '') || (not(productToConfigure.serviceResourceName == ''))}">
+                                                        <u>Edit Service Resource</u>
+                                                        <aura:set attribute="else">
+                                                            <u>Add Service Resource</u>
+                                                        </aura:set>
+                                                    </aura:renderIf>
+                                                </a>
+                                                <br />
+                                            </aura:renderIf>
+                                            <a onclick="{!c.addDiscountCode}" data-count="{!index}">
+                                                <aura:renderIf isTrue="{!not(empty(productToConfigure.discountEid))}">
+                                                    <u>Edit Discount Code</u>
+                                                    <aura:set attribute="else">
+                                                        <u>Add Discount Code</u>
+                                                    </aura:set>
+                                                </aura:renderIf>	
+                                            </a>
+                                            <br />
+                                            <aura:renderIf isTrue="{!and((v.ApiVersion==true),(productToConfigure.hasServiceCustomFields==true))}">
+                                                <a onclick="{!c.configCustomField}" data-count="{!index}">
+                                                    <aura:renderIf isTrue="{!not(empty(productToConfigure.serviceCustomFieldValueList))}">
+                                                        <u>Edit Service Custom Field Values</u>
+                                                        <aura:set attribute="else">
+                                                            <u>Add Service Custom Field Values</u>
+                                                        </aura:set>
+                                                    </aura:renderIf>
+                                                </a>
+                                                <br />
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!productToConfigure.oneTimeChargeEnable}">
+                                                <a onclick="{!c.scheduleCharge}" data-count="{!index}">
+                                                <aura:renderIf isTrue="{!not(empty(productToConfigure.scheduleChargeList))}">
+                                                    <u>Edit Schedule One-Time Charges</u>
+                                                    <aura:set attribute="else">
+                                                        <u>Add Schedule One-Time Charges</u>
+                                                    </aura:set>
+                                                </aura:renderIf>
+                                                </a>
+                                                <br />
+                                            </aura:renderIf>
+                                            <aura:renderIf isTrue="{!productToConfigure.ruleOverride}">
+                                                <a onclick="{!c.cofigureChargeRule}" data-count="{!index}">
+                                                    <u>Configure Activity Charge Rules</u>
+                                                </a>
+                                                <br />
+                                            </aura:renderIf>
+                                        </td>
+                                    </tr>
+                            </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </p>    
+            </lightning:card>
+            </aura:set>
+        </aura:renderIf>
+        </div>
+        <div class="slds-col slds-size_1-of-3">
+            <lightning:card >
+                <aura:set attribute = "title">
+                    <div >
+                        <h3 class="slds-text-heading--small font-normal">Cart</h3>
+                    </div>
+                </aura:set>
+                <p class="slds-p-horizontal_medium">
+                    <!-- Forming a grid of two equal columns -->
+                    
+                    <div class="slds-box slds-scrollable">
+                        <table class="slds-table">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Price</th>
+                                    <th>Qty</th>
+                                    <th>Total</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <aura:iteration items="{!v.existingProductWrapperList}" var="proDetails" indexVar="count">
+                                    <tr class="cust-vertical-align-top">
+                                        <td class="white-space-normal">{!proDetails.prod.Name}</td>
+                                        <td>
+                                            <aura:renderIf isTrue="{!proDetails.disableRecurring || proDetails.disableonetime}">
+                                            <a onclick="{!c.overridePrices}" data-count="{!count}">
+                                                    <u>{!proDetails.unitPrice}</u>
+                                                </a>
+                                                <aura:set attribute="else">
+                                                    {!proDetails.unitPrice}   
+                                                </aura:set>
+                                            </aura:renderIf> 
+                                        </td>
+                                        <td>
+                                            <aura:renderIf isTrue="{!proDetails.prod.TRACT3__Serialized__c}">
+                                                {!proDetails.quantity}
+                                                <aura:set attribute="else">
+                                                    <a onclick="{!c.overrideThisQty}" data-count="{!count}">
+                                                        <u>{!proDetails.quantity}</u>
+                                                    </a>   
+                                                </aura:set>
+                                            </aura:renderIf> 
+                                        </td>  
+                                                   
+                                        <td>{!proDetails.totelPrice}</td>
+                                        <td>
+                                            <a onclick="{!c.removeProductFromCart}" data-count="{!count}">
+                                                <u>Remove</u>
+                                            </a>
+                                        </td>
+                                        
+                                    </tr>
+                                </aura:iteration>
+                            </tbody>
+                        </table>
+                    </div>
+                </p> 
+              </lightning:card>
+        </div>
+        {!v.body}
+      </div>
+      <c:ConfigCustomFieldComponent />
+      <c:ConfigureChargeRuleComponent />
+    </aura:renderIf>
+    </aura:renderIf>     
+</aura:component>

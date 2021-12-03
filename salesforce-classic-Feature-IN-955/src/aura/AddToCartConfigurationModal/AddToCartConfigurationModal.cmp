@@ -1,0 +1,82 @@
+<aura:component controller="TractOppProduct_LT">
+    <aura:attribute name="productWrapper" type="Product2AddWrapper"/>
+    <aura:attribute name="selectedProduct" type="product2"/>
+    <aura:attribute name="opportunityId" type="String" access="global" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:registerEvent name="CartReturnEvent" type="c:AddToCartConfigurationModalReturnEvt"/>
+    <aura:attribute name="message" type="String" default="NoError" />
+
+    <div aria-hidden="false" id="configureProduct" role="dialog" class="slds-modal  slds-fade-in-open" style="display:block;">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header top-cmn-heading-row">
+				<h1 class="slds-text-heading--small">Select Price</h1>
+				<button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+					<c:svg class="slds-button__icon slds-button__icon--large"
+			        xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+			        ariaHidden="true"
+			        />
+				</button>
+			</div>
+            <div class="slds-modal__content slds-p-horizontal_medium">
+                <div class="slds-grid slds-grid_vertical">
+                    <div class="slds-p-bottom_x-small">
+                        <div id="showErrorconfigureProduct" class="slds-text-color_error " style="display:none; text-align:center;font-weight:700">
+                            <lightning:formattedText value="{!v.message}"/>   
+                        </div>
+                    </div>
+                    <div class="slds-form-element slds-form-element_compound">
+                        <div class="slds-p-bottom_x-small slds-text-align_center">
+                            <label><b>Product Name&nbsp;:&nbsp;&nbsp;</b></label>
+                            <ui:outputText aura:id="prodName" class="slds-output" value="{!v.productWrapper.prod.Name}" />
+                        </div>
+                        <div class="slds-form-element__row">
+                            <div class="slds-size_1-of-2">
+                                <div>
+                                    <lightning:select value="{!v.productWrapper.priceListValue}" label="Price List:" required="true" onchange="{!c.onPriceListChange}">
+                                        <aura:iteration items="{!v.productWrapper.productPriceList}" var="priceList">
+                                            <option text="{!priceList.label}" value="{!priceList.value}" label="{!priceList.label}" selected="{!priceList.value == v.productWrapper.priceListValue}">
+                                            </option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                            </div>
+                            <div class="slds-size_1-of-2">
+                                <aura:If isTrue="{!v.productWrapper.recurrenceoptList.length >0}">
+                                    <div>
+                                        <lightning:select value="{!v.productWrapper.recurrencPerValue}" label="Recurrence Period:" required="true" onchange="{!c.onRecurPerChange}">
+                                            <aura:iteration items="{!v.productWrapper.recurrenceoptList}" var="recList">
+                                                <option value="{!recList.value}" label="{!recList.label}" selected="{!recList.value == v.productWrapper.recurrencPerValue}">
+                                                </option>
+                                            </aura:iteration>
+                                        </lightning:select>
+                                    </div>
+                                </aura:If>
+                            </div>
+                        </div>
+                        <div class="slds-grid slds-wrap slds-p-vertical_x-small">
+                            <aura:if isTrue="{!not(empty(v.productWrapper.recurringprice))}">
+                                <div class="slds-size_1-of-2">
+                                    <label><b>Recurring Prices&nbsp;:&nbsp;&nbsp;</b></label>
+                                    <ui:outputText aura:id="RecurringPrice" class="slds-output" value="{!v.productWrapper.recurringprice}" />
+                                </div>
+                            </aura:if>
+                            <aura:If isTrue="{!not(empty(v.productWrapper.oneTimePrice))}">
+                                <div class="slds-size_1-of-2">
+                                    <label><b>OneTime Price&nbsp;:&nbsp;&nbsp;</b></label>
+                                    <ui:outputText aura:id="OneTimePrice" class="slds-output" value="{!v.productWrapper.oneTimePrice}" />  
+                                </div>
+                            </aura:If>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-modal__footer">
+                <div class="slds-grid  slds-grid--align-center slds-p-vertical_medium">
+                    <lightning:button class="slds-button slds-button--brand" onclick="{!c.closeModalBox}">Cancel</lightning:button>
+                    <lightning:button class="slds-button slds-button--brand" onclick="{!c.saveProductPrice}">Finish</lightning:button> 
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open" id="productPriceCreationBackground" style="display:block;"></div>
+</aura:component>

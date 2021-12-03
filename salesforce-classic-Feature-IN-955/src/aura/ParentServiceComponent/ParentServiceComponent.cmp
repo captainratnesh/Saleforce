@@ -1,0 +1,93 @@
+<aura:component controller="TractOppProduct_LT">
+    <aura:attribute name="productWrapper" type="Product2AddWrapper" />
+    <aura:attribute name="selectedProductIndex" type="Integer" />
+    <aura:attribute name="productWrapperList" type="Product2AddWrapper[]" />
+    <aura:attribute name="parentProductWrapper" type="Product2AddWrapper[]" />
+    <aura:attribute name="message" type="String" default="NoError" />
+    <aura:attribute name="oppId" type="String" />
+    <aura:attribute name="relatedProductList" type="String[]" />
+    <aura:attribute name="showapplicableServices" type="boolean" default="true" />
+    <aura:handler name="init" value="this" action="{!c.doinit}" />
+    <!--  <aura:handler event="c:AddParentEvent" action="{!c.handleAddParentEvent}" />-->
+    <aura:registerEvent name="SetParentEvent" type="c:SetParentEvent" />
+
+    <div aria-hidden="false" id="parentService" role="dialog" class="slds-modal  slds-fade-in-open cmn_modelbox add-new-prod-model select-applicable-service"
+        style="display:block;">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header top-cmn-heading-row">
+                <h1 class="slds-text-heading--Large">Select Applicable Service</h1>
+                <div id="showErrorService" class="cmn_error_msg" style="display:none;">
+                    <ui:outputText value="{!v.message}" />
+                </div>
+                <button class="slds-button slds-button--icon-inverse slds-modal__close" onclick="{!c.closeModalBox}">
+                    <c:svg class="slds-button__icon slds-button__icon--large" xlinkHref="/resource/TRACT3__SLDS/assets/icons/action-sprite/svg/symbols.svg#close"
+                        ariaHidden="true" />
+                </button>
+            </div>
+            <div class="slds-modal__content">
+                <aura:if isTrue="{!v.showapplicableServices}">
+                    <h3>Select Service to apply Add-On to</h3>
+                    <div class="account-details">
+                        <div class="panel-body panel_body_details service-table service-table2  heading last">
+                            <div class="cmn-table-responsive">
+                                <table>
+                                    <aura:iteration items="{!v.parentProductWrapper}" var="pro" indexVar="index">
+                                        <tr>
+
+                                            <td>
+                                                <aura:renderIf isTrue="{!index == 0}">
+                                                    <b>Applicable Services :</b>
+                                                </aura:renderIf>
+                                            </td>
+                                            <td>
+                                                <div class="uiInput uiInputRadio uiInput--default uiInput--radio select-appli-radio">
+                                                    <ui:inputRadio label="{!pro.prod.Name}" change="{!c.onRadio}" text="{!index}" name="options"/>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </aura:iteration>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <aura:set attribute="else">
+                        <aura:renderIf isTrue = "{!not(empty(v.relatedProductList))}" >
+                            <h3>No related subscription product found on the order. Please add one of the following related
+                                products:</h3>
+                            <aura:set attribute="else">
+                                <h3 class="slds-align_absolute-center">No parent service available.</h3>
+                            </aura:set>
+                        </aura:renderIf>
+                        <div class="account-details" style="border:none !important;">
+                            <div class="panel-body panel_body_details service-table service-table2  heading last">
+                                <div class="cmn-table-responsive">
+                                    <table>
+                                        <aura:iteration items="{!v.relatedProductList}" var="related" indexVar="index">
+                                            <tr>
+
+                                                <td>
+                                                    {!related}
+                                                </td>
+                                            </tr>
+                                        </aura:iteration>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </aura:set>
+                </aura:if>
+
+            </div>
+            <div class="slds-modal__footer">
+                <div class="slds-x-small-buttons--horizontal">
+                    <button class="slds-button slds-button--neutral" onclick="{!c.closeModalBox}">Cancel</button>
+                    <aura:if isTrue="{!v.showapplicableServices}">
+                        <button class="slds-button slds-button--neutral slds-button--brand" onclick="{!c.saveService}">Finish</button>
+                    </aura:if>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="slds-backdrop slds-backdrop--open" id="parentServiceBackground" style="display:block;"></div>
+</aura:component>

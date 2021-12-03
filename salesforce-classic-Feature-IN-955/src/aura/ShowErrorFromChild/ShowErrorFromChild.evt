@@ -1,0 +1,7 @@
+<aura:event type="COMPONENT" access="global">
+    <aura:attribute name="errorMessage"
+                    access="global"
+                    type="String" 
+                    description="Error message to be shown on parent component"
+                    />
+</aura:event>
